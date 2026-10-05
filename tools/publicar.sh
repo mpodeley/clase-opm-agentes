@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Build the public site (landing page + slides) into dist/ and publish it to the gh-pages branch.
 #
-#   tools/publicar.sh            build and push
-#   tools/publicar.sh --local    build only
+#   tools/publicar.sh               build and push to gh-pages
+#   tools/publicar.sh --cloudflare  build and deploy to Cloudflare (wrangler.jsonc)
+#   tools/publicar.sh --local       build only
 set -euo pipefail
 
 repo="$(cd "$(dirname "$0")/.." && pwd)"
@@ -17,6 +18,11 @@ touch dist/.nojekyll
 
 if [ "${1:-}" = "--local" ]; then
     echo "listo: dist/index.html"
+    exit 0
+fi
+
+if [ "${1:-}" = "--cloudflare" ]; then
+    npx --yes wrangler@4 deploy
     exit 0
 fi
 

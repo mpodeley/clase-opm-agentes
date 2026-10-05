@@ -14,3 +14,10 @@ docente/plan-b/*/base/
 !docente/plan-b/*/SW.DATA
 !docente/plan-b/ensayo/results.tsv
 dist/
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example

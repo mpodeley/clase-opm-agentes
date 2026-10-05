@@ -10,7 +10,7 @@ diferencia es que el cálculo lo hace el equilibrio del propio simulador, así q
 es lo que después inicializa el modelo de campo.
 
 Las diapositivas y un resumen con las figuras están en
-[mpodeley.github.io/clase-opm-agentes](https://mpodeley.github.io/clase-opm-agentes/).
+[clase-opm-agentes.podeley.workers.dev](https://clase-opm-agentes.podeley.workers.dev/).
 
 ## Qué se ve en la clase
 
