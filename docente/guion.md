@@ -1,6 +1,6 @@
 # Guion del docente
 
-Clase de 3 h 40 min en formato demostración: todo corre en tu máquina y se proyecta. La sala son
+Clase de 3 h 45 min en formato demostración: todo corre en tu máquina y se proyecta. La sala son
 ingenieros de reservorios. Conocen presión capilar, función J y contactos; lo nuevo para ellos es
 OPM Flow y el trabajo con un agente.
 
@@ -30,54 +30,61 @@ OPM Flow y el trabajo con un agente.
 
 ## Minuto a minuto
 
-### Bloque 1 · El problema (0:00 a 0:15)
+### Bloque 1 · El campo y el problema (0:00 a 0:20)
 
 - 0:00. Qué van a ver: un agente que maneja un simulador, sobre un problema que ellos conocen.
   La clase sirve si al final pueden decir qué le pedirían y qué le revisarían.
-- 0:03. Volve en un minuto: mar del Norte, Formación Hugin, producido de 2008 a 2016, datos
-  liberados en 2018. Dos pozos: F-12, desviado y perfilado en 2007; F-11 B, casi horizontal y
-  perfilado en 2013.
-- 0:06. La figura del perfil de F-12 sin simulación. Preguntar a la sala: ¿dónde pondrían el
+- 0:02. Volve en un minuto: mar del Norte, 80 m de agua, Formación Hugin entre 2,700 y 3,100 m,
+  producido de 2008 a 2016 con inyección de agua, datos liberados en 2018.
+- 0:04. El mapa del tope del Hugin: un alto de unos 1.5 por 2.5 km con 18 pozos. F-12 entra cerca de
+  la cresta; F-11 B entra 500 m al nordeste y recorre 1,200 m hacia el flanco este.
+- 0:07. La sección: las dos trayectorias coloreadas por Sw. F-11 B tiene un tramo horizontal y
+  tramos claros (petróleo) por debajo de 3,100 m.
+- 0:10. La producción: F-12 se perfiló en 2007, antes del primer petróleo; F-11 B en 2013, con
+  el campo produciendo más agua que petróleo.
+- 0:12. Qué trae el conjunto completo (unos 40,000 archivos, cerca de 5 TB, con sísmica y el
+  modelo de simulación de Equinor) y qué usamos (7 archivos).
+- 0:14. La figura del perfil de F-12 sin simulación. Preguntar a la sala: ¿dónde pondrían el
   contacto? Anotar dos o tres respuestas para el bloque 5.
-- 0:10. Qué significa reproducirlo: el simulador inicializa con `EQUIL` y una curva de presión
+- 0:17. Qué significa reproducirlo: el simulador inicializa con `EQUIL` y una curva de presión
   capilar; se compara celda por celda con el perfil. El número es `rmse_ajuste`.
-- 0:13. Lo que no hay: presiones, ensayos de laboratorio, PVT. Queda dicho desde el principio.
+- 0:19. Lo que no hay en lo que usamos: presiones y laboratorio. Queda dicho desde el principio.
 
-### Bloque 2 · Instalación (0:15 a 0:40)
+### Bloque 2 · Instalación (0:20 a 0:45)
 
-- 0:15. Las cuatro piezas: contenedor, `uv`, git, Claude Code. Mostrar la tabla del README.
-- 0:20. Ventana B: `instalacion/instalar.sh`. Leer en voz alta las tres etapas. Señalar el hash
+- 0:20. Las cuatro piezas: contenedor, `uv`, git, Claude Code. Mostrar la tabla del README.
+- 0:25. Ventana B: `instalacion/instalar.sh`. Leer en voz alta las tres etapas. Señalar el hash
   de la imagen: la versión del simulador queda fijada.
-- 0:27. `instalacion/verificar.sh`. SPE1 corre en cerca de un segundo. Para quien usa un
+- 0:32. `instalacion/verificar.sh`. SPE1 corre en cerca de un segundo. Para quien usa un
   simulador comercial: es el mismo formato de deck.
-- 0:32. `uv run evaluar.py` a mano, sin agente. Mostrar el bloque de números y abrir la figura.
-- 0:36. `ejercicio/preparar.sh` y qué hay en la carpeta: `CLAUDE.md`, los pedidos y
+- 0:37. `uv run evaluar.py` a mano, sin agente. Mostrar el bloque de números y abrir la figura.
+- 0:41. `ejercicio/preparar.sh` y qué hay en la carpeta: `CLAUDE.md`, los pedidos y
   `.claude/settings.json`. Leer la lista de permisos y la de prohibiciones.
 
-### Bloque 3 · El agente lee el deck (0:40 a 1:15)
+### Bloque 3 · El agente lee el deck (0:45 a 1:20)
 
-- 0:40. Ventana C: `claude`, y pegar `PEDIDO-1.md`. Aceptar el diálogo de confianza leyéndolo.
-- 0:42. Mientras trabaja, narrar qué herramienta llama: lee archivos, corre `evaluar.py`, abre el
+- 0:45. Ventana C: `claude`, y pegar `PEDIDO-1.md`. Aceptar el diálogo de confianza leyéndolo.
+- 0:47. Mientras trabaja, narrar qué herramienta llama: lee archivos, corre `evaluar.py`, abre el
   deck, mira la figura.
-- 0:50. La explicación del deck. Conviene que aparezcan: `DIMENS` con una sola fila de celdas,
+- 0:55. La explicación del deck. Conviene que aparezcan: `DIMENS` con una sola fila de celdas,
   `TOPS` por celda, `MULTX` en cero, `SWOF`, `EQUIL`. Si no nombra alguna, preguntársela.
-- 1:00. La lectura de la figura. Valores de referencia del caso base: `rmse_ajuste` 0.177, 0.128
+- 1:05. La lectura de la figura. Valores de referencia del caso base: `rmse_ajuste` 0.177, 0.128
   dentro del Hugin y 0.204 debajo. El nivel de agua libre está en 2,920 m.
-- 1:08. Los supuestos. Tienen que salir las densidades de los fluidos y el contacto. Pregunta
+- 1:13. Los supuestos. Tienen que salir las densidades de los fluidos y el contacto. Pregunta
   para la sala: ¿qué otro supuesto ven ustedes?
-- 1:12. Cierre: el agente todavía no cambió nada. Leyó, corrió y explicó.
+- 1:17. Cierre: el agente todavía no cambió nada. Leyó, corrió y explicó.
 
 Plan B: `docente/plan-b/a/` tiene el deck y la figura.
 
-### Pausa (1:15 a 1:25)
+### Pausa (1:20 a 1:30)
 
-### Bloque 4 · Alternativas de ajuste (1:25 a 2:10)
+### Bloque 4 · Alternativas de ajuste (1:30 a 2:15)
 
-- 1:25. Pegar `PEDIDO-2.md`. Son cuatro alternativas y hasta seis corridas cada una: entre 10 y
+- 1:30. Pegar `PEDIDO-2.md`. Son cuatro alternativas y hasta seis corridas cada una: entre 10 y
   15 minutos de trabajo del agente.
-- 1:27. Mientras corre, una diapositiva por alternativa, con la keyword que usa. Pedir a la sala
+- 1:32. Mientras corre, una diapositiva por alternativa, con la keyword que usa. Pedir a la sala
   que apueste cuál va a ajustar mejor.
-- 1:45. `comparacion.md`. Compararla con `docente/plan-b/tabla.md`:
+- 1:50. `comparacion.md`. Compararla con `docente/plan-b/tabla.md`:
 
   | Caso | RMSE en F-12 | En el Hugin | RMSE en F-11 B | Parámetros |
   | --- | ---: | ---: | ---: | ---: |
@@ -87,22 +94,22 @@ Plan B: `docente/plan-b/a/` tiene el deck y la figura.
   | D: agua connata por celda | 0.158 | 0.106 | 0.490 | 5 |
   | E: SWATINIT | 0.000 | 0.000 | 0.486 | 383 |
 
-- 1:52. Tres puntos para discutir, con la figura de cada caso en la ventana D:
+- 1:57. Tres puntos para discutir, con la figura de cada caso en la ventana D:
   - De A a D la diferencia está en el tercer decimal. La función J gana dentro del Hugin (de 0.124
     a 0.110) porque sigue las capas de mala calidad; debajo del Hugin nadie mejora.
   - Tres tipos de roca con 12 parámetros no superan a la función J con 4.
   - SWATINIT da cero en F-12 y 0.486 en F-11 B: no predice fuera del pozo. Además Flow lo ignora
     debajo del nivel de agua libre, y por eso el caso de referencia baja el contacto a 3,200 m.
-- 2:05. Qué eligió el agente para un modelo de campo y si la sala está de acuerdo.
+- 2:10. Qué eligió el agente para un modelo de campo y si la sala está de acuerdo.
 
 Si el agente se demora, cortarlo en la alternativa que esté y mostrar el resto desde el plan B.
 
-### Bloque 5 · El contacto (2:10 a 2:40)
+### Bloque 5 · El contacto (2:15 a 2:45)
 
-- 2:10. Volver a las respuestas del bloque 1 sobre el contacto. Pegar `PEDIDO-3.md`.
-- 2:12. Mientras corre: la trayectoria de F-11 B. Entra al Hugin a 2,829 m y sigue hasta 3,182 m,
+- 2:15. Volver a las respuestas del bloque 1 sobre el contacto. Pegar `PEDIDO-3.md`.
+- 2:17. Mientras corre: la trayectoria de F-11 B. Entra al Hugin a 2,829 m y sigue hasta 3,182 m,
   con petróleo por debajo de 3,100 m. En F-12 hay agua desde 2,910 m.
-- 2:22. Los tres casos de referencia:
+- 2:27. Los tres casos de referencia:
 
   | Caso | RMSE en F-12 | RMSE en F-11 B | Contactos |
   | --- | ---: | ---: | --- |
@@ -110,7 +117,7 @@ Si el agente se demora, cortarlo en la alternativa que esté y mostrar el resto 
   | F1: un contacto por sistema | 0.220 | 0.230 | Hugin 3,156 m; debajo 2,937 m |
   | F2: contacto inclinado | 0.261 | 0.232 | 2,994 m en F-12, 105 m por kilómetro |
 
-- 2:28. La discusión que importa:
+- 2:33. La discusión que importa:
   - F1 y F2 ajustan casi igual. Los perfiles no separan las dos explicaciones.
   - 105 m por kilómetro pide unos 3 bar por kilómetro de gradiente en el acuífero. Preguntar si
     alguien vio algo así en un campo de este tamaño.
@@ -118,22 +125,22 @@ Si el agente se demora, cortarlo en la alternativa que esté y mostrar el resto 
     contra ese perfil mezcla dos cosas.
   - Al ajustar los dos pozos con una sola función J, F-12 empeora (de 0.159 a 0.220). La curva no
     se traslada de un pozo al otro.
-- 2:36. Qué dato lo decidiría: presiones de formación en los dos pozos.
-- 2:38. Pegar `PEDIDO-4.md` y dejar el loop corriendo durante la pausa.
+- 2:41. Qué dato lo decidiría: presiones de formación en los dos pozos.
+- 2:43. Pegar `PEDIDO-4.md` y dejar el loop corriendo durante la pausa.
 
-### Pausa (2:40 a 2:50)
+### Pausa (2:45 a 2:55)
 
-### Bloque 6 · Loop autónomo (2:50 a 3:20)
+### Bloque 6 · Loop autónomo (2:55 a 3:25)
 
-- 2:50. Qué está haciendo: mostrar `program.md`. Tres piezas: un archivo fijo con la métrica, un
+- 2:55. Qué está haciendo: mostrar `program.md`. Tres piezas: un archivo fijo con la métrica, un
   archivo que el agente edita, y las reglas que escribió una persona.
-- 2:55. `results.tsv` en vivo y `git log --oneline`. Cada fila es un commit; lo descartado no
+- 3:00. `results.tsv` en vivo y `git log --oneline`. Cada fila es un commit; lo descartado no
   queda en la rama.
-- 3:00. El loop llega a su tope. Leer `informe.md` completo.
-- 3:08. Comparar con el optimizador clásico: `docente/optimizar.py` usa unas 250 corridas y cerca
+- 3:05. El loop llega a su tope. Leer `informe.md` completo.
+- 3:13. Comparar con el optimizador clásico: `docente/optimizar.py` usa unas 250 corridas y cerca
   de cuatro minutos para ajustar cuatro parámetros de una forma fija. El agente usa 15 corridas y
   cambia la forma del modelo. Son herramientas para preguntas distintas.
-- 3:14. Lo que el loop no ve: `rmse_validacion` se anota y no decide. Mirar si el caso final
+- 3:19. Lo que el loop no ve: `rmse_validacion` se anota y no decide. Mirar si el caso final
   mejoró o empeoró en F-11 B.
 
 Referencia del ensayo del 5 de octubre de 2026 (`docente/plan-b/ensayo/`): 15 experimentos en 17
@@ -150,18 +157,18 @@ la discusión:
 
 Plan B: `docente/plan-b/ensayo/`.
 
-### Bloque 7 · Controles y cierre (3:20 a 3:40)
+### Bloque 7 · Controles y cierre (3:25 a 3:45)
 
-- 3:20. Qué revisa el ingeniero antes de firmar un caso armado por un agente:
+- 3:25. Qué revisa el ingeniero antes de firmar un caso armado por un agente:
   1. El caso vive en su propia carpeta, con el caso base al lado.
   2. Un diff contra el caso base, leído.
   3. La lista de supuestos y de valores por defecto del simulador.
   4. La versión del simulador fijada.
   5. La misma descripción, armada dos veces, da el mismo resultado.
   6. Un ingeniero firma.
-- 3:28. Los límites de lo que se vio: la sección "Qué no se puede afirmar con esto" del README.
-- 3:33. Cómo repetirlo: el repo, los dos scripts de instalación y `preparar.sh`.
-- 3:36. Preguntas.
+- 3:33. Los límites de lo que se vio: la sección "Qué no se puede afirmar con esto" del README.
+- 3:38. Cómo repetirlo: el repo, los dos scripts de instalación y `preparar.sh`.
+- 3:41. Preguntas.
 
 ## Si algo falla
 

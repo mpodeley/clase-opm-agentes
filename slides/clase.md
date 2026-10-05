@@ -10,7 +10,7 @@ footer: 'clase-opm-agentes'
 
 # Un agente maneja el simulador
 
-Clase de 3 h 40 min · ingeniería de reservorios · **OPM Flow · Claude Code · Volve**
+Clase de 3 h 45 min · ingeniería de reservorios · **OPM Flow · Claude Code · Volve**
 
 <!--
 0:00 · portada mientras entra la gente
@@ -29,7 +29,7 @@ El minuto a minuto completo está en docente/guion.md.
 
 | Bloque | Tiempo | Qué hacemos |
 | --- | --- | --- |
-| El problema | 15 min | El perfil de F-12, qué significa reproducirlo y con qué número se mide |
+| El campo y el problema | 20 min | Volve en mapa y sección, qué datos hay, y con qué número se mide el ajuste |
 | Instalación | 25 min | OPM Flow en un contenedor, el entorno de Python y Claude Code |
 | El agente lee el deck | 35 min | Explica el modelo keyword por keyword, corre el caso base y lee el resultado |
 | Pausa | 10 min | |
@@ -50,32 +50,104 @@ le revisarían.
 
 <!-- _class: seccion -->
 
-## El problema
+## El campo y el problema
 
-Bloque 1 de 7 · **15 min**
+Bloque 1 de 7 · **20 min**
 
 <!--
 0 min · acumulado 0:02
-Arranca 0:00, termina 0:15.
+Arranca 0:00, termina 0:20.
 -->
 
 ---
 
 ## Volve, en un minuto
 
-- Campo de petróleo del mar del Norte noruego, en la **Formación Hugin**
-- Produjo de 2008 a 2016; Equinor liberó los datos en 2018
-- Usamos dos pozos con perfil interpretado: saturación de agua (Sw), porosidad y permeabilidad
-
-| Pozo | Geometría | Perfilado |
-| --- | --- | --- |
-| 15/9-F-12 | Desviado | 2007, antes de producir |
-| 15/9-F-11 B | Casi horizontal | 2013, con cinco años de producción |
+- Campo de petróleo del mar del Norte noruego, cinco kilómetros al norte de Sleipner Øst, con 80 m de agua
+- Descubierto en 1993; produjo de 2008 a 2016 con **inyección de agua**
+- Reservorio: arenisca del Jurásico Medio, **Formación Hugin**, entre 2,700 y 3,100 m
+- 10.0 millones de Sm³ de petróleo producidos; el operador informó 54% de recuperación
 
 <!--
-3 min · acumulado 0:05
-Las fechas importan y vuelven en el bloque 5: el perfil de F-11 B no es
-un estado inicial.
+2 min · acumulado 0:04
+Sm³: metro cúbico en condiciones estándar. Los datos de campo son de la
+ficha de la Norwegian Offshore Directorate (Sodir); el acumulado sale del
+archivo de producción del operador.
+Equinor liberó el conjunto en 2018.
+-->
+
+---
+
+<!-- _class: figura -->
+
+## Dónde están los pozos
+
+![Mapa del tope de la Formación Hugin con la entrada de 18 pozos al reservorio y las trayectorias de F-12 y F-11 B](img/mapa-hugin.png)
+
+En naranja, los dos pozos del ejercicio y su trayectoria dentro del intervalo perfilado.
+
+<!--
+3 min · acumulado 0:07
+Un alto estructural de unos 1.5 por 2.5 km, con el tope cerca de 2,800 m en la
+cresta. F-12 entra cerca de la cresta y se desplaza 300 m hacia el este. F-11 B
+entra 500 m al nordeste y recorre 1,200 m hacia el flanco este.
+Los puntos negros son las entradas al Hugin de los otros 16 pozos con tope.
+-->
+
+---
+
+<!-- _class: figura -->
+
+## Los dos pozos, en sección
+
+![Sección a lo largo de F-12 y F-11 B: trayectoria coloreada por saturación de agua, con el tope del Hugin del mapa](img/secciones.png)
+
+Claro es petróleo, oscuro es agua. F-11 B tiene un tramo horizontal y vuelve a entrar al Hugin a través de fallas.
+
+<!--
+3 min · acumulado 0:10
+F-12 atraviesa el Hugin en 90 m verticales y sigue en Sleipner y Skagerrak.
+F-11 B corre pegado al tope: baja de 2,829 a 3,182 m en 1,200 m de
+desplazamiento. Mirar los colores: hay tramos claros por debajo de 3,100 m.
+La línea punteada es el tope según el mapa, con su incertidumbre.
+-->
+
+---
+
+<!-- _class: figura -->
+
+## Cuándo se perfiló cada pozo
+
+![Producción mensual de petróleo y agua e inyección de agua del campo, de 2008 a 2016](img/produccion.png)
+
+F-12 se perfiló en 2007, antes del primer petróleo. Cuando se perfiló F-11 B el campo ya producía más agua que petróleo.
+
+<!--
+2 min · acumulado 0:12
+En total: 10.0 millones de Sm³ de petróleo, 15.3 de agua producida y 30.3
+de agua inyectada. Esto vuelve en el bloque 5: el perfil de F-11 B no es un
+estado inicial.
+-->
+
+---
+
+## Qué trae el conjunto y qué usamos
+
+| El conjunto completo | Lo que usa la clase |
+| --- | --- |
+| Unos 40,000 archivos, cerca de 5 TB | 7 archivos, 13 MB |
+| Sísmica 3D y 4D | |
+| Modelos estático y dinámico | |
+| Perfiles de pozo, crudos e interpretados | Perfil interpretado de 2 pozos |
+| Trayectorias, topes y mapas | 2 trayectorias, los topes, el tope del Hugin |
+| Producción diaria y mensual | La mensual, para el contexto |
+| Perforación en tiempo real, informes | |
+
+<!--
+2 min · acumulado 0:14
+El conjunto oficial trae el modelo de simulación de Equinor. No lo usamos:
+armamos uno propio desde los perfiles, que corre en un segundo y deja
+ajustar en vivo.
 -->
 
 ---
@@ -89,7 +161,7 @@ un estado inicial.
 Profundidad en metros verticales bajo el nivel del mar (TVDSS, true vertical depth subsea).
 
 <!--
-4 min · acumulado 0:09
+3 min · acumulado 0:17
 Preguntar a la sala y anotar dos o tres respuestas: vuelven en el bloque 5.
 Lo que se ve: Sw baja en el Hugin, con picos en las capas de mala calidad;
 Sw alta desde la base del Hugin, cerca de 2,910 m, en Sleipner y Skagerrak.
@@ -106,7 +178,7 @@ Sw alta desde la base del Hugin, cerca de 2,910 m, en Sleipner y Skagerrak.
 Es el trabajo de un programa de saturación-altura, hecho con el equilibrio del propio simulador.
 
 <!--
-4 min · acumulado 0:13
+2 min · acumulado 0:19
 La ventaja de hacerlo en el simulador: lo que se ajusta acá es exactamente
 lo que después inicializa el modelo de campo. No hay traducción entre dos
 programas.
@@ -116,13 +188,13 @@ programas.
 
 <!-- _class: cita -->
 
-## Lo que este conjunto **no trae**: presiones, laboratorio, PVT
+## Lo que este conjunto **no nos da** para el ajuste: presiones y laboratorio
 
 <!--
-2 min · acumulado 0:15
-PVT: presión, volumen y temperatura, el informe de fluidos. Tampoco hay
-presiones de formación ni presión capilar de laboratorio.
-Queda dicho al principio: todo lo de hoy se ajusta contra perfiles y nada más.
+1 min · acumulado 0:20
+En los archivos que usamos no hay presiones de formación, presión capilar
+de laboratorio ni informe de fluidos (PVT: presión, volumen y temperatura).
+Todo lo de hoy se ajusta contra perfiles y nada más.
 Cierre del bloque 1.
 -->
 
@@ -135,8 +207,8 @@ Cierre del bloque 1.
 Bloque 2 de 7 · **25 min**
 
 <!--
-0 min · acumulado 0:15
-Arranca 0:15, termina 0:40.
+0 min · acumulado 0:20
+Arranca 0:20, termina 0:45.
 -->
 
 ---
@@ -151,7 +223,7 @@ Arranca 0:15, termina 0:40.
 OPM Flow es un simulador de petróleo negro de código abierto. Lee el mismo formato de deck que los comerciales.
 
 <!--
-5 min · acumulado 0:20
+5 min · acumulado 0:25
 OPM: Open Porous Media. Lo mantienen Equinor, SINTEF y NORCE entre otros.
 Para quien usa Eclipse: las keywords son las mismas, con algunas sin soporte.
 -->
@@ -169,7 +241,7 @@ Para quien usa Eclipse: las keywords son las mismas, con algunas sin soporte.
 La imagen del simulador y los datos quedan **fijados por su hash**.
 
 <!--
-12 min · acumulado 0:32
+12 min · acumulado 0:37
 Ventana B. instalar.sh: leer las tres etapas en voz alta. La imagen ya está
 bajada; decir que la primera vez pesa 1.2 GB.
 verificar.sh: Flow responde, SPE1 corre en cerca de un segundo, el caso
@@ -188,7 +260,7 @@ la figura en la ventana D.
 - **`.claude/settings.json`**: puede correr `evaluar.py` y usar git local; no puede salir a internet, borrar ni tocar los datos
 
 <!--
-8 min · acumulado 0:40
+8 min · acumulado 0:45
 Ventana B: ejercicio/preparar.sh, y después abrir settings.json. Leer la
 lista de permisos y la de prohibiciones.
 La idea para llevarse: lo que el agente no debe hacer se escribe como
@@ -205,8 +277,8 @@ Cierre del bloque 2.
 Bloque 3 de 7 · **35 min**
 
 <!--
-0 min · acumulado 0:40
-Arranca 0:40, termina 1:15.
+0 min · acumulado 0:45
+Arranca 0:45, termina 1:20.
 -->
 
 ---
@@ -220,7 +292,7 @@ Arranca 0:40, termina 1:15.
 Correr el caso base, **explicar el deck**, leer la figura y listar los supuestos. Sin cambiar nada.
 
 <!--
-10 min · acumulado 0:50
+10 min · acumulado 0:55
 Ventana C. Aceptar el diálogo de confianza leyéndolo en voz alta.
 Narrar qué herramienta llama en cada vuelta: lee archivos, corre
 evaluar.py, abre SW.DATA, mira perfil.png.
@@ -238,7 +310,7 @@ evaluar.py, abre SW.DATA, mira perfil.png.
 El mismo armado sirve para el pozo desviado y para el horizontal.
 
 <!--
-10 min · acumulado 1:00
+10 min · acumulado 1:05
 Ventana E con SW.DATA al lado de la explicación del agente. Si no nombró
 alguna de estas keywords, preguntársela en vivo.
 Aclarar que es el cálculo de inicialización de un modelo, aislado: acá
@@ -256,7 +328,7 @@ nada fluye.
 Curva única ajustada: RMSE 0.163 en F-12, y 0.497 en el pozo que el caso no vio.
 
 <!--
-8 min · acumulado 1:08
+8 min · acumulado 1:13
 La figura es la del caso A ya ajustado; el caso base sin ajustar da 0.177.
 Dentro del Hugin 0.124, debajo 0.185. Una sola curva no puede seguir los
 picos de Sw de las capas de mala calidad.
@@ -271,7 +343,7 @@ el bloque 5.
 ## El agente todavía **no cambió nada**: leyó, corrió y explicó
 
 <!--
-7 min · acumulado 1:15
+7 min · acumulado 1:20
 Antes de la frase, los supuestos que listó el agente. Tienen que salir las
 densidades de los fluidos y el contacto. Pregunta a la sala: ¿qué otro
 supuesto ven ustedes?
@@ -287,8 +359,8 @@ Cierre del bloque 3. Pausa de 10 minutos.
 Bloque 4 de 7 · **45 min**
 
 <!--
-0 min · acumulado 1:25
-Arranca 1:25, termina 2:10. Pegar PEDIDO-2.md apenas vuelven: el agente
+0 min · acumulado 1:30
+Arranca 1:30, termina 2:15. Pegar PEDIDO-2.md apenas vuelven: el agente
 necesita entre 10 y 15 minutos.
 -->
 
@@ -304,7 +376,7 @@ necesita entre 10 y 15 minutos.
 - **`SWATINIT`**: el perfil impuesto celda a celda; el simulador reescala la presión capilar
 
 <!--
-18 min · acumulado 1:43
+18 min · acumulado 1:48
 Mientras el agente trabaja. Una vuelta por cada alternativa con la keyword
 que usa. Pedir a la sala que apueste cuál va a ajustar mejor y cuál
 llevarían a un modelo de campo.
@@ -323,7 +395,7 @@ llevarían a un modelo de campo.
 | E: SWATINIT | 0.000 | 0.000 | 0.486 | 383 |
 
 <!--
-7 min · acumulado 1:50
+7 min · acumulado 1:55
 Esta es la tabla de referencia, ajustada con un optimizador clásico.
 Compararla con comparacion.md, la que acaba de escribir el agente: los
 números van a diferir en el tercer decimal.
@@ -340,7 +412,7 @@ números van a diferir en el tercer decimal.
 Con los mismos cuatro parámetros, el error dentro del Hugin baja de 0.124 a 0.110.
 
 <!--
-6 min · acumulado 1:56
+6 min · acumulado 2:01
 Comparar con la figura del caso A: ahora el simulado tiene los picos.
 De A a D la diferencia total está en el tercer decimal: debajo del Hugin
 nadie mejora.
@@ -358,7 +430,7 @@ Tres tipos de roca con 12 parámetros no superan a la función J con 4.
 383 parámetros. En F-11 B, donde no hay perfil que imponer, el error es 0.486.
 
 <!--
-6 min · acumulado 2:02
+6 min · acumulado 2:07
 Dos cosas. Una: no predice. Dos: Flow ignora SWATINIT debajo del nivel de
 agua libre y pone Sw = 1, así que para honrar el perfil hubo que bajar el
 contacto a 3,200 m. El contacto dejó de ser un dato del modelo.
@@ -371,7 +443,7 @@ contacto a 3,200 m. El contacto dejó de ser un dato del modelo.
 ## Con cuatro parámetros ya se llega **al piso del perfil**
 
 <!--
-8 min · acumulado 2:10
+8 min · acumulado 2:15
 Qué eligió el agente para un modelo de campo, y si la sala está de acuerdo.
 El piso: la variabilidad metro a metro del perfil que ninguna función de
 la calidad de roca explica.
@@ -387,8 +459,8 @@ Cierre del bloque 4.
 Bloque 5 de 7 · **30 min**
 
 <!--
-0 min · acumulado 2:10
-Arranca 2:10, termina 2:40. Pegar PEDIDO-3.md al empezar.
+0 min · acumulado 2:15
+Arranca 2:15, termina 2:45. Pegar PEDIDO-3.md al empezar.
 -->
 
 ---
@@ -400,12 +472,12 @@ Arranca 2:10, termina 2:40. Pegar PEDIDO-3.md al empezar.
 
 Tres explicaciones, cada una un caso ajustado con los dos pozos a la vista:
 
-1. **F0**: un contacto plano
-2. **F1**: dos sistemas, el Hugin por un lado y Sleipner con Skagerrak debajo (`EQLNUM`)
-3. **F2**: un contacto inclinado, en escalones de regiones de equilibrio
+1. F0: un contacto plano
+2. F1: dos sistemas, el Hugin por un lado y Sleipner con Skagerrak debajo (`EQLNUM`)
+3. F2: un contacto inclinado, en escalones de regiones de equilibrio
 
 <!--
-12 min · acumulado 2:22
+12 min · acumulado 2:27
 Volver a las respuestas del bloque 1 sobre el contacto.
 Mientras el agente corre: la trayectoria de F-11 B entra al Hugin a 2,829 m
 y sigue hasta 3,182 m.
@@ -422,7 +494,7 @@ y sigue hasta 3,182 m.
 Contactos en 3,156 m para el Hugin y 2,937 m para lo que está debajo. RMSE 0.220 y 0.230.
 
 <!--
-3 min · acumulado 2:25
+3 min · acumulado 2:30
 Mirar F-12: con una sola función J para los dos pozos, el Hugin de F-12
 empeora respecto del caso B. La curva no se traslada de un pozo al otro.
 -->
@@ -438,7 +510,7 @@ empeora respecto del caso B. La curva no se traslada de un pozo al otro.
 105 m por kilómetro. RMSE 0.261 y 0.232: en F-11 B, casi lo mismo que dos sistemas.
 
 <!--
-3 min · acumulado 2:28
+3 min · acumulado 2:33
 El contacto plano único (F0) da 0.234 y 0.332.
 Los perfiles no separan F1 de F2.
 -->
@@ -454,7 +526,7 @@ Los perfiles no separan F1 de F2.
 El dato que lo decide son las **presiones de formación** en los dos pozos, y no están.
 
 <!--
-10 min · acumulado 2:38
+10 min · acumulado 2:43
 Preguntar si alguien vio una inclinación así en un campo de este tamaño.
 La cuenta: la inclinación por la diferencia de densidades sobre la densidad
 del agua da el gradiente de carga hidráulica; 0.105 por 290 sobre 1,040 es
@@ -474,7 +546,7 @@ El texto de `PEDIDO-4.md`
 El agente sigue **solo**: 15 experimentos o 20 minutos.
 
 <!--
-2 min · acumulado 2:40
+2 min · acumulado 2:45
 Ventana C. Pegar el pedido y dejarlo corriendo. Pausa de 10 minutos.
 Cierre del bloque 5.
 -->
@@ -488,8 +560,8 @@ Cierre del bloque 5.
 Bloque 6 de 7 · **30 min**
 
 <!--
-0 min · acumulado 2:50
-Arranca 2:50, termina 3:20.
+0 min · acumulado 2:55
+Arranca 2:55, termina 3:25.
 -->
 
 ---
@@ -503,7 +575,7 @@ Arranca 2:50, termina 3:20.
 Cada experimento es un commit. Si mejora, queda; si no, se deshace. Todo se anota en `results.tsv`.
 
 <!--
-5 min · acumulado 2:55
+5 min · acumulado 3:00
 Es una adaptación de autoresearch, de Andrej Karpathy, pensado para
 entrenar redes. Lo que cambia acá: un tope de experimentos, un máximo de
 8 parámetros, SWATINIT prohibido y el pozo de validación oculto.
@@ -521,7 +593,7 @@ Abrir program.md y leer el criterio de simplicidad.
 Buscá una idea que **descartó** y por qué.
 
 <!--
-13 min · acumulado 3:08
+13 min · acumulado 3:13
 Ventana C. results.tsv fila por fila; git log muestra solo lo conservado.
 Leer informe.md completo: caso final, intervalos mal ajustados, qué
 revisaría un ingeniero.
@@ -542,7 +614,7 @@ docente/plan-b/ensayo/.
 Son herramientas para preguntas distintas, y se combinan.
 
 <!--
-12 min · acumulado 3:20
+12 min · acumulado 3:25
 docente/optimizar.py: Nelder-Mead, cerca de cuatro minutos por caso.
 Lo que el loop no ve: rmse_validacion se anota y no decide. Mirar si el
 caso final mejoró o empeoró en F-11 B.
@@ -558,8 +630,8 @@ Cierre del bloque 6.
 Bloque 7 de 7 · **20 min**
 
 <!--
-0 min · acumulado 3:20
-Arranca 3:20, termina 3:40.
+0 min · acumulado 3:25
+Arranca 3:25, termina 3:45.
 -->
 
 ---
@@ -574,7 +646,7 @@ Arranca 3:20, termina 3:40.
 6. Un ingeniero **firma**
 
 <!--
-8 min · acumulado 3:28
+8 min · acumulado 3:33
 Cada control tuvo su ejemplo hoy: la carpeta de trabajo, git, la lista de
 supuestos del primer pedido, el hash de la imagen, la tabla del agente
 contra la de referencia.
@@ -590,7 +662,7 @@ contra la de referencia.
 - Que estos parámetros sirvan para un modelo de campo: son 2 pozos de 22
 
 <!--
-5 min · acumulado 3:33
+5 min · acumulado 3:38
 El ejercicio muestra el método de trabajo con el agente. El resultado de
 reservorios queda abierto, y está bien decirlo así.
 -->
@@ -606,7 +678,7 @@ reservorios queda abierto, y está bien decirlo así.
 - El agente ajusta varias hipótesis igual de bien: **elegir entre ellas** sigue siendo tu trabajo
 
 <!--
-7 min · acumulado 3:40
+7 min · acumulado 3:45
 Cómo repetirlo: el repo, instalar.sh, verificar.sh y preparar.sh.
 Preguntas.
 -->

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Simulación numérica con agentes — OPM Flow sobre Volve</title>
-<meta name="description" content="Clase de 3 h 40 min para ingenieros de reservorios: un agente de terminal maneja OPM Flow para reproducir la saturación de agua de dos pozos de Volve.">
+<meta name="description" content="Clase de 3 h 45 min para ingenieros de reservorios: un agente de terminal maneja OPM Flow para reproducir la saturación de agua de dos pozos de Volve.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
@@ -50,7 +50,7 @@ footer { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--border
 </head>
 <body>
 <main>
-  <div class="kicker">Clase · ingeniería de reservorios · 3 h 40 min</div>
+  <div class="kicker">Clase · ingeniería de reservorios · 3 h 45 min</div>
   <h1>Un agente maneja el simulador</h1>
   <p class="lead">Un agente de terminal (Claude Code) maneja un simulador numérico abierto (OPM Flow) para reproducir la saturación de agua de los perfiles de dos pozos del campo Volve, y compara distintas formas de hacerlo.</p>
   <div class="actions">
@@ -58,19 +58,75 @@ footer { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--border
     <a href="https://github.com/mpodeley/clase-opm-agentes">Repositorio en GitHub</a>
   </div>
 
-  <h2>El problema</h2>
-  <p>El perfil interpretado de 15/9-F-12 da la saturación de agua (Sw) metro a metro. Un modelo de simulación arranca con el agua donde la ponen su curva de presión capilar y su contacto. El ejercicio busca que las dos cosas coincidan, y mide la distancia con la raíz del error cuadrático medio (RMSE, root mean square error).</p>
+  <h2>Volve</h2>
+  <p>Volve es un campo de petróleo del sector noruego del mar del Norte, cinco kilómetros al norte de Sleipner Øst, bajo 80 m de agua. Se descubrió en 1993 y produjo de 2008 a 2016 desde una plataforma autoelevable, con inyección de agua para sostener la presión. El reservorio es una arenisca del Jurásico Medio, la Formación Hugin, entre 2,700 y 3,100 m de profundidad.</p>
+  <p>En 2018 Equinor y sus socios liberaron el conjunto de datos del campo completo: unos 40,000 archivos, desde la sísmica hasta la producción diaria de cada pozo.</p>
+  <div class="scroll">
+  <table>
+    <tr><th>Dato</th><th>Valor</th></tr>
+    <tr><td>Descubrimiento y plan de desarrollo</td><td>1993 y 2005</td></tr>
+    <tr><td>Producción</td><td>De febrero de 2008 a septiembre de 2016</td></tr>
+    <tr><td>Petróleo producido</td><td>10.0 millones de Sm³</td></tr>
+    <tr><td>Agua producida y agua inyectada</td><td>15.3 y 30.3 millones de Sm³</td></tr>
+    <tr><td>Pozos de desarrollo</td><td>22, de los cuales 7 figuran en el archivo de producción</td></tr>
+  </table>
+  </div>
+  <p>Sm³ es metro cúbico en condiciones estándar. Las fechas y la descripción vienen de la <a href="https://factpages.sodir.no/en/field/pageview/all/3420717">ficha del campo</a> de la Norwegian Offshore Directorate (Sodir); los volúmenes salen de sumar el archivo de producción del operador.</p>
+
+  <h2>Dónde están los pozos</h2>
+  <figure>
+    <img src="img/mapa-hugin.png" alt="Mapa del tope de la Formación Hugin con la entrada de 18 pozos al reservorio y las trayectorias de F-12 y F-11 B">
+    <figcaption>Tope de la Formación Hugin, en metros verticales bajo el nivel del mar (TVDSS, true vertical depth subsea). Cada punto es la entrada de un pozo al Hugin. En naranja, los dos pozos del ejercicio y su recorrido dentro del intervalo perfilado.</figcaption>
+  </figure>
+  <p>La estructura es un alto de unos 1.5 por 2.5 km, con el tope cerca de 2,800 m en la cresta. Todos los pozos de desarrollo salen de la misma plataforma y se abren en abanico. 15/9-F-12 entra cerca de la cresta y se desplaza 300 m hacia el este. 15/9-F-11 B entra 500 m al nordeste y recorre 1,200 m hacia el flanco.</p>
+  <figure>
+    <img src="img/secciones.png" alt="Sección a lo largo de F-12 y F-11 B: trayectoria coloreada por saturación de agua, con el tope del Hugin del mapa">
+    <figcaption>Cada pozo contra su desplazamiento horizontal, coloreado por la saturación de agua (Sw) del perfil: claro es petróleo, oscuro es agua. La línea punteada es el tope del Hugin según el mapa.</figcaption>
+  </figure>
+  <p>F-12 atraviesa el Hugin en 90 m verticales y sigue hacia abajo por las formaciones Sleipner y Skagerrak, donde la roca es más pobre y el perfil marca agua. F-11 B corre cerca del tope, con un tramo horizontal, y vuelve a entrar al Hugin varias veces a través de fallas. Por debajo de 3,100 m todavía tiene tramos con petróleo.</p>
+
+  <h2>Los perfiles</h2>
+  <p>De cada pozo se usa el perfil interpretado por el operador: saturación de agua, porosidad, permeabilidad y volumen de arcilla, con una muestra cada 10 a 15 cm. Para el modelo se promedian a una celda por metro de pozo.</p>
   <figure>
     <img src="img/perfil-f12.png" alt="Perfil interpretado de 15/9-F-12: saturación de agua, porosidad y permeabilidad contra profundidad">
-    <figcaption>15/9-F-12, perfilado en 2007, antes de que el campo produjera. Profundidad en metros verticales bajo el nivel del mar (TVDSS, true vertical depth subsea).</figcaption>
+    <figcaption>15/9-F-12: 379 celdas entre 2,819 y 3,044 m. Sw baja en el Hugin, con picos en las capas de mala calidad, y alta desde su base.</figcaption>
   </figure>
+  <figure>
+    <img src="img/perfil-f11b.png" alt="Perfil interpretado de 15/9-F-11 B: saturación de agua, porosidad y permeabilidad contra profundidad">
+    <figcaption>15/9-F-11 B: 1,277 celdas entre 2,829 y 3,182 m. El tramo horizontal apila unas 180 celdas cerca de 2,865 m.</figcaption>
+  </figure>
+
+  <h2>Cuándo se perfiló cada pozo</h2>
+  <figure>
+    <img src="img/produccion.png" alt="Producción mensual de petróleo y agua e inyección de agua del campo, de 2008 a 2016">
+    <figcaption>Producción e inyección mensual del campo. F-12 se perfiló en 2007, antes del primer petróleo.</figcaption>
+  </figure>
+  <p>Las fechas pesan en todo lo que sigue. El perfil de F-12 muestra el reservorio antes de producir. El de F-11 B es de mediados de 2013, cuando el campo ya producía unas cinco veces más agua que petróleo, así que parte del agua que ve puede ser de barrido.</p>
+
+  <h2>Qué trae el conjunto completo y qué usa la clase</h2>
+  <div class="scroll">
+  <table>
+    <tr><th>En el conjunto de Equinor</th><th>En la clase</th></tr>
+    <tr><td>Sísmica 3D y 4D</td><td>No se usa</td></tr>
+    <tr><td>Modelo estático y modelo dinámico de simulación</td><td>No se usa: el modelo se arma desde los perfiles</td></tr>
+    <tr><td>Perfiles de pozo, crudos e interpretados</td><td>El perfil interpretado de F-12 y F-11 B</td></tr>
+    <tr><td>Trayectorias y diseño de pozos</td><td>Las trayectorias de esos dos pozos</td></tr>
+    <tr><td>Datos geológicos y estratigráficos, superficies y grillas</td><td>Los topes de formación y el mapa del tope del Hugin</td></tr>
+    <tr><td>Producción diaria y mensual por pozo</td><td>La mensual, para el contexto</td></tr>
+    <tr><td>Perforación en tiempo real, terminaciones e informes</td><td>No se usa</td></tr>
+  </table>
+  </div>
+  <p>El conjunto completo tiene unos 40,000 archivos y cerca de 5 TB. La clase usa 7 archivos, 13 MB, bajados de espejos públicos y fijados por su hash. El recorte tiene un costo: en esos 7 archivos no hay presiones de formación, ensayos de laboratorio ni informe de fluidos.</p>
+
+  <h2>El problema</h2>
+  <p>El perfil interpretado de 15/9-F-12 da la saturación de agua (Sw) metro a metro. Un modelo de simulación arranca con el agua donde la ponen su curva de presión capilar y su contacto. El ejercicio busca que las dos cosas coincidan, y mide la distancia con la raíz del error cuadrático medio (RMSE, root mean square error).</p>
   <p>El cálculo lo hace el equilibrio del propio simulador, sobre una fila de celdas con una celda por metro de pozo. Lo que se ajusta es lo mismo que después inicializa un modelo de campo.</p>
 
   <h2>La clase, bloque por bloque</h2>
   <div class="scroll">
   <table>
     <tr><th>Bloque</th><th class="n">Tiempo</th><th>Qué pasa</th></tr>
-    <tr><td>El problema</td><td class="n">15 min</td><td>El perfil de F-12 y el número con que se mide el ajuste</td></tr>
+    <tr><td>El campo y el problema</td><td class="n">20 min</td><td>Volve en mapa y sección, los datos, y el número con que se mide el ajuste</td></tr>
     <tr><td>Instalación</td><td class="n">25 min</td><td>OPM Flow en un contenedor, el entorno de Python y Claude Code</td></tr>
     <tr><td>El agente lee el deck</td><td class="n">35 min</td><td>Explica el modelo keyword por keyword y corre el caso base</td></tr>
     <tr><td>Alternativas de ajuste</td><td class="n">45 min</td><td>Función J, tipos de roca, escalado de extremos y SWATINIT</td></tr>
@@ -129,7 +185,7 @@ uv run evaluar.py</pre>
 
   <footer>
     <p>Matías Podeley · 2026</p>
-    <p>Datos de Equinor y los ex socios de la licencia Volve (ExxonMobil Exploration &amp; Production Norway AS, Bayerngas Norge AS), bajo la <a href="https://cdn.equinor.com/files/h61q9gi9/global/de6532f6134b9a953f6c41bac47a0c055a3712d3.pdf">Equinor Open Data Licence</a>.</p>
+    <p>Los datos son de Equinor y los ex socios de la licencia Volve (ExxonMobil Exploration &amp; Production Norway AS, Bayerngas Norge AS), bajo la <a href="https://cdn.equinor.com/files/h61q9gi9/global/de6532f6134b9a953f6c41bac47a0c055a3712d3.pdf">Equinor Open Data Licence</a>. La descripción del conjunto completo sigue la <a href="https://www.equinor.com/energy/volve-data-sharing">página de Equinor</a> y la <a href="https://jpt.spe.org/equinor-releases-subsurface-and-production-data-ncs-field">nota del Journal of Petroleum Technology</a>; el tamaño, la de <a href="https://agilescientific.com/blog/2018/6/17/big-open-data-or-is-it">Agile Scientific</a>.</p>
   </footer>
 </main>
 </body>

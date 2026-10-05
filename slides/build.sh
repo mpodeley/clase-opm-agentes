@@ -15,11 +15,7 @@ mkdir -p slides/img
 for c in a b e f1 f2; do
     cp "docente/plan-b/$c/perfil.png" "slides/img/caso-$c.png"
 done
-uv run python -c "
-from pathlib import Path
-from sw import graficar, pozo
-graficar.log_only(pozo.load_all(), 'F-12', Path('slides/img/perfil-f12.png'))
-"
+uv run web/contexto.py slides/img > /dev/null
 
 marp="${MARP:-}"
 if [ -z "$marp" ]; then

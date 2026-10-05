@@ -20,6 +20,8 @@ autoresearch-style loop. Demo format: everything runs on the instructor's machin
   `optimizar.py` (Nelder-Mead baseline), `guion.md` (timing), `plan-b/` (recorded outputs).
 - `instalacion/` — `instalar.sh`, `verificar.sh`, the SPE1 deck.
 - `slides/clase.md` — Marp deck, `podeley` theme in `slides/themes/`.
+- `web/` — the public page: `index.html` and `contexto.py` (map, sections, logs, production figures).
+  `tools/publicar.sh [--cloudflare|--local]` builds `dist/` and publishes it.
 - `datos/preparar_datos.py` — pinned mirrors of the Volve files into `datos/volve/` (gitignored).
 
 ## Rules

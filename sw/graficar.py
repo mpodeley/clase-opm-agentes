@@ -111,12 +111,16 @@ def log_only(cells: Cells, well: str, path: Path) -> Path:
         ax.set_xlim(*limits)
         ax.set_xlabel(label, fontsize=11, color=SECONDARY)
     zones = cells.zone[m]
+    last = -np.inf
     for i in np.flatnonzero(np.r_[True, zones[1:] != zones[:-1]]):
-        axes[-1].text(1.04, cells.tvdss[m][i], zones[i], fontsize=11, color=MUTED, va='top',
-                      transform=axes[-1].get_yaxis_transform(), clip_on=False)
+        depth = cells.tvdss[m][i]
         if i:
             for ax in axes:
-                ax.axhline(cells.tvdss[m][i], color=AXIS, linewidth=0.6)
+                ax.axhline(depth, color=AXIS, linewidth=0.6)
+        if depth - last > 0.035 * np.ptp(cells.tvdss[m]):   # skip labels that would overprint
+            axes[-1].text(1.04, depth, zones[i], fontsize=11, color=MUTED, va='top',
+                          transform=axes[-1].get_yaxis_transform(), clip_on=False)
+            last = depth
     axes[0].invert_yaxis()
     axes[0].set_ylabel('Profundidad (m TVDSS)', fontsize=11, color=SECONDARY)
     fig.suptitle(f'15/9-{well}: perfil interpretado, una celda por metro de pozo',

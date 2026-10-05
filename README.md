@@ -16,7 +16,7 @@ Las diapositivas y un resumen con las figuras están en
 
 | Bloque | Tiempo | Qué pasa |
 | --- | --- | --- |
-| El problema | 15 min | El perfil de 15/9-F-12, qué significa reproducirlo y con qué número se mide |
+| El campo y el problema | 20 min | Volve en mapa y sección, qué datos hay, y con qué número se mide el ajuste |
 | Instalación | 25 min | OPM Flow en un contenedor, el entorno de Python y Claude Code, con un caso de prueba |
 | El agente lee el deck | 35 min | El agente explica el modelo keyword por keyword, corre el caso base y lee el resultado |
 | Pausa | 10 min | |
@@ -26,7 +26,7 @@ Las diapositivas y un resumen con las figuras están en
 | Loop autónomo | 30 min | El agente prueba variantes solo, con reglas y un tope; se lee qué conservó y qué descartó |
 | Controles y cierre | 20 min | Qué revisa y firma el ingeniero, y los límites del ejercicio |
 
-Suma 3 h 40 min. El guion con el minuto a minuto está en `docente/guion.md` y las diapositivas en
+Suma 3 h 45 min. El guion con el minuto a minuto está en `docente/guion.md` y las diapositivas en
 `slides/clase.md`.
 
 ## Instalación
