@@ -1,0 +1,29 @@
+-- ===== AJUSTE_GRID.INC
+-- Escalado de Leverett: Pc = J(Sw) * tension * (PORO/PERMX)^0.5
+--     fase  tension(dyn/cm)  gas  alpha(phi)  beta(k)  dirección
+JFUNC
+ WATER 2 1* 0.5 0.5 XY /
+-- ===== AJUSTE_PROPS.INC
+-- Una tabla por región de saturación (SATNUM).
+--   Sw        krw      kro      J, adimensional
+SWOF
+ 0.001000 0.000000 1.000000 1028.89
+ 0.001269 0.000000 0.999462 830.344
+ 0.001610 0.000000 0.998779 670.109
+ 0.002043 0.000000 0.997912 540.795
+   ...  (25 filas más)
+ 0.621017 0.239064 0.143916 3.15011
+ 0.788046 0.488995 0.045014 2.54222
+ 1.000000 1.000000 0.000000 2.05164 /
+-- ===== AJUSTE_SWL.INC
+-- Agua connata por celda: la tabla de SWOF se reescala entre SWL y 1.
+SWL   -- 1173 valores, de 0.020 a 0.765
+-- ===== AJUSTE_REGIONES.INC
+-- Qué tabla (SATNUM) y qué contacto (EQLNUM) le toca a cada celda.
+SATNUM   -- 1173 valores, 1: 1173 celdas
+EQLNUM   -- 1173 valores, 1: 1173 celdas
+-- ===== AJUSTE_SOLUTION.INC
+-- Un registro por región de equilibrio. Datum y contacto en el nivel de agua libre (FWL).
+--  datum(m)  presión(bar)  contacto(m)  Pc en el contacto  ...  0 = equilibrio al centro de la celda
+EQUIL
+ 3120.000 330 3120.000 0 1* 1* 1* 1* 0 /

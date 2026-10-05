@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Clase: ajuste de saturación inicial en OPM Flow con un agente, sobre Volve"
 requires-python = ">=3.12,<3.14"
 dependencies = [
+    "dlisio>=1.0.4",
     "lasio>=0.31",
     "matplotlib>=3.9",
     "numpy>=2.0",

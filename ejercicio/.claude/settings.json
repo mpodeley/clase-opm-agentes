@@ -20,7 +20,11 @@
       "Edit(./casos/**)",
       "Edit(./results.tsv)",
       "Edit(./comparacion.md)",
-      "Edit(./informe.md)"
+      "Edit(./informe.md)",
+      "Bash(uv run bitacora.py*)",
+      "Bash(diff *)",
+      "Bash(cat corridas/*)",
+      "Bash(cp casos/* casos/*)"
     ],
     "deny": [
       "WebFetch",

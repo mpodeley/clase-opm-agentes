@@ -1,160 +1,175 @@
-# Saturación inicial de F-12: informe del loop del 5 de octubre de 2026
+# Ajuste de la función J del Hugin: corrida `ajuste/oct5`
 
-Quince experimentos sobre `caso.py`, corridos en OPM Flow entre las 16:28 y las 16:43, rama
-`ajuste/oct5`. El caso que queda inicializa la saturación de agua (Sw) de F-12 con `rmse_ajuste`
-0.1089 y 4 parámetros. La base tenía 0.1772 con 4.
-
-## Tabla de experimentos
-
-La primera fila es la base. `rmse_validacion` se anotó en cada corrida y no intervino en ninguna
-decisión.
-
-| commit | rmse_ajuste | rmse_validacion | n_parametros | status | descripción |
-| --- | --- | --- | --- | --- | --- |
-| 38ff766 | 0.1772 | 0.4906 | 4 | keep | base: curva única (swirr 0.10, pe 0.10 bar, lam 1.0) y un contacto en 2,920 m |
-| dc08dce | 0.1634 | 0.4977 | 4 | keep | curva única reajustada: swirr 0.15, pe 0.26 bar, lam 2.6, FWL 2,920 |
-| b38ef1b | 0.1587 | 0.4837 | 4 | keep | función J única (swirr 0.09, J de entrada 0.0077, lam 0.61), FWL 2,917.5 |
-| f5d6c35 | 0.1169 | 0.4163 | 7 | keep | dos funciones J por formación (Hugin / bajo Hugin), FWL 3,213: 0.0139 por parámetro agregado |
-| 731f35c | 0.1189 | 0.4191 | 6 | keep | lam compartido entre las dos funciones J (0.20), FWL 3,300: un parámetro menos, empeora 0.0020 |
-| 5756fd3 | 0.1165 | 0.4345 | 4 | keep | funciones J lineales en ln(J): Sw = a - 0.052 ln J, a = 0.285 (Hugin) y 0.897 (bajo Hugin), FWL 3,300: dos parámetros menos y mejora 0.0024 |
-| 06f3529 | 0.1138 | 0.4875 | 5 | discard | FWL propio del Hugin en 2,909.2 más FWL 3,300 abajo: mejora 0.0027 por un parámetro, menos de 0.005 |
-| 455e092 | 0.1078 | 0.3930 | 5 | keep | exponente de porosidad de JFUNC ajustado (alpha -5.64): a = -0.0876 / 0.4292, b 0.0335, FWL 3,049.4: mejora 0.0087 por un parámetro |
-| efd981b | 0.1069 | 0.4423 | 6 | discard | FWL propio del Hugin (2,907.9) más FWL 3,047.9, alpha -7.02: mejora 0.0009 por un parámetro; el cálculo previo fuera de Flow prometía 0.102 y no se cumplió |
-| 52d2227 | 0.1037 | 0.4348 | 6 | discard | FWL propio del Hugin en 2,909.2 más FWL 3,048.7, alpha -6.20, reajustado: mejora 0.0041 por un parámetro, menos de 0.005 |
-| fec6540 | 0.1514 | 0.4349 | 4 | discard | una sola función para toda la columna (a -0.5698, b 0.0565, alpha -8.0), FWL 2,918.0: un parámetro menos pero empeora 0.0436 |
-| ae7fd27 | 0.1116 | 0.3913 | 4 | discard | exponente de porosidad fijo en -1 (a 0.1407 / 0.7072, b 0.0475, FWL 3,105.4): un parámetro menos pero empeora 0.0038, más de 0.003 |
-| 4a27c08 | 0.1428 | 0.4336 | 6 | discard | pendiente propia bajo el Hugin (b 0.0415 / 0.0209, alpha -7.77, FWL 3,048.7): empeora 0.0350; el cálculo previo fuera de Flow daba 0.104 |
-| 1bd8e0e | 0.1059 | 0.3100 | 6 | discard | exponente de permeabilidad también libre (alpha -0.964, beta 0.0425, b 0.2706, FWL 3,184.7): mejora 0.0019 por un parámetro |
-| e2bdc37 | 0.1089 | 0.3265 | 4 | keep | Sw = a - 0.3744 ln(J), J proporcional a Pc × porosidad (alpha -1, beta 0, sin KLOGH), a = -0.3854 / -0.0334, FWL 3,191.6: un parámetro menos, empeora 0.0011 |
-| 80e97ab | 0.1085 | 0.3789 | 5 | discard | FWL propio del Hugin (3,082.7) más FWL 3,200.3 sobre la forma vigente: mejora 0.0004 por un parámetro |
+Doce experimentos en OPM Flow, del caso base a una función J de un solo exponente. Inicio 20:41,
+último experimento 20:48 del 5 de octubre de 2026. Quedaron 2 experimentos además de la base y se
+descartaron 9.
 
 ## El caso final
 
-Commit `e2bdc37`. Sw depende de la altura sobre el nivel de agua libre (FWL) multiplicada por la
-porosidad, con una recta por formación y la misma pendiente en las dos:
+Una función J de Leverett para todo el Hugin, sin meseta de agua irreducible, y un nivel de agua
+libre (FWL):
 
 ```
-Sw = a - b · ln(J)        J = Pc · PHIF / 9.549        Pc = 0.0284 bar/m · (FWL - TVDSS)
+Sw = J^-0.284            J = Pc · √(k/φ) / (σ·cosθ),  σ·cosθ = 2 mN/m
+FWL = 3,150 m TVDSS
 ```
 
-| Parámetro | Valor |
-| --- | --- |
-| `a`, Hugin | -0.3854 |
-| `a`, Sleipner y Skagerrak | -0.0334 |
-| `b`, pendiente compartida | 0.3744 |
-| FWL | 3,191.6 m TVDSS |
+La curva llega a Sw = 1 en J = 1. Con 200 mD y 22% de porosidad eso es 0.6 m sobre el FWL, y con
+10 mD son 2.8 m. A J = 100 da Sw = 0.27 y a J = 1,000 da 0.14.
 
-Escrito en altura `h` en metros sobre el FWL, queda Sw = 1.792 - 0.3744 ln(h · PHIF) en el Hugin
-y Sw = 2.144 - 0.3744 ln(h · PHIF) debajo, recortado a 1.
-
-En el deck son dos tablas `SWOF` con J en la columna de presión capilar, `SATNUM` 1 en el Hugin
-y 2 debajo (el límite es el tope del Sleipner del archivo de picks), una región de equilibrio y:
+En el deck son tres keywords. `SATNUM` y `EQLNUM` valen 1 en todas las celdas y no hay `SWL`.
 
 ```
 JFUNC
- WATER 30 1* -1 0 XY /
+ WATER 2 1* 0.5 0.5 XY /
+SWOF                               -- 30 filas, J adimensional en la cuarta columna
+ 0.038019 0.000000 1.000000 100000
+ ...
+ 1.000000 1.000000 0.000000 1 /
 EQUIL
- 3191.600 330 3191.600 0 /
+ 3150.000 330 3150.000 0 1* 1* 1* 1* 0 /
 ```
 
-| Métrica | Valor |
-| --- | --- |
-| `rmse_ajuste` | 0.1089 |
-| `rmse_ajuste_hugin` | 0.1042 |
-| `rmse_ajuste_bajo_hugin` | 0.1120 |
-| `rmse_validacion` | 0.3265 |
-| `n_parametros` | 4 |
-| Error en volumen poral de hidrocarburo, F-12 | -0.30% |
-| Error en volumen poral de hidrocarburo, F-11 B | -38.3% |
-| Sesgo de Sw, F-12 | +0.0034 |
-| Sesgo de Sw, F-11 B | +0.2385 |
+Los parámetros contados son dos: el exponente (0.284) y el FWL (3,150 m). El coeficiente de la
+curva quedó fijo en 1 y σ·cosθ es el del operador.
 
-### Cómo se contaron los parámetros
+| Métrica | Base | Caso final |
+| --- | ---: | ---: |
+| `rmse_ajuste` | 0.1424 | 0.1121 |
+| RMSE 19 SR | 0.0819 | 0.0493 |
+| RMSE 19 A | 0.0934 | 0.0879 |
+| RMSE 19 BT2 | 0.1096 | 0.1096 |
+| RMSE F-12 | 0.1132 | 0.0915 |
+| RMSE F-4 | 0.2012 | 0.1422 |
+| `rmse_control` (F-11 B) | 0.2048 | 0.1207 |
+| `sesgo_control` | −0.0379 | +0.0078 |
+| Error en volumen poral de hidrocarburo, ajuste | +8.4% | −1.8% |
+| Error en volumen poral de hidrocarburo, control | +4.9% | −1.4% |
+| FWL (m TVDSS) | 3,120 | 3,150 |
+| `n_parametros` | 4 | 2 |
 
-Cuatro números salieron del ajuste: las dos ordenadas, la pendiente y el FWL. Tres elecciones
-quedaron fuera de la cuenta:
+## Los doce experimentos
 
-- Los exponentes de `JFUNC`, -1 para porosidad y 0 para permeabilidad. Se fijaron en esos valores
-  después de que el ajuste libre del experimento `1bd8e0e` diera -0.964 y 0.0425. Quien los
-  cuente como ajustados llega a 6 parámetros. Con esa cuenta el caso vigente sería `455e092`:
-  `rmse_ajuste` 0.1078, `rmse_validacion` 0.3930, 5 parámetros, error en volumen poral de
-  hidrocarburo de -0.22%.
-- El piso de las tablas, Sw = 0.02, que es el mínimo de saturación irreducible que admite el
-  pedido. Ninguna celda lo alcanza: el Sw simulado mínimo en F-12 es 0.058.
-- El límite entre tipos de roca, que es un pick de formación.
+| N.º | Hipótesis | `rmse_ajuste` | `rmse_control` | Parámetros | Estado |
+| ---: | --- | ---: | ---: | ---: | --- |
+| 1 | Base: Brooks-Corey con Swirr 0.10, FWL 3,120 m | 0.1424 | 0.2048 | 4 | base |
+| 2 | Sin meseta: Sw = 0.68·J^-0.22, FWL 3,120 m | 0.1125 | 0.1761 | 3 | queda |
+| 3 | FWL en 3,150 m con la curva del 2 reajustada | 0.1116 | 0.1201 | 3 | descartado |
+| 4 | Swirr lineal en log k (forma del operador) | 0.1155 | 0.1821 | 5 | descartado |
+| 5 | Sin coeficiente: Sw = J^-0.284, FWL 3,150 m | 0.1121 | 0.1207 | 2 | queda |
+| 6 | Sw según la altura sola, sin `JFUNC` | 0.1238 | 0.1297 | 3 | descartado |
+| 7 | Dos tipos de roca por permeabilidad (corte en 28 mD) | 0.1101 | 0.1184 | 4 | descartado |
+| 8 | Swirr = 0.20·VSH, agua ligada a la arcilla | 0.1129 | 0.1280 | 3 | descartado |
+| 9 | FWL del operador (3,120 m) con la curva del 5 | 0.1153 | 0.1771 | 2 | descartado |
+| 10 | Exponente de k libre en `JFUNC` (0.41) | 0.1118 | 0.1178 | 3 | descartado |
+| 11 | Arena limpia y arena arcillosa (corte en VSH 0.215) | 0.1102 | 0.1287 | 4 | descartado |
+| 12 | Hipérbola de Thomeer con umbral de entrada | 0.1135 | 0.1254 | 3 | descartado |
 
-Los valores de cada experimento se eligieron con un cálculo fuera de Flow que reproduce el
-equilibrio sobre las celdas de F-12 (misma tabla, Sw promediado en el alto de celda). Coincidió
-con Flow a 0.0006 o menos en todos los casos salvo dos: `4a27c08`, y `efd981b`, donde la versión
-inicial del cálculo evaluaba solo el centro de celda y erró por 0.0045.
+`rmse_control` está anotado en cada fila y ninguna decisión lo usó.
 
-`perfil.png` trae el panel de F-11 B. Se miró tres veces durante el loop para revisar F-12, así
-que la validación no fue ciega a la vista, aunque ninguna decisión de conservar o descartar usó
-ese panel ni `rmse_validacion`.
+## Hipótesis que se cumplieron
 
-## Intervalos de F-12 que siguen mal ajustados
+**La nube de J contra Sw no tiene meseta (experimento 2).** Entre 20 y 330 m sobre el contacto la
+Sw del perfil sigue bajando con J. Sacar el Swirr de 0.10 bajó `rmse_ajuste` de 0.1424 a 0.1125 con
+un parámetro menos, y F-4 pasó de 0.201 a 0.145. Un piso de Sw agregado después a la ley de
+potencias no cambia el ajuste en la cuenta previa (0.1121 con piso en 0.10).
 
-El 42% del error cuadrático está en 14 de las 379 celdas. Por intervalo de 10 m:
+**El escalado de Leverett hace falta (experimento 6).** Con una curva de Pc igual para toda la
+roca el RMSE sube 0.012, y sube donde alternan capas de 50 y de 3,000 mD a la misma altura: F-4
+pasa de 0.142 a 0.167 y F-12 de 0.092 a 0.100.
 
-| Intervalo (m TVDSS) | Sw perfil | Sw simulado | RMSE | Qué pasa |
-| --- | --- | --- | --- | --- |
-| 2,825–2,835, Hugin | 0.31 | 0.22 | 0.16 | Capa arcillosa en 2,830.5–2,832.2 m (VSH 0.59 a 0.82, PHIF 0.08 a 0.15) con Sw de 0.54 a 1.00; el caso da 0.29 a 0.53 |
-| 2,855–2,865, Hugin | 0.05 | 0.15 | 0.11 | La mejor arena del pozo (media geométrica de KLOGH de 416 mD); el caso no baja de 0.12 en el intervalo |
-| 2,895–2,910, base del Hugin | 0.33 a 0.72 | 0.26 a 0.64 | 0.10 a 0.16 | El perfil sube de 0.17 a más de 0.6 en 15 m; en 2,907.9–2,909.1 m marca 0.49 a 0.63 con PHIF 0.20 a 0.24 y el caso da 0.21 a 0.29 |
-| 2,935–2,945, Sleipner | 0.83 | 0.89 | 0.17 | Tres celdas en 2,937.7–2,938.9 m con Sw 0.37 a 0.63; el caso da 0.73 a 0.93 |
-| 2,965–2,975, Skagerrak | 0.84 | 0.88 | 0.17 | Dos celdas en 2,970 m con Sw 0.28 y 0.50, KLOGH menor a 0.1 mD y VSH 0.58 a 0.71; el caso da 0.83 y 0.85 |
-| 3,025–3,035, Skagerrak | 0.71 | 0.83 | 0.18 | Tres celdas en 3,032–3,033 m con Sw 0.42 a 0.58; el caso da 0.78 a 0.86 |
+**El exponente 0.5 alcanza (experimento 10).** Liberar el exponente de la permeabilidad da 0.41 y
+mejora 0.0003.
 
-Hipótesis sobre las causas, ninguna verificable con este conjunto de datos:
+**El coeficiente de la curva y el FWL se compensan (experimentos 3, 5 y 9).** Con el coeficiente
+libre, mover el FWL de 3,120 a 3,150 m cambia `rmse_ajuste` en 0.0009. Con el coeficiente fijo en
+1, el contacto en 3,150 m da 0.1121 y en 3,120 m da 0.1153, casi todo en 19 A (0.088 contra
+0.114). Los cinco pozos de ajuste solos no fijan el FWL dentro de ese rango de 30 m.
 
-- **Base del Hugin.** El perfil tiene la forma de una zona de transición sobre un contacto cerca
-  de 2,909 m. El caso final usa un solo FWL en 3,191.6 m y no la reproduce. Con un FWL propio del
-  Hugin en 2,909.2 m (`52d2227`), `rmse_ajuste_hugin` baja de 0.0989 (en `455e092`) a 0.0872, pero la mejora
-  total fue de 0.0041 y el criterio pedía 0.005. Sobre la forma final el mismo cambio rindió
-  0.0004 y el ajuste llevó ese contacto a 3,082.7 m.
-- **Capas finas.** Las celdas arcillosas de 2,831 m y las de alta Sw aisladas miden un metro de
-  pozo. Una función de altura y porosidad no las separa de la arena vecina; ni VSH ni KLOGH
-  bajaron el error en los ensayos fuera de Flow (menos de 0.002).
-- **Sw menor a 0.6 debajo del Hugin.** En once celdas de Sleipner y Skagerrak el perfil da
-  entre 0.28 y 0.60, en roca con propiedades iguales a las de celdas vecinas con Sw de 0.9. Puede ser
-  hidrocarburo residual o un efecto de la interpretación petrofísica en roca arcillosa.
-- **Dependencia con la porosidad.** En el Hugin el Sw del perfil baja al subir PHIF, y por eso
-  el escalado de Leverett (`alpha` 0.5) empeora el ajuste frente a `alpha` negativo. Si el Sw
-  interpretado se calculó con Archie, esa dependencia viene en parte de la ecuación de
-  interpretación y el caso la estaría copiando.
+**No hay umbral de entrada visible (experimento 12).** La hipérbola de Thomeer con umbral en
+J = 2.1 mejora 19 A (0.076) y empeora F-4 y F-12; el total queda en 0.1135.
+
+## Hipótesis que no se cumplieron
+
+**El agua irreducible según la roca, con la forma del operador (experimento 4).** Predije 0.1116
+y salió 0.1155. 19 A mejoró de 0.082 a 0.056, y F-4 y 19 SR empeoraron. La función J ya lleva la
+permeabilidad, y un `SWL` por celda encima le pide a los pozos cosas opuestas.
+
+**El agua ligada a la arcilla (experimento 8).** Predije 0.1115 y salió 0.1129. La base de F-4 no
+ganó el agua que le falta: F-4 pasó de 0.142 a 0.148.
+
+En los dos casos falló también mi cuenta previa. La tabla de `SWOF` del caso arranca en Sw = 0.03
+a 0.04 y Flow reescala desde ese valor hasta el `SWL` de la celda, así que el resultado sale 0.02
+más seco que lo calculado. Los coeficientes de esos dos experimentos no son los óptimos de su
+forma; la cuenta previa estima que el óptimo mejora menos de 0.001, y eso no está verificado en
+Flow.
+
+**Los dos tipos de roca (experimentos 7 y 11).** Las predicciones numéricas se cumplieron (0.110)
+y la hipótesis física no: dos regiones `SATNUM` ganan 0.002 con dos parámetros más. El corte por
+permeabilidad mejora 19 A y el corte por arcilla mejora F-4 (0.133) a costa de 19 A, 19 SR y F-12.
+
+Los dos grupos dicen lo mismo sobre la roca. El Hugin neto de estos pozos se comporta como una sola
+familia de gargantas una vez escalado por √(k/φ), y la arcilla y la permeabilidad no agregan
+información a la saturación inicial. Es una hipótesis que sostienen cinco pozos y ningún dato de
+laboratorio.
+
+## Lo que sigue mal ajustado
+
+F-4 concentra el 50% del error cuadrático y 19 BT2 el 23%. Sin 19 BT2 y sin la base de F-4, las
+356 celdas restantes tienen un RMSE de 0.081.
+
+| Tramo | Celdas | Sw del perfil | Sw simulada | RMSE |
+| --- | ---: | ---: | ---: | ---: |
+| F-4, 3,005 a 3,033 m | 46 | 0.447 | 0.243 | 0.247 |
+| F-4, 2,931 a 3,005 m | 119 | 0.160 | 0.189 | 0.067 |
+| 19 A, 3,060 a 3,101 m | 44 | 0.246 | 0.326 | 0.107 |
+| 19 BT2, 3,150 a 3,274 m | 128 | 0.953 | 1.000 | 0.110 |
+
+**La base de F-4.** El perfil tiene el doble de agua que el modelo a 115 a 145 m sobre el FWL, en
+roca de 149 mD de media geométrica. 19 A, 70 m más abajo y con roca de 53 mD, tiene Sw de 0.25.
+Ninguna de las cinco formas de roca probadas le da agua a la base de F-4 sin quitarle petróleo a
+19 A. Hipótesis: los dos pozos tienen contactos distintos, por un nivel de agua libre inclinado o
+por bloques separados por fallas. El programa excluye más de un FWL, así que no se probó.
+
+**19 BT2.** El pozo está entero bajo el FWL y el modelo le pone Sw = 1. El perfil promedia 0.953 y
+12 de las 128 celdas netas bajan de 0.90. Un equilibrio de drenaje no puede reproducir eso con
+ningún contacto del rango permitido. Hipótesis: petróleo residual bajo el contacto o ruido de la
+interpretación en zona de agua. Ese 0.110 es un piso para cualquier caso de este ejercicio.
+
+**19 A entre 3,060 y 3,101 m.** El modelo pone 0.08 más de agua que el perfil. Es el costo de
+tener una sola curva: las formas que lo corrigen (experimentos 4, 7 y 12) empeoran F-4.
 
 ## Qué revisar antes de llevarlo a un modelo de campo
 
-1. El FWL de 3,191.6 m. Queda 148 m debajo de la última muestra de F-12 (3,044 m) y 283 m
-   debajo de la base del Hugin. Su función en el ajuste es dar Sw de 0.8 a 0.9 en Sleipner y
-   Skagerrak, donde el equilibrio capilar con un contacto en la base del Hugin pondría Sw = 1.
-   Es una hipótesis de ajuste. No hay presiones de formación en los datos para ubicar un
-   contacto, y el caso con una sola función y FWL en 2,918 m (`fec6540`) dio 0.1514.
-2. El hidrocarburo debajo del Hugin. El perfil de F-12 tiene ahí el 14% del volumen poral de
-   hidrocarburo del pozo (4.85 de 33.60 m de porosidad por hidrocarburo). El caso lo reproduce
-   (4.87) y en un modelo de campo lo extendería a toda la columna hasta 3,191.6 m. Conviene
-   decidir si ese volumen existe y es móvil antes de aceptarlo en el volumen in situ.
-3. El contacto del Hugin. La transición de 2,895–2,910 m sugiere un contacto cerca de
-   2,909 m que el caso final no tiene. En los flancos, por debajo de esa profundidad, el caso
-   pone petróleo en el Hugin con Sw de 0.2 a 0.3.
-4. La forma de la función. `JFUNC` con exponentes -1 y 0 deja de ser un escalado de
-   Leverett: la permeabilidad no interviene. Hay que confirmar que el simulador de destino
-   acepta esos exponentes y que la porosidad del modelo de campo, a escala de celda, tiene la
-   misma distribución que PHIF a un metro. Con `alpha` -1, una celda de porosidad 0.10 recibe
-   0.26 más de Sw que una de 0.20 a igual altura.
-5. La extrapolación en altura. F-12 cubre de 148 a 373 m sobre el FWL del caso. La recta en
-   ln(h · PHIF) no tiene saturación irreducible y sigue bajando arriba del tope perfilado; el
-   piso de la tabla es 0.02.
-6. Los fluidos. El gradiente de 0.0284 bar/m sale de densidades supuestas (750 y
-   1,040 kg/m³), sin informe PVT. Otro contraste de densidad cambia el FWL ajustado y las
-   ordenadas, y deja el Sw de F-12 igual.
-7. La validación. `rmse_validacion` es 0.3265 y el caso da 38.3% menos volumen poral de
-   hidrocarburo que el perfil de F-11 B, con sesgo de Sw de +0.2385. F-11 B se perfiló en 2013
-   con el campo en producción, y su Sw solo puede ser igual o mayor que la inicial; el caso da
-   más agua que ese perfil, que es el sentido contrario al que explicaría el barrido. Con un pozo
-   de ajuste y uno de validación no se puede afirmar que el caso prediga la Sw inicial fuera de
-   F-12.
-8. La pendiente propia bajo el Hugin. En `4a27c08` Flow dejó Sw = 1 en 131 celdas donde el
-   cálculo previo daba cerca de 0.78, con una tabla de J que cubría de 4e-11 a 1e10. La causa no
-   se investigó. Las tablas del caso final cubren J de 0.025 a 0.87 y Flow coincide con el
-   cálculo previo.
+1. **El FWL.** 3,150 m es el tope del agua de 19 BT2 y queda 15 m por debajo del rango del
+   operador (3,120 ± 15 m). Con esta curva los pozos de ajuste lo prefieren por 0.003 de RMSE,
+   casi todo en 19 A. El pozo de control cambia mucho más entre los dos contactos:
+   `sesgo_control` es +0.055 con 3,120 m y +0.008 con 3,150 m. Ese dato no decidió nada acá y
+   pide una revisión con presiones de formación, que este ajuste no usó.
+2. **La cola de la curva.** Sin meseta, Sw sigue bajando con la altura. La tabla termina en
+   Sw = 0.038 a J = 100,000 y las celdas del ajuste llegan a J cercanos a 3,000 (Sw = 0.10). Un
+   modelo de campo con más columna o más permeabilidad que estos pozos va a extrapolar por debajo
+   de lo que muestran los perfiles.
+3. **La permeabilidad.** J va con √k. El KLOGH de F-12, F-4 y 19 BT2 es la revisión de 2009; el
+   modelo de campo tiene que usar una permeabilidad coherente con esa, o el exponente cambia.
+4. **Las curvas de laboratorio.** El ajuste salió de perfiles. Falta comparar Sw = J^-0.284 con
+   las presiones capilares de corona del informe del operador (sección 6 y tabla 11), que no leí
+   en esta corrida.
+5. **El contacto de F-4.** Un solo FWL deja 46 celdas con la mitad del agua del perfil. En un
+   modelo con regiones de equilibrio (`EQLNUM`), como el de Equinor, ese bloque necesita su propia
+   decisión.
+6. **El control.** F-11 B se perfiló con cinco años de inyección. Un `sesgo_control` de +0.008
+   está dentro de lo que el control permite afirmar: el caso no pone más agua inicial que la que
+   tenía el pozo en 2013. No permite afirmar que la saturación inicial de F-11 B esté bien.
+
+## Cómo se eligieron los números
+
+Cada experimento se escribió como hipótesis en el commit antes de correr. Para dar un número a la
+predicción usé una cuenta propia del equilibrio fuera del repo (Sw a partir de J, celda por celda,
+solo con los cinco pozos de ajuste), que reproduce a Flow en el caso base: 0.1425 contra 0.1424.
+Los coeficientes de cada forma salieron de ese ajuste por mínimos cuadrados y cada uno está contado
+como parámetro. La consecuencia es que las predicciones acertaron más de lo que acertaría una
+hipótesis sin cuenta previa, salvo en los dos experimentos con `SWL`.
+
+El punto de partida fue el caso base: en este repo no había otros casos en `casos/` aparte de
+`base.py`.

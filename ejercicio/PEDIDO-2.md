@@ -1,8 +1,7 @@
-Ahora probá cuatro alternativas de ajuste sobre F-12, de a una. Para cada una ajustá los parámetros a mano en pocas corridas (seis como máximo), guardá el caso en casos/ y la corrida en corridas/ con la misma letra:
+Ahora ajustá la función J, con pocas formas y pocos parámetros. Tres casos, cada uno guardado en casos/ y corrido con su etiqueta:
 
-- B: función J de Leverett, una sola curva adimensional escalada por √(k/φ).
-- C: tres tipos de roca por √(k/φ), con una curva de presión capilar cada uno.
-- D: una sola forma de curva y agua connata por celda según la calidad de roca (escalado de extremos, SWL).
-- E: SWATINIT con el perfil celda a celda.
+- J1: una sola función J de Leverett y un contacto (la forma del caso base). Ajustá sus cuatro parámetros en ocho corridas como máximo.
+- OP: el modelo del operador tal como está en la tabla 11 de su informe (datos/volve/referencia/statoil_3781-06_petrofisica_2006.pdf, páginas 49 a 52) y el FWL de su tabla 10, sin ajustar nada. Si el informe se contradice en algún número, decímelo y decí cuál usaste.
+- J2: la misma forma del operador, con sus constantes ajustadas a estos pozos, en ocho corridas como máximo.
 
-El caso base (A) también va a la tabla. Al terminar escribí comparacion.md con una tabla de A a E (rmse_ajuste, rmse_ajuste_hugin, rmse_validacion, error en volumen poral de hidrocarburo, n_parametros) y, para cada alternativa, una oración sobre qué gana y qué cuesta. Decime cuál llevarías a un modelo de campo y por qué.
+Para cada paso de J1 a J2 mostrame el diff de los archivos AJUSTE_*.INC contra el caso anterior. Al terminar escribí comparacion.md con una tabla de los tres casos (rmse_ajuste, el RMSE de cada pozo, rmse_control, sesgo_control, error en volumen poral de hidrocarburo, FWL, n_parametros) y, para cada uno, una oración sobre qué gana y qué cuesta. Decime cuál llevarías a un modelo de campo y qué pozo queda peor ajustado.

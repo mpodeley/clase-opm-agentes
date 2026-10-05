@@ -1,13 +1,13 @@
-# Simulación numérica con agentes: saturación inicial de Volve en OPM Flow
+# Simulación numérica con agentes: la función J de Volve en OPM Flow
 
-Material de una clase de hasta cuatro horas para ingenieros de reservorios. Un agente de terminal
-(Claude Code) maneja un simulador numérico abierto (OPM Flow) para reproducir la saturación de agua
-de los perfiles de dos pozos del campo Volve, y compara distintas formas de hacerlo.
+Material de una clase de 3 h 45 min para ingenieros de reservorios. Un agente de terminal
+(Claude Code) maneja un simulador numérico abierto (OPM Flow) para encontrar la función J que
+reproduce la saturación de agua de los pozos del campo Volve perfilados antes de producir, con un
+pozo posterior como control.
 
-El ejercicio es el de un programa de saturación-altura: elegir curvas de presión capilar, tipos de
-roca y contactos para que el modelo arranque con el agua donde la midieron los perfiles. La
-diferencia es que el cálculo lo hace el equilibrio del propio simulador, así que lo que se ajusta
-es lo que después inicializa el modelo de campo.
+El ejercicio es el de un programa de saturación-altura. La diferencia es que el cálculo lo hace
+el equilibrio del propio simulador, así que lo que se ajusta es lo que después inicializa el
+modelo de campo.
 
 Las diapositivas y un resumen con las figuras están en
 [clase-opm-agentes.podeley.workers.dev](https://clase-opm-agentes.podeley.workers.dev/).
@@ -16,18 +16,19 @@ Las diapositivas y un resumen con las figuras están en
 
 | Bloque | Tiempo | Qué pasa |
 | --- | --- | --- |
-| El campo y el problema | 20 min | Volve en mapa y sección, qué datos hay, y con qué número se mide el ajuste |
-| Instalación | 25 min | OPM Flow en un contenedor, el entorno de Python y Claude Code, con un caso de prueba |
-| El agente lee el deck | 35 min | El agente explica el modelo keyword por keyword, corre el caso base y lee el resultado |
+| El campo y el dataset | 25 min | Mapa, superficies, secciones, producción y qué pozos sirven para ajustar |
+| Lectura rápida de perfiles | 20 min | Arenas, porosidad, agua como BVW, agua irreducible y agua móvil |
+| PVT y presiones | 15 min | Densidades, gradientes y los contactos que circulan |
+| Instalación | 20 min | OPM Flow en un contenedor, el entorno de Python y Claude Code |
 | Pausa | 10 min | |
-| Alternativas de ajuste | 45 min | Función J, tipos de roca, escalado de extremos y SWATINIT, comparados en una tabla |
-| El contacto | 30 min | Contacto plano, dos sistemas o contacto inclinado, con el segundo pozo a la vista |
+| Repaso de J y el deck | 25 min | Qué es la función J; el agente lee el deck y muestra dónde vive el ajuste |
+| Ajuste de J | 40 min | Una J, el modelo del operador y su forma reajustada; el pozo de control |
 | Pausa | 10 min | El loop queda corriendo |
-| Loop autónomo | 30 min | El agente prueba variantes solo, con reglas y un tope; se lee qué conservó y qué descartó |
-| Controles y cierre | 20 min | Qué revisa y firma el ingeniero, y los límites del ejercicio |
+| Loop con hipótesis a la vista | 30 min | El agente prueba variantes solo y escribe cada hipótesis antes de correr |
+| ¿Contacto inclinado? | 15 min | Cuánto mejora el ajuste y qué dice el control |
+| Controles y cierre | 15 min | Qué revisa y firma el ingeniero, y los límites del ejercicio |
 
-Suma 3 h 45 min. El guion con el minuto a minuto está en `docente/guion.md` y las diapositivas en
-`slides/clase.md`.
+El guion con el minuto a minuto está en `docente/guion.md` y las diapositivas en `slides/clase.md`.
 
 ## Instalación
 
@@ -48,7 +49,7 @@ Con eso instalado:
 ```bash
 git clone https://github.com/mpodeley/clase-opm-agentes.git
 cd clase-opm-agentes
-instalacion/instalar.sh     # baja la imagen de OPM Flow (1.2 GB), arma el entorno y baja los datos
+instalacion/instalar.sh     # baja la imagen de OPM Flow (1.2 GB), arma el entorno y baja los datos (52 MB)
 instalacion/verificar.sh    # corre un caso de prueba y el caso base del ejercicio
 ```
 
@@ -60,55 +61,78 @@ Con Docker, anteponé `CONTENEDOR=docker` a los dos comandos. Si ya tenés OPM F
 sistema, exportá `FLOW=/ruta/a/flow` y el contenedor no se usa. En Ubuntu, OPM publica paquetes
 propios: las instrucciones están en [opm-project.org](https://opm-project.org).
 
-La imagen del simulador está fijada por su hash en `sw/correr.py`, y los archivos de Volve por el
-suyo en `datos/preparar_datos.py`. Dos personas que instalan en días distintos corren lo mismo.
+La imagen del simulador está fijada por su hash en `sw/correr.py`, y los 24 archivos de Volve por
+el suyo en `datos/preparar_datos.py`. Dos personas que instalan en días distintos corren lo mismo.
+
+## Los pozos
+
+El campo empezó a producir el 12 de febrero de 2008. El ajuste usa solo pozos perfilados antes.
+
+| Pozo | Perfilado | Hugin (m TVDSS) | Rol |
+| --- | --- | --- | --- |
+| 15/9-19 SR | 1993 | 2,861 a 2,880 | Ajuste |
+| 15/9-19 A | 1997 | 3,013 a 3,101 | Ajuste |
+| 15/9-19 BT2 | 1998 | 3,149 a 3,275 | Ajuste, todo en agua |
+| 15/9-F-12 | 2007 | 2,818 a 2,910 | Ajuste |
+| 15/9-F-4 | 7 y 11 de febrero de 2008 | 2,931 a 3,033 | Ajuste |
+| 15/9-F-11 B | 2013 | 2,829 a 3,171 | Control |
+
+TVDSS (true vertical depth subsea) es profundidad vertical bajo el nivel del mar. F-11 B se
+perfiló con cinco años de producción e inyección de agua: ningún caso ve su perfil. Como su
+saturación de agua es igual o mayor que la inicial, un buen modelo queda igual o por debajo.
 
 ## Correr un caso
 
 ```bash
-uv run evaluar.py
+uv run evaluar.py --fragmento
 ```
 
-Tarda uno o dos segundos. Arma el deck, corre Flow, lee la saturación inicial y la compara con los
-perfiles:
+Tarda uno o dos segundos. Arma el deck, corre Flow, lee la saturación inicial y la compara con
+los perfiles:
 
 ```
 grafico: corridas/ultima/perfil.png
 ---
-caso: A: curva única y un contacto
-rmse_ajuste: 0.1772
-rmse_ajuste_hugin: 0.1283
-rmse_ajuste_bajo_hugin: 0.2041
-sesgo_ajuste: 0.0566
-error_hcpv_ajuste: -0.1374
-rmse_validacion: 0.4906
+caso: J1: una función J y un contacto
+rmse_ajuste: 0.1424
+rmse_19-SR: 0.0819
 ...
+rmse_control: 0.2048
+sesgo_control: -0.0379
 n_parametros: 4
+fwl: 3120.0
 ```
 
 `rmse_ajuste` es la raíz del error cuadrático medio (RMSE, root mean square error) entre la
-saturación simulada y la del perfil en el pozo 15/9-F-12, celda por celda. `rmse_validacion` es lo
-mismo en 15/9-F-11 B, que el caso no ve. `error_hcpv` es el error relativo en el volumen poral de
-hidrocarburo a lo largo del pozo.
+saturación simulada y la del perfil, celda por celda, en la arena neta del Hugin de los cinco
+pozos de ajuste. `rmse_control` es lo mismo en F-11 B. `fwl` es el nivel de agua libre (free
+water level) del caso.
 
-El caso se define en `caso.py`, el único archivo que se edita. En `corridas/ultima/` quedan el
-deck (`SW.DATA`), la salida de Flow, una tabla (`sw.csv`) y la figura.
+El caso se define en `caso.py`, el único archivo que se edita. Con `--fragmento` se imprime además
+la parte del deck que decide el caso.
 
-## El modelo
+## El modelo y el deck
 
-Una fila de celdas, una por metro de pozo, desde el tope de la Formación Hugin hasta el final del
-perfil. Cada celda lleva su profundidad, su porosidad, su permeabilidad y su volumen de arcilla,
-promediados del perfil interpretado. Entre celdas no hay flujo: cada una se equilibra sola, con la
-curva de presión capilar y el nivel de agua libre que le asigne el caso.
+Una fila de celdas, una por metro de pozo dentro del Hugin. Cada celda lleva su profundidad, su
+porosidad, su permeabilidad y una marca de arena neta. Entre celdas no hay flujo: cada una se
+equilibra sola, con la función J y el contacto que le asigne el caso.
 
-Así el mismo armado sirve para un pozo desviado y para uno horizontal, y el caso puede usar
-cualquier keyword de inicialización de Flow: `SWOF`, `JFUNC`, `SATNUM`, `ENDSCALE` con `SWL`,
-`SWATINIT`, `EQUIL` y `EQLNUM`.
+El deck está partido para que el ajuste se vea. `SW.DATA` es el esqueleto; `MODELO_GRID.INC` y
+`MODELO_PROPS.INC` tienen la grilla, la roca y los fluidos, y no cambian. Lo que decide un caso
+va en cinco archivos:
 
-| Pozo | Rol | Celdas | Perfilado |
-| --- | --- | --- | --- |
-| 15/9-F-12 | Ajuste | 379 | 2007, antes de que el campo produjera |
-| 15/9-F-11 B | Validación | 1,277 | 2013, con cinco años de producción e inyección de agua |
+| Archivo | Keyword | Qué decide |
+| --- | --- | --- |
+| `AJUSTE_GRID.INC` | `JFUNC` | El escalado de Leverett y sus exponentes |
+| `AJUSTE_PROPS.INC` | `SWOF` | La tabla de J contra Sw de cada región de saturación |
+| `AJUSTE_SWL.INC` | `SWL` | El agua irreducible por celda, si el caso la escala |
+| `AJUSTE_REGIONES.INC` | `SATNUM`, `EQLNUM` | Qué tabla y qué contacto le toca a cada celda |
+| `AJUSTE_SOLUTION.INC` | `EQUIL` | El nivel de agua libre de cada región |
+
+Pasar de un caso a otro es un `diff` de esos archivos.
+
+Los fluidos están fijos y vienen de los datos: 720 kg/m³ para el petróleo y 1,065 kg/m³ para el
+agua en reservorio, los que usó el operador en su informe petrofísico de 2006.
 
 ## El ejercicio con el agente
 
@@ -119,58 +143,79 @@ claude
 ```
 
 `preparar.sh` arma una carpeta de trabajo aparte, con su propio `CLAUDE.md`, los permisos del
-agente y cuatro pedidos (`PEDIDO-1.md` a `PEDIDO-4.md`) que se le pasan de a uno. El agente puede
-editar `caso.py` y correr `evaluar.py`; no puede tocar la métrica, los datos ni salir a internet.
-Los casos de referencia de `docente/soluciones/` no se copian.
+agente y cuatro pedidos que se le pasan de a uno:
+
+1. Leer y explicar el deck.
+2. Ajustar tres casos: una función J, el modelo del operador sin tocar y su forma reajustada.
+3. El loop de `program.md`.
+4. La hipótesis del contacto inclinado.
+
+El agente puede editar `caso.py` y correr `evaluar.py`; no puede tocar la métrica, los datos ni
+salir a internet. Los casos de referencia de `docente/soluciones/` no se copian.
 
 La primera vez, Claude Code pregunta si confiás en la carpeta. Hasta que aceptes, ignora los
 permisos de `.claude/settings.json` y pide confirmación para cada comando.
 
-El cuarto pedido lanza el loop de `program.md`, una adaptación de
-[autoresearch](https://github.com/karpathy/autoresearch): el agente cambia el caso, corre, anota
-el resultado en `results.tsv` y conserva o descarta el cambio con git, hasta 15 experimentos o
-20 minutos.
+## El loop
+
+`program.md` es una adaptación de [autoresearch](https://github.com/karpathy/autoresearch). El
+agente cambia el caso, corre, anota el resultado y conserva o descarta el cambio con git, hasta
+12 experimentos o 20 minutos.
+
+Lo que agrega esta versión es que cada experimento es una hipótesis escrita antes de correr. El
+mensaje del commit lleva tres líneas, la hipótesis, el mecanismo físico y la predicción, y como
+el commit es anterior a la corrida no se puede escribir mirando el resultado.
+
+```bash
+uv run bitacora.py --animacion
+```
+
+arma `bitacora.html` con todos los experimentos, quedaran o no: hipótesis, predicción, resultado,
+lectura, diff del deck y figura. Con `--animacion` suma un reproductor y `animacion.gif`, con un
+cuadro por experimento.
+
+El ensayo del 5 de octubre de 2026, 12 experimentos en 9 minutos, está en `docente/plan-b/ensayo/`:
+
+![Animación del loop: un cuadro por experimento, con la hipótesis, los perfiles de los seis pozos, la función J y el error](docente/plan-b/ensayo/animacion.gif)
 
 ## Resultados de referencia
 
 Salen de `uv run docente/tabla.py`, con los casos de `docente/soluciones/` ajustados por un
 optimizador clásico (Nelder-Mead, `docente/optimizar.py`).
 
-| Caso | Ajustado con | RMSE en F-12 | RMSE en F-11 B | Parámetros |
-| --- | --- | ---: | ---: | ---: |
-| A: curva única y un contacto | F-12 | 0.163 | 0.497 | 4 |
-| B: función J de Leverett | F-12 | 0.159 | 0.484 | 4 |
-| C: tres tipos de roca | F-12 | 0.163 | 0.473 | 12 |
-| D: agua connata por celda | F-12 | 0.158 | 0.490 | 5 |
-| E: SWATINIT | F-12 | 0.000 | 0.486 | 383 |
-| F0: un contacto plano | Los dos | 0.234 | 0.332 | 4 |
-| F1: un contacto por sistema | Los dos | 0.220 | 0.230 | 5 |
-| F2: contacto inclinado | Los dos | 0.261 | 0.232 | 5 |
+| Caso | RMSE de ajuste | RMSE de control | Sesgo del control | FWL | Parámetros |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Base, sin ajustar | 0.142 | 0.205 | −0.038 | 3,120 m | 4 |
+| J1: una función J y un contacto | 0.112 | 0.122 | −0.003 | 3,150 m | 4 |
+| OP: el modelo del operador (2006), sin ajustar | 0.122 | 0.197 | +0.066 | 3,120 m | 0 |
+| J2: la forma del operador, reajustada | 0.114 | 0.142 | +0.003 | 3,151 m | 5 |
+| T: J2 con contacto inclinado 90 m por km | 0.097 | 0.193 | +0.049 | 3,030 a 3,127 m | 6 |
 
-Tres lecturas que la clase discute:
+Lo que la clase discute:
 
-- De A a D el error en F-12 cambia en el tercer decimal. Con cuatro parámetros ya se llega al piso
-  que deja la variabilidad del perfil metro a metro.
-- SWATINIT lleva el error a cero en el pozo donde se impone y no mejora nada en el otro.
-- Dos sistemas con contactos a 2,937 y 3,156 m y un contacto inclinado 105 m por kilómetro
-  ajustan casi igual. Los perfiles no los separan.
+- El modelo del operador, sin ajustar nada, queda a 0.010 del mejor caso. Pone más agua que la
+  que hay en el control.
+- Con cuatro parámetros alcanza: el quinto de J2 no baja el error y deja peor el control.
+- Los dos ajustes llevan el contacto a 3,150 m, entre el petróleo de 19 A y el agua de 19 BT2.
+- El contacto inclinado baja el error de ajuste 0.017 y sube el del control 0.051.
 
 ## Qué no se puede afirmar con esto
 
-- **Dónde está el contacto de Volve.** El conjunto no trae presiones de formación ni ensayos de
-  laboratorio. Las densidades de los fluidos son un supuesto, y cualquier cambio en ellas se
-  compensa con la presión de entrada de la curva.
-- **Que F-11 B valide la saturación inicial.** Se perfiló en 2013, con cinco años de
-  producción e inyección de agua detrás. Su saturación es igual o mayor que la original.
-- **Que un contacto inclinado exista.** El ajuste lo admite tanto como admite dos compartimentos.
-  Sostener 105 m por kilómetro pediría unos 3 bar por kilómetro de gradiente en el acuífero.
-- **Que estos parámetros sirvan para un modelo de campo.** Son 2 de los 22 pozos de desarrollo del campo, sin variograma
-  ni modelo de facies. El ejercicio muestra el método de trabajo con el agente.
+- **Dónde está el contacto.** Los datos lo dejan entre 3,100 y 3,220 m. El informe del operador
+  dice 3,120 ± 15 m, las presiones 3,196 ± 14 m y el modelo de campo 3,200 m. Ningún pozo lo vio.
+- **Que haya un solo contacto.** F-4 tiene agua móvil 130 m por encima del contacto ajustado. No
+  hay presiones del mismo momento en F-4 y en 19 A.
+- **Que el control valide la saturación inicial.** Solo dice que el modelo no pone más agua que la
+  que había en 2013.
+- **Que estos parámetros sirvan para un modelo de campo.** Son 5 pozos, sin facies ni geomodelo.
+  El ejercicio muestra el método de trabajo con el agente.
 
 ## Datos
 
-Los perfiles, las trayectorias, los topes y el mapa del tope de Hugin son parte del conjunto que
-Equinor liberó en 2018, y se bajan de espejos públicos fijados por commit.
+Los perfiles, las trayectorias, los topes, las superficies, la producción, el informe petrofísico
+y el de laboratorio son parte del conjunto que Equinor liberó en 2018, y se bajan de espejos
+públicos fijados por commit y por hash. Los archivos originales no están en este repositorio;
+`docente/plan-b/` guarda decks, tablas y figuras derivados de ellos, bajo la misma licencia.
 
 Datos de Equinor y los ex socios de la licencia Volve (ExxonMobil Exploration & Production Norway
 AS, Bayerngas Norge AS), bajo la
@@ -185,4 +230,4 @@ uv run pytest
 ```
 
 Las de `tests/test_flow.py` corren Flow y comparan su saturación inicial contra la fórmula cerrada
-de saturación-altura, con curva única, con función J y con SWATINIT.
+de la función J, con y sin agua irreducible por celda.

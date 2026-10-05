@@ -1,8 +1,14 @@
-e2bdc37 exponentes fijos en -1 (porosidad) y 0 (permeabilidad): Sw depende de altura por porosidad y no usa KLOGH; un parámetro menos, espero rmse cerca de 0.109
-455e092 exponente de porosidad de JFUNC libre: en el Hugin el Sw del perfil baja con la porosidad y Leverett (alpha 0.5) lo empuja al revés; espero rmse cerca de 0.108
-5756fd3 funciones J lineales en ln(J) (Sw = a - b ln J) con pendiente compartida en lugar de Brooks-Corey: dos parámetros menos, espero rmse cerca de 0.117
-731f35c mismo lam en las dos funciones J (un parámetro menos): espero perder menos de 0.003
-f5d6c35 dos funciones J separadas en la base del Hugin, con un FWL profundo: Sleipner y Skagerrak dejan de quedar en Sw = 1, espero rmse cerca de 0.116
-b38ef1b función J de Leverett en lugar de curva única: la roca pobre retiene más agua a igual altura, espero rmse cerca de 0.159
-dc08dce misma curva única, reajustando swirr, pe y lam: transición más corta, espero rmse cerca de 0.163
-38ff766 caso base
+b0972be La curva no necesita coeficiente: Sw = J^-b con b = 0.284, que llega a Sw = 1 en J = 1, y el FWL en 3,150 m, el tope del agua de 19 BT2
+mecanismo: con a = 0.68 y FWL en 3,120 m la curva tenía una presión de entrada casi nula (J = 0.17) y compensaba con un contacto alto; a y FWL se compensan, así que fijar a = 1 y bajar el contacto al tope del agua de 19 BT2 da la misma columna con un número menos. Ningún pozo debería cambiar más de 0.01
+
+prediccion: rmse_ajuste de 0.1125 a 0.112 con un parámetro menos (2: b y FWL); 19 A de 0.082 a 0.087, F-4 de 0.145 a 0.143
+
+fb8e21c La curva J no tiene meseta de agua irreducible: Sw = a·J^-b (a = 0.68, b = 0.22), con el FWL del operador en 3,120 m
+mecanismo: entre 20 y 330 m sobre el contacto la nube de J contra Sw sigue bajando con J en vez de aplanarse en un Swirr; la base (swirr 0.10, lam 1) llega a la meseta a pocos metros del contacto y deja F-4, F-12 y 19 A con Sw casi constante. Deberían mejorar F-4, F-12 y 19 SR; 19 BT2 no cambia porque sigue entero en agua
+
+prediccion: rmse_ajuste de 0.1424 a 0.113 con un parámetro menos (3); F-4 de 0.201 a 0.146, 19 SR de 0.082 a 0.046, 19 BT2 queda en 0.110
+
+ccb2dfa base
+
+f8727ae caso base
+

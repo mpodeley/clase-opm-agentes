@@ -2,8 +2,7 @@
 
     uv run docente/tabla.py
 
-Writes docente/plan-b/<case>/ (deck, Flow output, figure) and docente/plan-b/tabla.md.
-Cases F0, F1 and F2 are fitted on both wells, so they run with --ver-validacion.
+Writes docente/plan-b/<case>/ (deck, Flow output, fragment, figure) and docente/plan-b/tabla.md.
 """
 from __future__ import annotations
 
@@ -13,29 +12,30 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / 'docente' / 'plan-b'
-CASES = [('a', False), ('b', False), ('c', False), ('d', False), ('e', False),
-         ('f0', True), ('f1', True), ('f2', True)]
-COLUMNS = ['rmse_ajuste', 'rmse_ajuste_hugin', 'rmse_ajuste_bajo_hugin', 'error_hcpv_ajuste',
-           'rmse_validacion', 'error_hcpv_validacion', 'n_parametros']
+CASES = ['base', 'j1', 'op', 'j2', 't']
+COLUMNS = ['rmse_ajuste', 'rmse_19-SR', 'rmse_19-A', 'rmse_19-BT2', 'rmse_F-12', 'rmse_F-4',
+           'rmse_control', 'sesgo_control', 'error_hcpv_ajuste', 'fwl', 'n_parametros']
 
 
 def main() -> int:
     rows = []
-    for name, both in CASES:
-        cmd = [sys.executable, str(ROOT / 'evaluar.py'), '--caso', str(ROOT / 'docente' / 'soluciones' / f'caso_{name}.py'),
-               '--salida', str(OUT / name)] + (['--ver-validacion'] if both else [])
+    for name in CASES:
+        case = ROOT / 'caso.py' if name == 'base' else ROOT / 'docente' / 'soluciones' / f'caso_{name}.py'
+        cmd = [sys.executable, str(ROOT / 'evaluar.py'), '--caso', str(case), '--salida', str(OUT / name)]
         proc = subprocess.run(cmd, capture_output=True, text=True, cwd=ROOT)
         if proc.returncode != 0:
             print(proc.stderr, file=sys.stderr)
             return 1
         values = dict(line.split(': ', 1) for line in proc.stdout.splitlines() if ': ' in line)
-        rows.append((values['caso'], 'los dos' if both else 'F-12', values))
-        print(f'{name:3} {values["rmse_ajuste"]}  {values["rmse_validacion"]}  {values["caso"]}')
+        if name == 'base':
+            values['caso'] = 'Base: J1 sin ajustar'
+        rows.append(values)
+        print(f'{name:5} {values["rmse_ajuste"]}  {values["rmse_control"]}  {values["caso"]}')
 
-    lines = ['| Caso | Ajustado con | ' + ' | '.join(COLUMNS) + ' |', '| --- | --- |' + ' ---: |' * len(COLUMNS)]
-    for description, fitted, values in rows:
+    lines = ['| Caso | ' + ' | '.join(COLUMNS) + ' |', '| --- |' + ' ---: |' * len(COLUMNS)]
+    for values in rows:
         cells = [f'{float(values[c]):+.1%}' if c.startswith('error_') else values[c] for c in COLUMNS]
-        lines.append(f'| {description} | {fitted} | ' + ' | '.join(cells) + ' |')
+        lines.append(f'| {values["caso"]} | ' + ' | '.join(cells) + ' |')
     (OUT / 'tabla.md').write_text('\n'.join(lines) + '\n')
     print(f'escrito {OUT / "tabla.md"}')
     return 0

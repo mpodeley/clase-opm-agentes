@@ -8,7 +8,7 @@ footer: 'clase-opm-agentes'
 
 <!-- _class: portada -->
 
-# Un agente maneja el simulador
+# Un agente ajusta la función J
 
 Clase de 3 h 45 min · ingeniería de reservorios · **OPM Flow · Claude Code · Volve**
 
@@ -16,8 +16,8 @@ Clase de 3 h 45 min · ingeniería de reservorios · **OPM Flow · Claude Code �
 0:00 · portada mientras entra la gente
 Ventanas: A este deck; B terminal en el repo; C terminal en ~/sw-volve con
 el agente SIN lanzar, letra grande y tema claro; D visor de imágenes sobre
-~/sw-volve/corridas; E editor para SW.DATA; F fuera de pantalla, el guion y
-docente/plan-b/tabla.md.
+~/sw-volve/corridas; E navegador con bitacora.html; F fuera de pantalla, el
+guion y docente/plan-b/tabla.md.
 El minuto a minuto completo está en docente/guion.md.
 -->
 
@@ -29,15 +29,17 @@ El minuto a minuto completo está en docente/guion.md.
 
 | Bloque | Tiempo | Qué hacemos |
 | --- | --- | --- |
-| El campo y el problema | 20 min | Volve en mapa y sección, qué datos hay, y con qué número se mide el ajuste |
-| Instalación | 25 min | OPM Flow en un contenedor, el entorno de Python y Claude Code |
-| El agente lee el deck | 35 min | Explica el modelo keyword por keyword, corre el caso base y lee el resultado |
+| El campo y el dataset | 25 min | Mapa, superficies, secciones, producción y qué pozos sirven para ajustar |
+| Lectura rápida de perfiles | 20 min | Arenas, porosidad, agua como BVW, agua irreducible y agua móvil |
+| PVT y presiones | 15 min | Densidades, gradientes y los tres contactos que circulan |
+| Instalación | 20 min | OPM Flow en un contenedor, el entorno de Python y Claude Code |
 | Pausa | 10 min | |
-| Alternativas de ajuste | 45 min | Función J, tipos de roca, escalado de extremos y SWATINIT, en una tabla |
-| El contacto | 30 min | Plano, dos sistemas o inclinado, con el segundo pozo a la vista |
+| Repaso de J y el deck | 25 min | Qué es la función J; el agente lee el deck y muestra dónde vive el ajuste |
+| Ajuste de J | 40 min | Una J, el modelo del operador y su forma reajustada; el pozo de control |
 | Pausa | 10 min | El loop queda corriendo |
-| Loop autónomo | 30 min | El agente prueba variantes solo; leemos qué conservó y qué descartó |
-| Controles y cierre | 20 min | Qué revisa y firma el ingeniero, y los límites de lo que vimos |
+| Loop con hipótesis a la vista | 30 min | El agente prueba variantes solo y escribe cada hipótesis antes de correr |
+| ¿Contacto inclinado? | 15 min | Cuánto mejora el ajuste y qué dice el control |
+| Controles y cierre | 15 min | Qué revisa y firma el ingeniero, y los límites de lo que vimos |
 
 <!--
 2 min · acumulado 0:02
@@ -50,13 +52,13 @@ le revisarían.
 
 <!-- _class: seccion -->
 
-## El campo y el problema
+## El campo y el dataset
 
-Bloque 1 de 7 · **20 min**
+Bloque 1 de 9 · **25 min**
 
 <!--
 0 min · acumulado 0:02
-Arranca 0:00, termina 0:20.
+Arranca 0:00, termina 0:25.
 -->
 
 ---
@@ -72,8 +74,7 @@ Arranca 0:00, termina 0:20.
 2 min · acumulado 0:04
 Sm³: metro cúbico en condiciones estándar. Los datos de campo son de la
 ficha de la Norwegian Offshore Directorate (Sodir); el acumulado sale del
-archivo de producción del operador.
-Equinor liberó el conjunto en 2018.
+archivo de producción del operador. Equinor liberó el conjunto en 2018.
 -->
 
 ---
@@ -82,51 +83,95 @@ Equinor liberó el conjunto en 2018.
 
 ## Dónde están los pozos
 
-![Mapa del tope de la Formación Hugin con la entrada de 18 pozos al reservorio y las trayectorias de F-12 y F-11 B](img/mapa-hugin.png)
+![Mapa del tope de la Formación Hugin con los seis pozos del ejercicio y la entrada de otros doce pozos al reservorio](img/mapa-hugin.png)
 
-En naranja, los dos pozos del ejercicio y su trayectoria dentro del intervalo perfilado.
+Cada pozo tiene un color y lo conserva en todas las figuras de la clase.
 
 <!--
 3 min · acumulado 0:07
-Un alto estructural de unos 1.5 por 2.5 km, con el tope cerca de 2,800 m en la
-cresta. F-12 entra cerca de la cresta y se desplaza 300 m hacia el este. F-11 B
-entra 500 m al nordeste y recorre 1,200 m hacia el flanco este.
-Los puntos negros son las entradas al Hugin de los otros 16 pozos con tope.
+Un alto de unos 1.5 por 2.5 km con el tope cerca de 2,800 m en la cresta.
+En color, los seis pozos que usamos, con su tramo dentro del Hugin. Los
+tres 19 son pozos de exploración de 1993 a 1998; los F salen de la
+plataforma. Los puntos negros son los otros pozos con tope del Hugin.
 -->
 
 ---
 
 <!-- _class: figura -->
 
-## Los dos pozos, en sección
+## Las superficies del conjunto
 
-![Sección a lo largo de F-12 y F-11 B: trayectoria coloreada por saturación de agua, con el tope del Hugin del mapa](img/secciones.png)
+![Mapas de la discordancia de la base del Cretácico, el tope y la base de la Formación Hugin, y el espesor del Hugin](img/superficies.png)
 
-Claro es petróleo, oscuro es agua. F-11 B tiene un tramo horizontal y vuelve a entrar al Hugin a través de fallas.
+Tres horizontes en la misma escala de profundidad, y el espesor del Hugin entre dos de ellos.
 
 <!--
 3 min · acumulado 0:10
-F-12 atraviesa el Hugin en 90 m verticales y sigue en Sleipner y Skagerrak.
-F-11 B corre pegado al tope: baja de 2,829 a 3,182 m en 1,200 m de
-desplazamiento. Mirar los colores: hay tramos claros por debajo de 3,100 m.
-La línea punteada es el tope según el mapa, con su incertidumbre.
+BCU: base Cretaceous unconformity, la discordancia de la base del
+Cretácico, el sello regional. En nuestros pozos el Hugin tiene de 18 m (19 SR) a 126 m (19 BT2) de
+espesor vertical, y se adelgaza hacia el oeste.
+No hay en público superficies de Sleipner ni de Skagerrak, ni polígonos
+de falla: los topes de pozo son la única fuente para lo que está debajo.
 -->
 
 ---
 
 <!-- _class: figura -->
 
-## Cuándo se perfiló cada pozo
+## Los seis pozos, en sección
+
+![Sección a lo largo de cada pozo con la discordancia, el tope y la base del Hugin, y la trayectoria coloreada por saturación de agua](img/secciones.png)
+
+Claro es petróleo, oscuro es agua. Solo el tramo dentro del Hugin entra al modelo.
+
+<!--
+4 min · acumulado 0:14
+19 SR, F-12, F-4 y 19 A cruzan el Hugin con petróleo, cada uno a una
+profundidad distinta: entre los cuatro cubren de 2,818 a 3,101 m. 19 BT2
+lo cruza entero en agua, de 3,149 a 3,275 m. F-11 B corre cerca del tope
+y entra y sale por fallas.
+La línea de los horizontes sale del mapa, con su incertidumbre.
+-->
+
+---
+
+<!-- _class: figura -->
+
+## Qué pozos muestran el estado inicial
 
 ![Producción mensual de petróleo y agua e inyección de agua del campo, de 2008 a 2016](img/produccion.png)
 
-F-12 se perfiló en 2007, antes del primer petróleo. Cuando se perfiló F-11 B el campo ya producía más agua que petróleo.
+El primer petróleo fue el 12 de febrero de 2008. Lo perfilado después ya no es saturación inicial.
 
 <!--
-2 min · acumulado 0:12
-En total: 10.0 millones de Sm³ de petróleo, 15.3 de agua producida y 30.3
-de agua inyectada. Esto vuelve en el bloque 5: el perfil de F-11 B no es un
-estado inicial.
+3 min · acumulado 0:17
+La regla de la clase: se ajusta solo con pozos perfilados antes de
+producir. Cuando se perfiló F-11 B el campo producía unas cinco veces más
+agua que petróleo: su perfil sirve de control y no de dato de ajuste.
+F-4 es el caso límite: sus perfiles de reservorio son del 7 y del 11 de
+febrero de 2008, la semana anterior al primer petróleo.
+-->
+
+---
+
+## Cinco pozos para ajustar, uno de control
+
+| Pozo | Perfilado | Hugin (m TVDSS) | Arena neta | Rol |
+| --- | --- | --- | ---: | --- |
+| 15/9-19 SR | 1993 | 2,861 a 2,880 | 23 m | Ajuste |
+| 15/9-19 A | 1997 | 3,013 a 3,101 | 88 m | Ajuste |
+| 15/9-19 BT2 | 1998 | 3,149 a 3,275 | 128 m | Ajuste, todo en agua |
+| 15/9-F-12 | 2007 | 2,818 a 2,910 | 126 m | Ajuste |
+| 15/9-F-4 | 7 y 11 de febrero de 2008 | 2,931 a 3,033 | 165 m | Ajuste |
+| 15/9-F-11 B | 2013 | 2,829 a 3,171 | 431 m | Control |
+
+<!--
+3 min · acumulado 0:20
+TVDSS: true vertical depth subsea, metros verticales bajo el nivel del
+mar. La arena neta está en metros de pozo, una celda por metro.
+El control nunca se le muestra al caso. Como es posterior a cinco años de
+inyección, su Sw es igual o mayor que la inicial: un buen modelo de
+saturación inicial queda igual o por debajo de ese perfil.
 -->
 
 ---
@@ -135,67 +180,203 @@ estado inicial.
 
 | El conjunto completo | Lo que usa la clase |
 | --- | --- |
-| Unos 40,000 archivos, cerca de 5 TB | 7 archivos, 13 MB |
+| Unos 40,000 archivos, cerca de 5 TB | 24 archivos, 52 MB |
 | Sísmica 3D y 4D | |
-| Modelos estático y dinámico | |
-| Perfiles de pozo, crudos e interpretados | Perfil interpretado de 2 pozos |
-| Trayectorias, topes y mapas | 2 trayectorias, los topes, el tope del Hugin |
-| Producción diaria y mensual | La mensual, para el contexto |
-| Perforación en tiempo real, informes | |
+| Modelos estático y dinámico | El deck de campo, solo para leerlo |
+| Perfiles de pozo, crudos e interpretados | Interpretado de 6 pozos, crudos de 2 |
+| Trayectorias, topes y superficies | 3 trayectorias, los topes, 3 horizontes |
+| Producción, presiones e informes | La mensual, 1 ensayo de presión, 2 informes |
 
 <!--
-2 min · acumulado 0:14
-El conjunto oficial trae el modelo de simulación de Equinor. No lo usamos:
-armamos uno propio desde los perfiles, que corre en un segundo y deja
-ajustar en vivo.
+3 min · acumulado 0:23
+Todo se baja de espejos públicos y queda fijado por su hash. Los dos
+informes son el petrofísico del operador de 2006 y el PVT de laboratorio
+del petróleo de F-4.
 -->
 
 ---
 
 <!-- _class: figura -->
 
-## ¿Dónde pondrías el contacto?
+## Lo que hay que reproducir
 
-![Perfil interpretado de 15/9-F-12: saturación de agua, porosidad y permeabilidad contra profundidad](img/perfil-f12.png)
+![Saturación de agua de la arena neta del Hugin contra profundidad en los cinco pozos de ajuste](img/sw-profundidad.png)
 
-Profundidad en metros verticales bajo el nivel del mar (TVDSS, true vertical depth subsea).
+Cinco pozos en una sola escala de profundidad: 450 m entre el más alto y el más bajo.
 
 <!--
-3 min · acumulado 0:17
-Preguntar a la sala y anotar dos o tres respuestas: vuelven en el bloque 5.
-Lo que se ve: Sw baja en el Hugin, con picos en las capas de mala calidad;
-Sw alta desde la base del Hugin, cerca de 2,910 m, en Sleipner y Skagerrak.
+2 min · acumulado 0:25
+Preguntar a la sala: ¿dónde pondrían el contacto? Anotar dos o tres
+respuestas, vuelven en el bloque 3.
+Petróleo hasta 3,101 m en 19 A, agua desde 3,149 m en 19 BT2. Ningún pozo
+vio el contacto.
+Cierre del bloque 1.
 -->
 
 ---
 
-## Qué significa reproducirlo
+<!-- _class: seccion -->
 
-- El simulador arranca en equilibrio: **`EQUIL`** más una curva de presión capilar dan la Sw de cada celda
-- Comparamos esa Sw con la del perfil, celda por celda
-- El número es la raíz del error cuadrático medio (**RMSE**, root mean square error)
+## Lectura rápida de perfiles
 
-Es el trabajo de un programa de saturación-altura, hecho con el equilibrio del propio simulador.
+Bloque 2 de 9 · **20 min**
 
 <!--
-2 min · acumulado 0:19
-La ventaja de hacerlo en el simulador: lo que se ajusta acá es exactamente
-lo que después inicializa el modelo de campo. No hay traducción entre dos
-programas.
+0 min · acumulado 0:25
+Arranca 0:25, termina 0:45.
+-->
+
+---
+
+<!-- _class: figura -->
+
+## F-12: la arena, la porosidad y el agua
+
+![Lectura rápida de 15/9-F-12: rayos gamma con arena neta, resistividad, densidad y neutrón, porosidad, saturación de agua y volumen de fluidos](img/quicklook-f12.png)
+
+De izquierda a derecha: dónde hay arena, qué dice la resistividad, cuánta porosidad y cuánta agua.
+
+<!--
+5 min · acumulado 0:30
+No hay potencial espontáneo (SP): los pozos se perforaron con lodo base
+aceite. La arena se marca con rayos gamma y volumen de arcilla.
+Leer las pistas en orden. La última es la que importa para hoy: BVW (bulk
+volume water) es porosidad por saturación, el agua por unidad de roca.
+El celeste claro es agua que la roca retiene; el azul oscuro, agua que
+puede moverse.
+-->
+
+---
+
+<!-- _class: figura -->
+
+## F-4: el agua móvil aparece en la base
+
+![Lectura rápida de 15/9-F-4: la resistividad cae y el agua móvil crece hacia la base del Hugin](img/quicklook-f4.png)
+
+La resistividad cae desde 3,005 m y por debajo de 3,015 m la Sw media es 0.51.
+
+<!--
+5 min · acumulado 0:35
+En F-4 la zona de transición está dentro del pozo: debajo de 3,015 m hay
+agua móvil. En 19 A, 70 m más abajo, casi no la hay. Esa diferencia es la
+pregunta del bloque 8.
+Dato de procedencia: la permeabilidad de F-12 en el archivo de 2007 es
+unas 40 veces menor que la revisión de 2009 del operador. Usamos la
+revisión. La función J depende de la raíz de k.
+-->
+
+---
+
+<!-- _class: figura -->
+
+## ¿Cuánta del agua es irreducible?
+
+![Gráfico de Buckles de los cinco pozos de ajuste y saturación de agua contra permeabilidad con la línea de agua irreducible del operador](img/buckles.png)
+
+Agua irreducible (Swirr): la que la roca retiene por capilaridad a cualquier altura. Lo que la supera es agua móvil.
+
+<!--
+6 min · acumulado 0:41
+Izquierda, Buckles: los puntos sobre una línea de BVW constante tienen
+solo agua irreducible. F-12, 19 SR y buena parte de 19 A y F-4 caen entre
+0.02 y 0.04. 19 BT2 queda aparte: es agua.
+Derecha: Sw contra permeabilidad con la línea de Swirr del operador. Con
+esa línea, hay agua móvil en el 17% de la arena de 19 A, el 27% de F-12,
+el 37% de F-4 y el 99% de 19 BT2.
+Mucho punto queda por debajo de la línea: el Swirr del operador es alto
+para estos pozos. Vuelve en el bloque 6.
 -->
 
 ---
 
 <!-- _class: cita -->
 
-## Lo que este conjunto **no nos da** para el ajuste: presiones y laboratorio
+## La función J tiene que explicar **el agua móvil**; el resto lo fija la roca
 
 <!--
-1 min · acumulado 0:20
-En los archivos que usamos no hay presiones de formación, presión capilar
-de laboratorio ni informe de fluidos (PVT: presión, volumen y temperatura).
-Todo lo de hoy se ajusta contra perfiles y nada más.
-Cierre del bloque 1.
+4 min · acumulado 0:45
+La idea que ordena el ajuste. El agua irreducible depende de la calidad
+de roca y no de la altura. Lo que cambia con la altura sobre el contacto
+es el agua móvil, y eso es lo que describe una función J.
+Cierre del bloque 2.
+-->
+
+---
+
+<!-- _class: seccion -->
+
+## PVT y presiones
+
+Bloque 3 de 9 · **15 min**
+
+<!--
+0 min · acumulado 0:45
+Arranca 0:45, termina 1:00.
+-->
+
+---
+
+## Lo que dicen los fluidos
+
+| Dato | Valor | Fuente |
+| --- | --- | --- |
+| Densidad del petróleo en reservorio | 720 kg/m³ | Ensayo de 19 A (1997) y PVT de F-4 (2008) |
+| Densidad del agua de formación | 1,065 kg/m³ | Informe petrofísico del operador (2006) |
+| Presión de burbuja | 213 a 236 bar | PVT de F-4 y ensayo de 19 A |
+| Presión inicial | 336.5 ± 0.5 bar | Ensayo de 19 A |
+| Temperatura | 107 a 112 °C | Los dos |
+
+La diferencia de densidades, 345 kg/m³, da **0.034 bar de presión capilar por metro** sobre el nivel de agua libre.
+
+<!--
+4 min · acumulado 0:49
+PVT: presión, volumen y temperatura, el estudio de fluidos. El petróleo
+está subsaturado: 100 bar por encima de la burbuja. No hay gas libre y el
+modelo es de dos fases.
+Estas dos densidades son las que usó el operador para su modelo de
+saturación-altura y las que quedan fijas en nuestro deck.
+-->
+
+---
+
+<!-- _class: figura -->
+
+## Tres fuentes de presión, tres contactos
+
+![Presión de formación contra profundidad: 16 puntos en agua de 19 BT2, el ensayo de 19 A y la muestra de F-4, con las líneas de agua y petróleo](img/presiones.png)
+
+El cruce de las dos líneas da 3,196 ± 14 m. El informe del operador dice 3,120 ± 15 m; su modelo de campo usa 3,200 m.
+
+<!--
+6 min · acumulado 0:55
+La línea de agua sale de 16 puntos del probador de formación de 19 BT2:
+0.1053 bar por metro, 1,074 kg/m³. La de petróleo pasa por el ensayo de
+19 A con 720 kg/m³.
+Medio bar de error en el ensayo mueve el cruce 14 m. Y 19 BT2 puede estar
+en otro bloque.
+El punto de F-4 queda 6.7 bar por encima de la línea de petróleo: o la
+presión de 19 A está referida a otra profundidad, o son bloques
+distintos. No hay presiones en F-12.
+-->
+
+---
+
+## Lo que se sabe del contacto
+
+- **Perfiles**: petróleo hasta 3,101 m (19 A), agua desde 3,149 m (19 BT2). Nadie lo vio
+- **Informe del operador, 2006**: nivel de agua libre (**FWL**, free water level) en 3,120 ± 15 m, por modelado con función J
+- **Presiones**: 3,196 ± 14 m
+- **Modelo de campo, 2016**: 12 regiones de equilibrio; la principal en 3,200 m, otras en 3,025 y 2,910 m
+
+Nuestro ajuste deja el FWL libre entre **3,100 y 3,220 m**.
+
+<!--
+5 min · acumulado 1:00
+Volver a las respuestas del bloque 1.
+El rango de 120 m es lo que dejan los datos. Dentro de ese rango, el
+contacto es un parámetro más del ajuste.
+Cierre del bloque 3.
 -->
 
 ---
@@ -204,11 +385,11 @@ Cierre del bloque 1.
 
 ## Instalación
 
-Bloque 2 de 7 · **25 min**
+Bloque 4 de 9 · **20 min**
 
 <!--
-0 min · acumulado 0:20
-Arranca 0:20, termina 0:45.
+0 min · acumulado 1:00
+Arranca 1:00, termina 1:20.
 -->
 
 ---
@@ -223,9 +404,9 @@ Arranca 0:20, termina 0:45.
 OPM Flow es un simulador de petróleo negro de código abierto. Lee el mismo formato de deck que los comerciales.
 
 <!--
-5 min · acumulado 0:25
-OPM: Open Porous Media. Lo mantienen Equinor, SINTEF y NORCE entre otros.
-Para quien usa Eclipse: las keywords son las mismas, con algunas sin soporte.
+4 min · acumulado 1:04
+OPM: Open Porous Media. Para quien usa Eclipse: las keywords son las
+mismas, con algunas sin soporte.
 -->
 
 ---
@@ -241,9 +422,9 @@ Para quien usa Eclipse: las keywords son las mismas, con algunas sin soporte.
 La imagen del simulador y los datos quedan **fijados por su hash**.
 
 <!--
-12 min · acumulado 0:37
-Ventana B. instalar.sh: leer las tres etapas en voz alta. La imagen ya está
-bajada; decir que la primera vez pesa 1.2 GB.
+9 min · acumulado 1:13
+Ventana B. instalar.sh: leer las tres etapas en voz alta. La imagen ya
+está bajada; decir que la primera vez pesa 1.2 GB.
 verificar.sh: Flow responde, SPE1 corre en cerca de un segundo, el caso
 base da su puntaje.
 Después, uv run evaluar.py a mano: mostrar el bloque de números y abrir
@@ -260,25 +441,80 @@ la figura en la ventana D.
 - **`.claude/settings.json`**: puede correr `evaluar.py` y usar git local; no puede salir a internet, borrar ni tocar los datos
 
 <!--
-8 min · acumulado 0:45
+7 min · acumulado 1:20
 Ventana B: ejercicio/preparar.sh, y después abrir settings.json. Leer la
 lista de permisos y la de prohibiciones.
-La idea para llevarse: lo que el agente no debe hacer se escribe como
-permiso, y lo que debe saber se escribe en CLAUDE.md.
-Cierre del bloque 2.
+Lo que el agente no debe hacer se escribe como permiso, y lo que debe
+saber se escribe en CLAUDE.md.
+Cierre del bloque 4. Pausa de 10 minutos.
 -->
 
 ---
 
 <!-- _class: seccion -->
 
-## El agente lee el deck
+## Repaso de J y el deck
 
-Bloque 3 de 7 · **35 min**
+Bloque 5 de 9 · **25 min**
 
 <!--
-0 min · acumulado 0:45
-Arranca 0:45, termina 1:20.
+0 min · acumulado 1:30
+Arranca 1:30, termina 1:55.
+-->
+
+---
+
+## La función J, en tres líneas
+
+- En equilibrio, la presión capilar crece con la altura **H** sobre el nivel de agua libre: Pc = Δρ · g · H
+- Leverett la normaliza por la calidad de roca: **J = Pc · √(k/φ) / (σ · cosθ)**
+- Si la roca es de una misma familia, J contra Sw es **una sola curva**
+
+El operador usó una potencia: Swn = a · J^−b, con Sw = Swn · (1 − Swirr) + Swirr.
+
+<!--
+4 min · acumulado 1:34
+Swn: saturación normalizada entre el agua irreducible y uno.
+Lo que supone: una sola familia de roca, mojabilidad uniforme, drenaje
+primario, y que k y φ del perfil representan la garganta poral. Cuando
+alguno falla, la nube de puntos se abre.
+σ·cosθ en reservorio no se mide: es un parámetro de escala. Lo dejamos
+fijo en el valor del operador, 2 mN/m, para comparar con su informe.
+-->
+
+---
+
+<!-- _class: figura -->
+
+## Qué compra la función J
+
+![Tres perfiles de saturación contra altura para rocas de 10, 100 y 1,000 mD, y las mismas tres rocas colapsadas en una sola curva de J](img/repaso-j.png)
+
+Tres rocas dan tres perfiles de saturación y una sola curva de J: se ajusta una curva en lugar de una por roca.
+
+<!--
+4 min · acumulado 1:38
+Izquierda: a igual altura, la roca de 10 mD tiene mucha más agua que la
+de 1,000 mD. Derecha: las tres caen sobre la misma J.
+El ajuste de hoy son los parámetros de esa curva, más el contacto.
+-->
+
+---
+
+## El modelo y el deck de campo
+
+- **Nuestro modelo**: una celda por metro de pozo, con su profundidad y su roca; `MULTX` en cero, cada celda se equilibra sola
+- **El deck de campo de Equinor**: 12 regiones de `EQUIL` y **presión capilar cero**. El agua inicial es un arreglo `SWL` por celda
+- Sin presión capilar no hay zona de transición: el agua es la irreducible hasta el contacto
+
+Con una función J, la saturación sale de la roca y la altura, y predice donde no hay pozo.
+
+<!--
+4 min · acumulado 1:42
+Lo verifiqué en el deck público: la columna de presión capilar de sus
+tablas de saturación es cero y no usa JFUNC ni SWATINIT.
+Las dos formas son legítimas. La de campo honra el volumen del
+geomodelo; la de J explica por qué el agua está donde está.
 -->
 
 ---
@@ -292,262 +528,59 @@ Arranca 0:45, termina 1:20.
 Correr el caso base, **explicar el deck**, leer la figura y listar los supuestos. Sin cambiar nada.
 
 <!--
-10 min · acumulado 0:55
+6 min · acumulado 1:48
 Ventana C. Aceptar el diálogo de confianza leyéndolo en voz alta.
-Narrar qué herramienta llama en cada vuelta: lee archivos, corre
-evaluar.py, abre SW.DATA, mira perfil.png.
+Narrar qué herramienta llama: lee archivos, corre evaluar.py con
+--fragmento, abre SW.DATA, mira perfil.png.
+El caso base da rmse_ajuste 0.142 y control 0.205.
 -->
 
 ---
 
-## El modelo: una fila de celdas
+<style scoped>pre { font-size: 15.5px; line-height: 1.32; } h2 { margin-bottom: 10px; }</style>
 
-- Una celda por metro de pozo, cada una con **su profundidad y su roca**
-- `DIMENS` con una sola fila; `TOPS` distinto en cada celda
-- `MULTX` en cero: no hay flujo, cada celda se equilibra sola
-- `SWOF` da la curva; `EQUIL` da el nivel de agua libre (**FWL**, free water level)
+## Dónde vive el ajuste en el deck
 
-El mismo armado sirve para el pozo desviado y para el horizontal.
-
-<!--
-10 min · acumulado 1:05
-Ventana E con SW.DATA al lado de la explicación del agente. Si no nombró
-alguna de estas keywords, preguntársela en vivo.
-Aclarar que es el cálculo de inicialización de un modelo, aislado: acá
-nada fluye.
--->
-
----
-
-<!-- _class: figura -->
-
-## Caso base: una curva y un contacto
-
-![Caso A: saturación del perfil y simulada en F-12 y en F-11 B](img/caso-a.png)
-
-Curva única ajustada: RMSE 0.163 en F-12, y 0.497 en el pozo que el caso no vio.
+```
+-- ===== AJUSTE_GRID.INC
+JFUNC
+ WATER 2 1* 0.5 0.5 XY /          -- tensión, exponentes de φ y de k
+-- ===== AJUSTE_PROPS.INC
+SWOF
+--   Sw        krw      kro      J
+ 0.064510 0.000000 1.000000 100000
+   ...  (27 filas más)
+ 0.900894 0.714661 0.011223 0.462126
+ 1.000000 1.000000 0.000000 0.298 /
+-- ===== AJUSTE_SWL.INC
+-- Sin escalado de extremos: el agua irreducible es la de la tabla.
+-- ===== AJUSTE_SOLUTION.INC
+EQUIL
+ 3150.000 330 3150.000 0 1* 1* 1* 1* 0 /      -- nivel de agua libre
+```
 
 <!--
-8 min · acumulado 1:13
-La figura es la del caso A ya ajustado; el caso base sin ajustar da 0.177.
-Dentro del Hugin 0.124, debajo 0.185. Una sola curva no puede seguir los
-picos de Sw de las capas de mala calidad.
-En F-11 B el modelo pone agua donde el perfil muestra petróleo: vuelve en
-el bloque 5.
--->
-
----
-
-<!-- _class: cita -->
-
-## El agente todavía **no cambió nada**: leyó, corrió y explicó
-
-<!--
-7 min · acumulado 1:20
-Antes de la frase, los supuestos que listó el agente. Tienen que salir las
-densidades de los fluidos y el contacto. Pregunta a la sala: ¿qué otro
-supuesto ven ustedes?
-Cierre del bloque 3. Pausa de 10 minutos.
--->
-
----
-
-<!-- _class: seccion -->
-
-## Alternativas de ajuste
-
-Bloque 4 de 7 · **45 min**
-
-<!--
-0 min · acumulado 1:30
-Arranca 1:30, termina 2:15. Pegar PEDIDO-2.md apenas vuelven: el agente
-necesita entre 10 y 15 minutos.
--->
-
----
-
-<!-- _class: acentos -->
-
-## Cuatro formas de decir dónde está el agua
-
-- **Función J de Leverett** (`JFUNC`): una curva adimensional, escalada en cada celda por √(k/φ)
-- **Tipos de roca** (`SATNUM`): tres clases de calidad, una curva para cada una
-- **Escalado de extremos** (`ENDSCALE`, `SWL`): una forma de curva, agua connata por celda
-- **`SWATINIT`**: el perfil impuesto celda a celda; el simulador reescala la presión capilar
-
-<!--
-18 min · acumulado 1:48
-Mientras el agente trabaja. Una vuelta por cada alternativa con la keyword
-que usa. Pedir a la sala que apueste cuál va a ajustar mejor y cuál
-llevarían a un modelo de campo.
--->
-
----
-
-## Lo que dio
-
-| Caso | RMSE en F-12 | En el Hugin | RMSE en F-11 B | Parámetros |
-| --- | ---: | ---: | ---: | ---: |
-| A: curva única | 0.163 | 0.124 | 0.497 | 4 |
-| B: función J | 0.159 | 0.110 | 0.484 | 4 |
-| C: tres tipos de roca | 0.163 | 0.130 | 0.473 | 12 |
-| D: agua connata por celda | 0.158 | 0.106 | 0.490 | 5 |
-| E: SWATINIT | 0.000 | 0.000 | 0.486 | 383 |
-
-<!--
-7 min · acumulado 1:55
-Esta es la tabla de referencia, ajustada con un optimizador clásico.
-Compararla con comparacion.md, la que acaba de escribir el agente: los
-números van a diferir en el tercer decimal.
--->
-
----
-
-<!-- _class: figura -->
-
-## La función J sigue las capas
-
-![Caso B: función J de Leverett, saturación del perfil y simulada](img/caso-b.png)
-
-Con los mismos cuatro parámetros, el error dentro del Hugin baja de 0.124 a 0.110.
-
-<!--
-6 min · acumulado 2:01
-Comparar con la figura del caso A: ahora el simulado tiene los picos.
-De A a D la diferencia total está en el tercer decimal: debajo del Hugin
-nadie mejora.
-Tres tipos de roca con 12 parámetros no superan a la función J con 4.
--->
-
----
-
-<!-- _class: figura -->
-
-## SWATINIT: cero en el pozo, nada fuera de él
-
-![Caso E: SWATINIT con el perfil celda a celda](img/caso-e.png)
-
-383 parámetros. En F-11 B, donde no hay perfil que imponer, el error es 0.486.
-
-<!--
-6 min · acumulado 2:07
-Dos cosas. Una: no predice. Dos: Flow ignora SWATINIT debajo del nivel de
-agua libre y pone Sw = 1, así que para honrar el perfil hubo que bajar el
-contacto a 3,200 m. El contacto dejó de ser un dato del modelo.
+5 min · acumulado 1:53
+Es la salida de evaluar.py --fragmento para el caso J1, sin los
+comentarios. El deck está
+partido: SW.DATA es el esqueleto, MODELO_*.INC la grilla y los fluidos,
+que no cambian, y estos archivos lo que decide un caso.
+Con JFUNC, la cuarta columna de SWOF deja de ser presión capilar en bar y
+pasa a ser J.
+Cuatro parámetros a la vista: la J de entrada (0.298), la forma de la
+tabla (dos números) y el contacto.
 -->
 
 ---
 
 <!-- _class: cita -->
 
-## Con cuatro parámetros ya se llega **al piso del perfil**
+## Un caso nuevo es un **diff de tres archivos chicos**
 
 <!--
-8 min · acumulado 2:15
-Qué eligió el agente para un modelo de campo, y si la sala está de acuerdo.
-El piso: la variabilidad metro a metro del perfil que ninguna función de
-la calidad de roca explica.
-Cierre del bloque 4.
--->
-
----
-
-<!-- _class: seccion -->
-
-## El contacto
-
-Bloque 5 de 7 · **30 min**
-
-<!--
-0 min · acumulado 2:15
-Arranca 2:15, termina 2:45. Pegar PEDIDO-3.md al empezar.
--->
-
----
-
-## Dos pozos que no cuentan lo mismo
-
-- En **F-12** hay agua desde la base del Hugin, cerca de 2,910 m
-- En **F-11 B** hay petróleo por debajo de 3,100 m
-
-Tres explicaciones, cada una un caso ajustado con los dos pozos a la vista:
-
-1. F0: un contacto plano
-2. F1: dos sistemas, el Hugin por un lado y Sleipner con Skagerrak debajo (`EQLNUM`)
-3. F2: un contacto inclinado, en escalones de regiones de equilibrio
-
-<!--
-12 min · acumulado 2:27
-Volver a las respuestas del bloque 1 sobre el contacto.
-Mientras el agente corre: la trayectoria de F-11 B entra al Hugin a 2,829 m
-y sigue hasta 3,182 m.
--->
-
----
-
-<!-- _class: figura -->
-
-## Dos sistemas
-
-![Caso F1: un contacto para el Hugin y otro para Sleipner y Skagerrak](img/caso-f1.png)
-
-Contactos en 3,156 m para el Hugin y 2,937 m para lo que está debajo. RMSE 0.220 y 0.230.
-
-<!--
-3 min · acumulado 2:30
-Mirar F-12: con una sola función J para los dos pozos, el Hugin de F-12
-empeora respecto del caso B. La curva no se traslada de un pozo al otro.
--->
-
----
-
-<!-- _class: figura -->
-
-## Un contacto inclinado
-
-![Caso F2: contacto inclinado desde F-12 hacia F-11 B](img/caso-f2.png)
-
-105 m por kilómetro. RMSE 0.261 y 0.232: en F-11 B, casi lo mismo que dos sistemas.
-
-<!--
-3 min · acumulado 2:33
-El contacto plano único (F0) da 0.234 y 0.332.
-Los perfiles no separan F1 de F2.
--->
-
----
-
-## Lo que los perfiles no deciden
-
-- **105 m por kilómetro** pide unos 3 bar por kilómetro de gradiente en el acuífero
-- F-11 B se perfiló en 2013: parte de su agua puede ser de barrido
-- Una sola función J no ajusta bien los dos pozos a la vez
-
-El dato que lo decide son las **presiones de formación** en los dos pozos, y no están.
-
-<!--
-10 min · acumulado 2:43
-Preguntar si alguien vio una inclinación así en un campo de este tamaño.
-La cuenta: la inclinación por la diferencia de densidades sobre la densidad
-del agua da el gradiente de carga hidráulica; 0.105 por 290 sobre 1,040 es
-0.029, unos 3 bar por kilómetro.
-El agente ajusta las tres hipótesis igual de bien. Elegir entre ellas es
-trabajo de ingeniería.
--->
-
----
-
-<!-- _class: panel -->
-
-## Antes de la pausa
-
-El texto de `PEDIDO-4.md`
-
-El agente sigue **solo**: 15 experimentos o 20 minutos.
-
-<!--
-2 min · acumulado 2:45
-Ventana C. Pegar el pedido y dejarlo corriendo. Pausa de 10 minutos.
+2 min · acumulado 1:55
+Lo que hace revisable el trabajo del agente: cada cambio de caso toca
+solo AJUSTE_*.INC. Lo vamos a ver en el bloque que sigue.
 Cierre del bloque 5.
 -->
 
@@ -555,31 +588,196 @@ Cierre del bloque 5.
 
 <!-- _class: seccion -->
 
-## Loop autónomo
+## Ajuste de J
 
-Bloque 6 de 7 · **30 min**
+Bloque 6 de 9 · **40 min**
 
 <!--
-0 min · acumulado 2:55
-Arranca 2:55, termina 3:25.
+0 min · acumulado 1:55
+Arranca 1:55, termina 2:35. Pegar PEDIDO-2.md al empezar: el agente
+necesita unos 12 minutos.
 -->
 
 ---
 
-## Tres piezas
+<!-- _class: acentos -->
 
-- **Un archivo fijo**: `evaluar.py` y la métrica. El agente no los toca
-- **Un archivo editable**: `caso.py`
-- **Las reglas, escritas por una persona**: `program.md`
+## Tres casos y nada más
 
-Cada experimento es un commit. Si mejora, queda; si no, se deshace. Todo se anota en `results.tsv`.
+- **J1**: una función J de Leverett y un contacto. Cuatro parámetros
+- **OP**: el modelo del operador tal como está en su informe de 2006, **sin ajustar**
+- **J2**: la forma del operador, con Swirr según permeabilidad, reajustada a estos pozos. Cinco parámetros
+
+El agente lee el informe, arma los tres y muestra el diff entre uno y otro.
 
 <!--
-5 min · acumulado 3:00
+12 min · acumulado 2:07
+Mientras el agente trabaja. Pedir a la sala que apueste: ¿el modelo de
+2006 sin tocar ajusta mejor o peor que una J nueva de cuatro parámetros?
+Si el agente encuentra que la tabla 11 y las figuras del informe no
+coinciden, mostrarlo: es verdad. La tabla da Swirr = 0.45 − 0.105 log k
+para Volve; la figura 20.b rotula 0.412 − 0.088 log k.
+-->
+
+---
+
+<!-- _class: figura -->
+
+## El modelo del operador, sin tocar
+
+![Caso OP: perfil y simulado en los seis pozos y nube de J contra Sw normalizada](img/caso-op.png)
+
+RMSE de ajuste 0.122 sin ajustar un solo número. En el control pone más agua que la que hay: sesgo +0.066.
+
+<!--
+6 min · acumulado 2:13
+Leer la figura: seis pozos en una escala de profundidad, el FWL como
+línea de trazos, y a la derecha la nube de J de cada pozo con la curva.
+Un modelo de 2006, hecho con pozos de Sleipner Øst y dos de Volve,
+reproduce pozos que no existían cuando se escribió.
+Su debilidad está en el control: da más agua inicial que la que F-11 B
+tiene después de cinco años de inyección. El Swirr es alto.
+-->
+
+---
+
+<!-- _class: figura -->
+
+## Una sola J, cuatro parámetros
+
+![Caso J1: perfil y simulado en los seis pozos y nube de J contra Sw](img/caso-j1.png)
+
+RMSE de ajuste 0.112 y control 0.122, con el contacto en 3,150 m y sin sesgo en el control.
+
+<!--
+6 min · acumulado 2:19
+El contacto queda en 3,150 m: entre el petróleo de 19 A y el agua de
+19 BT2, que es donde los datos lo acotan.
+Mirar F-11 B: la transición que el modelo predice entre 3,100 y 3,170 m
+está en el perfil de 2013. El caso nunca vio ese pozo.
+El peor pozo es F-4: 0.147. El modelo no pone agua en su base.
+-->
+
+---
+
+## Lo que dio
+
+| Caso | Ajuste | F-4 | Control | Sesgo del control | FWL | Parámetros |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Base, sin ajustar | 0.142 | 0.201 | 0.205 | −0.038 | 3,120 m | 4 |
+| J1: una función J | 0.112 | 0.147 | 0.122 | −0.003 | 3,150 m | 4 |
+| OP: operador, 2006 | 0.122 | 0.151 | 0.197 | +0.066 | 3,120 m | 0 |
+| J2: forma del operador | 0.114 | 0.149 | 0.142 | +0.003 | 3,151 m | 5 |
+
+Error en volumen poral de hidrocarburo: de −1.0% a −2.2% en los tres casos ajustados o publicados.
+
+<!--
+6 min · acumulado 2:25
+Tabla de referencia, ajustada con un optimizador clásico. Compararla con
+comparacion.md, la que acaba de escribir el agente.
+Tres lecturas. Una: el quinto parámetro de J2 no compra nada; J2 puede
+colapsar en J1 y da 0.112. Dos: los dos ajustes llevan el contacto a
+3,150 m sin que nadie se lo pida. Tres: F-4 queda mal en todos.
+-->
+
+---
+
+<style scoped>pre { font-size: 15.5px; line-height: 1.32; } h2 { margin-bottom: 10px; }</style>
+
+## De J1 al operador, en el deck
+
+```diff
+ SWOF
+- 0.064510 0.000000 1.000000 100000
+- 0.900894 0.714661 0.011223 0.462126
+- 1.000000 1.000000 0.000000 0.298 /
++ 0.001000 0.000000 1.000000 1028.89
++ 0.788046 0.488995 0.045014 2.54222
++ 1.000000 1.000000 0.000000 2.05164 /
+--- AJUSTE_SWL.INC
+- -- Sin escalado de extremos: el agua irreducible es la de la tabla.
++ SWL   -- 1173 valores, de 0.020 a 0.765
+--- AJUSTE_SOLUTION.INC
+- 3150.000 330 3150.000 0 1* 1* 1* 1* 0 /
++ 3120.000 330 3120.000 0 1* 1* 1* 1* 0 /
+```
+
+<!--
+5 min · acumulado 2:30
+Es diff corridas/j1/fragmento.txt corridas/op/fragmento.txt, recortado.
+Tres cambios y se leen: la tabla pasa a ir de 0 a 1 porque el agua
+irreducible sale de SWL celda por celda; la J de entrada sube de 0.3 a 2;
+el contacto sube 30 m.
+Esto es lo que un ingeniero revisa antes de aceptar un caso.
+-->
+
+---
+
+<!-- _class: cita -->
+
+## Con **cuatro parámetros** alcanza, y el control lo confirma
+
+<!--
+5 min · acumulado 2:35
+Qué eligió el agente para un modelo de campo y si la sala está de acuerdo.
+J1 es el caso parsimonioso: menos parámetros, mejor control. Su punto
+débil es que casi no tiene agua irreducible (0.02): toda el agua la
+explica la altura. Un petrofísico puede preferir J2 por eso.
+Antes de la pausa: pegar PEDIDO-3.md y dejar el loop corriendo.
+Cierre del bloque 6. Pausa de 10 minutos.
+-->
+
+---
+
+<!-- _class: seccion -->
+
+## Loop con hipótesis a la vista
+
+Bloque 7 de 9 · **30 min**
+
+<!--
+0 min · acumulado 2:45
+Arranca 2:45, termina 3:15.
+-->
+
+---
+
+<!-- _class: figura -->
+
+## El flujo de autoresearch
+
+![Diagrama del ciclo: una persona escribe program.md; el agente escribe una hipótesis, edita caso.py y hace commit; evaluar.py corre Flow y la métrica; el agente lee el resultado, decide si queda o se descarta, y todo se ve en bitacora.html](img/flujo-loop.svg)
+
+Una persona escribe las reglas; el agente solo edita un archivo; la métrica y los datos no se tocan.
+
+<!--
+4 min · acumulado 2:49
 Es una adaptación de autoresearch, de Andrej Karpathy, pensado para
-entrenar redes. Lo que cambia acá: un tope de experimentos, un máximo de
-8 parámetros, SWATINIT prohibido y el pozo de validación oculto.
-Abrir program.md y leer el criterio de simplicidad.
+entrenar redes: un archivo fijo con la métrica, un archivo que el agente
+edita y un texto con las reglas.
+Cada experimento es un commit. Si mejora y es simple, queda; si no, git
+reset. Nada se pierde: la bitácora guarda también lo descartado.
+-->
+
+---
+
+## Qué le cambiamos al original
+
+| En autoresearch | Acá |
+| --- | --- |
+| Corre sin fin | 12 experimentos o 20 minutos |
+| Cualquier cambio vale | Hasta 6 parámetros y FWL entre 3,100 y 3,220 m |
+| Se anota qué se probó | La hipótesis y la predicción van **en el commit, antes de correr** |
+| Una métrica | La de ajuste decide; la de control se anota y no decide |
+| Un registro en texto | `bitacora.html`: cada experimento con su diff y su figura |
+
+<!--
+3 min · acumulado 2:52
+Abrir program.md y leer el formato del commit: hipótesis, mecanismo y
+predicción. Como el commit es anterior a la corrida, nadie puede escribir
+la hipótesis mirando el resultado.
+El criterio de simplicidad: una mejora que agrega parámetros se conserva
+solo si baja el error 0.004 por parámetro.
 -->
 
 ---
@@ -588,17 +786,117 @@ Abrir program.md y leer el criterio de simplicidad.
 
 ## Qué hizo mientras no mirábamos
 
-`results.tsv` · `git log --oneline` · `informe.md`
+`bitacora.html` · `results.tsv` · `informe.md`
 
-Buscá una idea que **descartó** y por qué.
+Buscá una hipótesis que **no se cumplió** y qué aprendió de eso.
 
 <!--
-13 min · acumulado 3:13
-Ventana C. results.tsv fila por fila; git log muestra solo lo conservado.
-Leer informe.md completo: caso final, intervalos mal ajustados, qué
-revisaría un ingeniero.
+5 min · acumulado 2:57
+Ventana E, bitacora.html. Arriba, el reproductor y la curva del error de
+ajuste y la del control por experimento: marca llena, conservado; hueca,
+descartado. Abajo, cada experimento con su hipótesis, el mecanismo, la
+predicción, el resultado, la lectura, el diff del deck y la figura.
 Si no terminó: Esc y pedirle el informe con lo que tenga. Plan B en
 docente/plan-b/ensayo/.
+-->
+
+---
+
+<!-- _class: figura -->
+
+## El loop, cuadro a cuadro
+
+![Animación del loop: en cada cuadro, la hipótesis del experimento, los perfiles de los seis pozos, la nube de J con la curva del caso y el error de ajuste y de control](img/loop.gif)
+
+Un cuadro por experimento: la hipótesis arriba, los perfiles y la función J abajo, el error a la derecha.
+
+<!--
+3 min · acumulado 3:00
+Es el ensayo del 5 de octubre de 2026: 12 experimentos en 9 minutos, 3
+conservados. El GIF avanza solo cada 4 segundos; en bitacora.html está el
+mismo reproductor con pausa y flechas.
+Mirar tres cosas mientras corre: cómo se mueve la curva negra sobre la
+nube de J, qué pozo cambia de un cuadro al otro, y que el error de
+ajuste casi no baja después del segundo experimento.
+-->
+
+---
+
+<!-- HIPOTESIS:INICIO -->
+
+<style scoped>table { font-size: 19px; line-height: 1.3; width: 100%; } td { padding: 8px 14px 8px 0; } td:nth-child(2) { font-family: inherit; font-size: 19px; color: inherit; white-space: normal; } h2 { margin-bottom: 8px; max-width: none; }</style>
+
+## Las hipótesis que surgieron (1 de 3)
+
+| N.º | Hipótesis | Ajuste | Control | Parámetros | Veredicto |
+| ---: | --- | ---: | ---: | ---: | --- |
+| 1 | base | 0.142 | 0.205 | 4 | Queda |
+| 2 | La curva J no tiene meseta de agua irreducible: Sw = a·J^-b (a = 0.68, b = 0.22), con el FWL del operador en 3,120 m | 0.112 | 0.176 | 3 | Queda |
+| 3 | El nivel de agua libre está en 3,150 m, donde empieza el agua de 19 BT2, y no en los 3,120 m del operador (a = 0.83, b = 0.25) | 0.112 | 0.120 | 3 | Se descarta |
+| 4 | El agua irreducible depende de la roca, como en el modelo del operador: Swirr = 0.156 − 0.038·log10(k), y sobre ella Swn = 0.48·J^-0.215 | 0.116 | 0.182 | 5 | Se descarta |
+
+<!--
+2 min · acumulado 3:02
+Tabla del ensayo, tal como la escribió el agente: cada hipótesis es la
+primera línea de un commit anterior a la corrida.
+Leer dos o tres en voz alta: una que quedó, una que se descartó por
+el criterio de simplicidad y una que empeoró.
+-->
+
+---
+
+<style scoped>table { font-size: 19px; line-height: 1.3; width: 100%; } td { padding: 8px 14px 8px 0; } td:nth-child(2) { font-family: inherit; font-size: 19px; color: inherit; white-space: normal; } h2 { margin-bottom: 8px; max-width: none; }</style>
+
+## Las hipótesis que surgieron (2 de 3)
+
+| N.º | Hipótesis | Ajuste | Control | Parámetros | Veredicto |
+| ---: | --- | ---: | ---: | ---: | --- |
+| 5 | La curva no necesita coeficiente: Sw = J^-b con b = 0.284, que llega a Sw = 1 en J = 1, y el FWL en 3,150 m, el tope del agua de 19 BT2 | 0.112 | 0.121 | 2 | Queda |
+| 6 | La saturación depende solo de la altura sobre el contacto: una curva de Pc en bar igual para toda la roca, sin JFUNC (Sw = (Pc/0.09)^-0.38) | 0.124 | 0.130 | 3 | Se descarta |
+| 7 | Hay dos tipos de roca con curva J distinta: por debajo de 28 mD el exponente es 0.339 y por encima 0.275 (dos regiones SATNUM) | 0.110 | 0.118 | 4 | Se descarta |
+| 8 | El agua irreducible es agua ligada a la arcilla: Swirr = 0.20·VSH por celda (SWL), y sobre ella Swn = J^-0.316 | 0.113 | 0.128 | 3 | Se descarta |
+
+<!--
+2 min · acumulado 3:04
+Preguntar antes de mostrar el veredicto: ¿esta la conservarían?
+-->
+
+---
+
+<style scoped>table { font-size: 19px; line-height: 1.3; width: 100%; } td { padding: 8px 14px 8px 0; } td:nth-child(2) { font-family: inherit; font-size: 19px; color: inherit; white-space: normal; } h2 { margin-bottom: 8px; max-width: none; }</style>
+
+## Las hipótesis que surgieron (3 de 3)
+
+| N.º | Hipótesis | Ajuste | Control | Parámetros | Veredicto |
+| ---: | --- | ---: | ---: | ---: | --- |
+| 9 | El nivel de agua libre es el del informe del operador, 3,120 m, con la misma curva Sw = J^-b (b = 0.30) | 0.115 | 0.177 | 2 | Se descarta |
+| 10 | La permeabilidad pesa menos que en Leverett: Pc = J·σ·φ^0.5/k^0.41 en JFUNC, con Sw = J^-0.309 | 0.112 | 0.118 | 3 | Se descarta |
+| 11 | La arena arcillosa (VSH mayor que 0.215) tiene su propia curva, con exponente 0.259 contra 0.303 de la arena limpia (dos regiones SATNUM) | 0.110 | 0.129 | 4 | Se descarta |
+| 12 | La curva tiene un umbral de entrada real y forma de hipérbola de Thomeer: Sw = 1 hasta J = 2.1 y después 1 − exp(−0.48/log10(J/2.1)) | 0.113 | 0.125 | 3 | Se descarta |
+
+<!--
+2 min · acumulado 3:06
+Preguntar antes de mostrar el veredicto: ¿esta la conservarían?
+-->
+
+<!-- HIPOTESIS:FIN -->
+
+---
+
+## Cómo leer esas hipótesis
+
+- **De forma o de valor**: cambiar cómo depende Sw de la roca es una hipótesis; mover un número 5% es un barrido
+- **Predicción cumplida o fallida**: una que falla enseña más que una que acierta por poco
+- **Ajuste contra control**: si el ajuste baja y el control sube, el modelo está aprendiendo los pozos y no la roca
+- **Defendible o indefendible**: un caso que baja el error con un contacto fuera del rango físico se descarta aunque gane
+
+<!--
+5 min · acumulado 3:11
+Recorrer la tabla anterior con estas cuatro preguntas.
+En la primera versión de esta clase, sin rango para el contacto, el loop
+terminó con el contacto 148 m debajo del pozo y una J sin permeabilidad.
+Bajaba el error y nadie la habría firmado. Las reglas de program.md
+salen de ese ensayo.
 -->
 
 ---
@@ -607,18 +905,86 @@ docente/plan-b/ensayo/.
 
 | | Optimizador clásico | Agente en loop |
 | --- | --- | --- |
-| Corridas | Unas 250 | 15 |
-| Qué cambia | Cuatro números de una forma fija | La forma del modelo |
-| Qué deja | Un mínimo | Un historial con hipótesis |
+| Corridas | 250 a 400 por caso | 12 |
+| Qué cambia | Los números de una forma fija | La forma del modelo |
+| Qué deja | Un mínimo | Hipótesis, predicciones y lecturas |
+| Qué no hace | Proponer otra forma | Garantizar el mínimo de cada forma |
 
-Son herramientas para preguntas distintas, y se combinan.
+Se combinan: el agente propone la forma y un optimizador le ajusta los números.
 
 <!--
-12 min · acumulado 3:25
-docente/optimizar.py: Nelder-Mead, cerca de cuatro minutos por caso.
-Lo que el loop no ve: rmse_validacion se anota y no decide. Mirar si el
-caso final mejoró o empeoró en F-11 B.
-Cierre del bloque 6.
+4 min · acumulado 3:15
+docente/optimizar.py: Nelder-Mead, cuatro a seis minutos por caso.
+Cierre del bloque 7.
+-->
+
+---
+
+<!-- _class: seccion -->
+
+## ¿Contacto inclinado?
+
+Bloque 8 de 9 · **15 min**
+
+<!--
+0 min · acumulado 3:15
+Arranca 3:15, termina 3:30. Pegar PEDIDO-4.md al empezar.
+-->
+
+---
+
+## Dos pozos que no cuentan lo mismo
+
+- En **F-4** hay agua móvil desde unos 3,015 m: Sw media 0.51 en la base del Hugin
+- En **19 A**, a 960 m, hay petróleo con Sw 0.26 hasta 3,101 m
+- Con un solo contacto, F-4 es el pozo peor ajustado en todos los casos: 0.147 a 0.151
+
+La hipótesis: el nivel de agua libre sube de 19 A hacia F-4. Es **un parámetro más**, escrito como escalones de `EQLNUM`.
+
+<!--
+3 min · acumulado 3:18
+Mientras el agente corre el pedido 4. Es la única hipótesis de contacto
+que los pozos previos a la producción dejan plantear.
+-->
+
+---
+
+<!-- _class: figura -->
+
+## El ajuste mejora, el control no
+
+![RMSE de ajuste, de F-4, de 19 A y del control contra la inclinación del nivel de agua libre](img/inclinacion.png)
+
+Con 90 m por kilómetro el ajuste baja de 0.114 a 0.097 y F-4 de 0.149 a 0.108. El control pasa de 0.142 a 0.193.
+
+<!--
+5 min · acumulado 3:23
+Cada punto es un ajuste completo con esa inclinación fija.
+La mejora está toda en F-4. El control no acompaña: con 90 m por
+kilómetro el modelo pone agua donde F-11 B, después de cinco años de
+inyección, todavía tiene petróleo.
+-->
+
+---
+
+## ¿Vale la pena?
+
+- **A favor**: 0.017 de mejora por un parámetro, cuatro veces el umbral del criterio de simplicidad
+- **En contra**: el control empeora, y sostener 90 m por kilómetro pide unos **3 bar por kilómetro** de gradiente en el acuífero
+- **La otra explicación**: bloques separados por fallas, cada uno con su contacto. El modelo de campo tiene una región con contacto en 3,025 m
+
+Lo decide un dato que no está: presiones de formación en F-4 y en 19 A, del mismo momento.
+
+<!--
+7 min · acumulado 3:30
+La cuenta: inclinación por diferencia de densidades sobre densidad del
+agua da el gradiente de carga; 0.090 por 345 sobre 1,065 es 0.029, unos
+3 bar por kilómetro.
+El punto de presión de F-4 que vimos en el bloque 3, 6.7 bar sobre la
+línea de 19 A, apunta a bloques distintos.
+Respuesta corta: como plano inclinado, no. Como señal de que F-4 está en
+otro bloque, sí.
+Cierre del bloque 8.
 -->
 
 ---
@@ -627,11 +993,11 @@ Cierre del bloque 6.
 
 ## Controles y cierre
 
-Bloque 7 de 7 · **20 min**
+Bloque 9 de 9 · **15 min**
 
 <!--
-0 min · acumulado 3:25
-Arranca 3:25, termina 3:45.
+0 min · acumulado 3:30
+Arranca 3:30, termina 3:45.
 -->
 
 ---
@@ -641,28 +1007,27 @@ Arranca 3:25, termina 3:45.
 1. El caso vive en su carpeta, con el caso base al lado
 2. Un **diff** contra el caso base, leído
 3. La lista de supuestos y de valores por defecto del simulador
-4. La versión del simulador, fijada
-5. La misma descripción, armada dos veces, da el mismo resultado
-6. Un ingeniero **firma**
+4. La versión del simulador y los datos, fijados
+5. Un pozo de control que el caso **nunca vio**
+6. Un ingeniero firma
 
 <!--
-8 min · acumulado 3:33
-Cada control tuvo su ejemplo hoy: la carpeta de trabajo, git, la lista de
-supuestos del primer pedido, el hash de la imagen, la tabla del agente
-contra la de referencia.
+6 min · acumulado 3:36
+Cada control tuvo su ejemplo hoy: la carpeta de trabajo, el diff de los
+AJUSTE_*.INC, la lista de supuestos del primer pedido, los hashes, F-11 B.
 -->
 
 ---
 
 ## Qué no se puede afirmar con esto
 
-- Dónde está el contacto de Volve: no hay presiones, y las densidades son un supuesto
-- Que F-11 B valide la saturación inicial: es un perfil de 2013
-- Que el contacto esté inclinado: dos compartimentos ajustan igual
-- Que estos parámetros sirvan para un modelo de campo: son 2 pozos de 22
+- Dónde está el contacto: los datos lo dejan entre 3,100 y 3,220 m, y el ajuste lo pone en 3,150 m
+- Que haya un solo contacto: F-4 pide otro, y no hay presiones que lo confirmen
+- Que el control valide la saturación inicial: solo dice que el modelo no pone más agua que la de 2013
+- Que estos parámetros sirvan para un modelo de campo: son 5 pozos, sin facies ni geomodelo
 
 <!--
-5 min · acumulado 3:38
+4 min · acumulado 3:40
 El ejercicio muestra el método de trabajo con el agente. El resultado de
 reservorios queda abierto, y está bien decirlo así.
 -->
@@ -673,12 +1038,12 @@ reservorios queda abierto, y está bien decirlo así.
 
 ## Para llevarse
 
-- Lo que el agente debe saber va en **`CLAUDE.md`**; lo que no debe hacer, en los permisos
-- Una **métrica fija** y un solo archivo editable hacen comparable todo lo que pruebe
-- El agente ajusta varias hipótesis igual de bien: **elegir entre ellas** sigue siendo tu trabajo
+- **Mirar los datos antes de ajustar**: qué pozo es de cuándo cambió todo el planteo
+- **Pocas formas, pocos parámetros** y un pozo que el ajuste no ve
+- **Una hipótesis escrita antes de correr** vuelve revisable lo que prueba un agente
 
 <!--
-7 min · acumulado 3:45
+5 min · acumulado 3:45
 Cómo repetirlo: el repo, instalar.sh, verificar.sh y preparar.sh.
 Preguntas.
 -->

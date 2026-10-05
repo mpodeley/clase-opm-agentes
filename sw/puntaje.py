@@ -1,14 +1,15 @@
-"""The fixed metric: how far the initialized water saturation is from the log.
+"""The fixed metric: how far the initialized water saturation is from the logs.
 
-Nothing in this file is tuned by the case. The fitted well is F-12, logged in 2007 before
-production started. F-11 B is held out; it was logged in 2013, after five years of production
-and water injection, so its water saturation is at least the initial one.
+Nothing in this file is tuned by a case. Only net sand of the Hugin counts. The fit is scored on
+the five wells logged before first oil (12 February 2008). The control, 15/9-F-11 B, was logged
+in 2013 after five years of production and water injection: its water saturation is at least
+the initial one, so a good case should not sit above it.
 """
 from __future__ import annotations
 
 import numpy as np
 
-from sw.pozo import WELLS, Cells
+from sw.pozo import CONTROL_WELLS, FIT_WELLS, WELLS, Cells
 
 
 def rmse(sim: np.ndarray, log: np.ndarray) -> float:
@@ -22,33 +23,34 @@ def hcpv_error(cells: Cells, sim: np.ndarray, log: np.ndarray) -> float:
 
 
 def score(cells: Cells, sw_sim: np.ndarray, n_parameters: int) -> dict[str, float | int]:
-    """`cells` must carry the log saturation of every well, including the held-out one."""
+    """`cells` must carry the log saturation of every well, including the control."""
     out: dict[str, float | int] = {}
-    for spec in WELLS.values():
-        m = cells.of(spec.name)
+    for role, wells in (('ajuste', FIT_WELLS), ('control', CONTROL_WELLS)):
+        m = np.isin(cells.well, wells) & cells.net
         sim, log = sw_sim[m], cells.sw[m]
-        out[f'rmse_{spec.role}'] = rmse(sim, log)
-        out[f'sesgo_{spec.role}'] = float(np.mean(sim - log))
-        out[f'error_hcpv_{spec.role}'] = hcpv_error(cells.mask(m), sim, log)
-        out[f'n_celdas_{spec.role}'] = int(m.sum())
-        if spec.role == 'ajuste':
-            hugin = cells.zone[m] == 'Hugin'
-            out['rmse_ajuste_hugin'] = rmse(sim[hugin], log[hugin])
-            out['rmse_ajuste_bajo_hugin'] = rmse(sim[~hugin], log[~hugin])
+        out[f'rmse_{role}'] = rmse(sim, log)
+        out[f'sesgo_{role}'] = float(np.mean(sim - log))
+        out[f'rmse_bvw_{role}'] = rmse(cells.phi[m] * sim, cells.phi[m] * log)
+        out[f'error_hcpv_{role}'] = hcpv_error(cells.mask(m), sim, log)
+        out[f'n_celdas_{role}'] = int(m.sum())
+    for spec in WELLS.values():
+        m = cells.of(spec.name) & cells.net
+        out[f'rmse_{spec.slug}'] = rmse(sw_sim[m], cells.sw[m])
     out['n_parametros'] = n_parameters
     return out
 
 
-ORDER = ['rmse_ajuste', 'rmse_ajuste_hugin', 'rmse_ajuste_bajo_hugin', 'sesgo_ajuste', 'error_hcpv_ajuste',
-         'rmse_validacion', 'sesgo_validacion', 'error_hcpv_validacion',
-         'n_parametros', 'n_celdas_ajuste', 'n_celdas_validacion']
-
-
-def block(description: str, result: dict[str, float | int], seconds: float) -> str:
+def block(description: str, result: dict[str, float | int], fwl: list[float], seconds: float) -> str:
     """The summary evaluar.py prints: one `key: value` per line, easy to grep."""
+    order = (['rmse_ajuste', 'sesgo_ajuste', 'rmse_bvw_ajuste', 'error_hcpv_ajuste']
+             + [f'rmse_{WELLS[w].slug}' for w in FIT_WELLS]
+             + ['rmse_control', 'sesgo_control', 'error_hcpv_control', 'n_parametros',
+                'n_celdas_ajuste', 'n_celdas_control'])
     lines = ['---', f'caso: {description}']
-    for key in ORDER:
+    for key in order:
         v = result[key]
         lines.append(f'{key}: {v:.4f}' if isinstance(v, float) else f'{key}: {v}')
+    lines.append('fwl: ' + ' '.join(f'{f:.1f}' for f in sorted(set(fwl))[:6])
+                 + (' ...' if len(set(fwl)) > 6 else ''))
     lines.append(f'segundos_flow: {seconds:.1f}')
     return '\n'.join(lines)

@@ -20,17 +20,17 @@ fi
 mkdir -p "$dest/casos" "$dest/datos" "$dest/.claude"
 cp -r "$repo/sw" "$dest/sw"
 cp -r "$repo/datos/volve" "$dest/datos/volve"
-cp "$repo/evaluar.py" "$repo/caso.py" "$repo/program.md" "$repo/pyproject.toml" "$repo/uv.lock" "$dest/"
-cp "$repo/caso.py" "$dest/casos/a.py"
+cp "$repo/evaluar.py" "$repo/bitacora.py" "$repo/caso.py" "$repo/program.md" "$repo/pyproject.toml" "$repo/uv.lock" "$dest/"
+cp "$repo/caso.py" "$dest/casos/base.py"
 cp "$repo/ejercicio/CLAUDE.md" "$repo"/ejercicio/PEDIDO-*.md "$dest/"
 cp "$repo/ejercicio/.claude/settings.json" "$dest/.claude/"
 find "$dest/sw" -name __pycache__ -prune -exec rm -r {} +
-printf '%s\n' '.venv/' '__pycache__/' 'corridas/' 'run.log' 'results.tsv' > "$dest/.gitignore"
+printf '%s\n' '.venv/' '__pycache__/' 'corridas/' 'run.log' 'results.tsv' 'bitacora.html' > "$dest/.gitignore"
 
 cd "$dest"
 uv sync --quiet --no-dev
 git init -q -b main
 git add -A
 git -c user.name="clase" -c user.email="clase@localhost" commit -q -m "caso base"
-uv run evaluar.py --sin-grafico | grep -E "^(caso|rmse_ajuste|rmse_validacion):"
+uv run evaluar.py --sin-grafico | grep -E "^(caso|rmse_ajuste|rmse_control):"
 echo "listo: cd $dest && claude"

@@ -13,7 +13,8 @@ slides/build.sh < /dev/null
 rm -rf dist
 mkdir -p dist/img
 cp web/index.html slides/clase.html dist/
-cp slides/img/*.png dist/img/
+cp slides/img/*.png slides/img/*.svg slides/img/*.gif dist/img/
+cp -r slides/img/loop dist/img/loop
 touch dist/.nojekyll
 
 if [ "${1:-}" = "--local" ]; then

@@ -12,6 +12,7 @@ name = "clase-opm-agentes"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "dlisio" },
     { name = "lasio" },
     { name = "matplotlib" },
     { name = "numpy" },
@@ -28,6 +29,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "dlisio", specifier = ">=1.0.4" },
     { name = "lasio", specifier = ">=0.31" },
     { name = "matplotlib", specifier = ">=3.9" },
     { name = "numpy", specifier = ">=2.0" },
@@ -101,6 +103,30 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/60/8b/32f9823da46cde7df2087faa08cd98d01b908f8dcab982cdba9c84e85355/decorator-5.3.1.tar.gz", hash = "sha256:4cbcdd55a6efadb9dbea26b858f4fb3264567b52d69ca0d25b721b553f60ea82", size = 58084, upload-time = "2026-05-18T06:03:28.057Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/05/7f/798705f5296a58ca505d600456748d1be48078eac8a7050d8a98bc9edb89/decorator-5.3.1-py3-none-any.whl", hash = "sha256:f47fe6fdbd2edd623ecfe36875d37aba411624e2670dd395dddae1358689bb3c", size = 10365, upload-time = "2026-05-18T06:03:26.517Z" },
+]
+
+[[package]]
+name = "dlisio"
+version = "1.0.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/36/a7/a78e15991eecc9fdeb62040dc34c2501cc4975dad1afd822a1053235b43b/dlisio-1.0.4-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:88210204f4fc0f656d36f3a71b3a3ac1679ea13467547feec2a0fe1aa5441500", size = 1767704, upload-time = "2025-12-03T12:48:51.268Z" },
+    { url = "https://files.pythonhosted.org/packages/f1/02/98a27c143fec35cba1b0e4c185faf2e5be0e0044ca3ee03f7e9260f48b3a/dlisio-1.0.4-cp312-cp312-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:4c5e7d8c85c995643c954c9bd646ab95968de93aec2e3a6f15e17649ed2273a4", size = 2040637, upload-time = "2025-12-03T12:48:53.054Z" },
+    { url = "https://files.pythonhosted.org/packages/d9/1c/f58f26d5d39b4aa54d8961a507eae7a5189225e542405e146143e169d8c0/dlisio-1.0.4-cp312-cp312-manylinux_2_27_i686.manylinux_2_28_i686.whl", hash = "sha256:46e10043f79ec71f13ab6a60347604a0375ad2c0ca4b1312cedb429b41893373", size = 2319737, upload-time = "2025-12-03T12:48:54.481Z" },
+    { url = "https://files.pythonhosted.org/packages/bb/8f/7151c6bddf85e4acc9b4b91c89897dc69364853f64b4b673f80943d271a4/dlisio-1.0.4-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:b336fcc2b319958041d2abf9c6c245c1fe6e928c71ada8b688eb723be54cf863", size = 2216731, upload-time = "2025-12-03T12:48:56Z" },
+    { url = "https://files.pythonhosted.org/packages/1e/89/7888d78a7dd3e2509c0b2ce7503666bb159bd155e31d6034f1e0554dcbd4/dlisio-1.0.4-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:895e37aab917003afc8535d64eaf1d0f9c398c36cd02999a8bb7cd1c47897560", size = 3322016, upload-time = "2025-12-03T12:48:57.43Z" },
+    { url = "https://files.pythonhosted.org/packages/0b/bd/70530eaa02560a4edfee53436b85ba65c09c6185d9280cb13177bff1a759/dlisio-1.0.4-cp312-cp312-win32.whl", hash = "sha256:be940dab97d77686a7e2b1fa9b84e81d9dc6737b4fd394107584062beda09266", size = 1058184, upload-time = "2025-12-03T12:48:59.353Z" },
+    { url = "https://files.pythonhosted.org/packages/df/91/36989f753d99a767ff123d950896162f26cc5ca22579a9fa03165243cf1a/dlisio-1.0.4-cp312-cp312-win_amd64.whl", hash = "sha256:6075a25334901b3984f6e7cbefec47b58fef7d76585b8d7c48b59e3300f62174", size = 1188259, upload-time = "2025-12-03T12:49:01.093Z" },
+    { url = "https://files.pythonhosted.org/packages/e9/1f/fffc9ac2846a8819eb7213eb673bcd1640f060719c96cd41fe4e98a8e1cc/dlisio-1.0.4-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:b46db6e8316476a2622774830da71911260e8b74929f3451ebfd89a1028d6c60", size = 2357652, upload-time = "2025-12-03T12:49:03.13Z" },
+    { url = "https://files.pythonhosted.org/packages/56/5a/732cf7f63f539b6cda2a50099817a6169ffa71c2b5f42212b814dfc0f395/dlisio-1.0.4-cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:a8e58ef620a90e1f686cdb45a551203582fe43d044b15484c493a2352d57c481", size = 2728266, upload-time = "2025-12-03T12:49:04.637Z" },
+    { url = "https://files.pythonhosted.org/packages/55/39/c8a2ba0caa5280e269aa13f4073e2dc3018bb6462b71b106674d0c877acd/dlisio-1.0.4-cp313-cp313-manylinux_2_27_i686.manylinux_2_28_i686.whl", hash = "sha256:ec3f81407fa9fb86e553bb2e5da47fd23d17b22fd32f2607cf2037a0e8dcc657", size = 3098561, upload-time = "2025-12-03T12:49:07.262Z" },
+    { url = "https://files.pythonhosted.org/packages/01/82/1a6cbde2a6b263b5d7f3fca668d21442d2c7ad9ef3539c28fe794749fac9/dlisio-1.0.4-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:cc8baaf5bb5bb3bbfb030a7bfb2cfdd5335f3d9cd056ce139daaa4945c8f97c2", size = 2964517, upload-time = "2025-12-03T12:49:08.754Z" },
+    { url = "https://files.pythonhosted.org/packages/7d/37/6d0fdf5c51d65c490a8e3ee5bddc49ece5869008cb38afb9326f0494c997/dlisio-1.0.4-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:2a346ebebebe6750b8f273d36739a755e50be0f977d19aa7c5662f7bf20628eb", size = 4095927, upload-time = "2025-12-03T12:49:10.433Z" },
+    { url = "https://files.pythonhosted.org/packages/72/e4/b22290725d0e2f340675363175f24ba0fed0a6601005699e9e39697a4d9f/dlisio-1.0.4-cp313-cp313-win32.whl", hash = "sha256:1893cd50d15ca017163953dfcc33f6837bea40d3ba127992e5d9fc37d8f6fb73", size = 1375408, upload-time = "2025-12-03T12:49:11.901Z" },
+    { url = "https://files.pythonhosted.org/packages/1e/cd/e25c1c787a0ebc5beb37883f39ed2d5c14e926c29bc75274be6eace545ee/dlisio-1.0.4-cp313-cp313-win_amd64.whl", hash = "sha256:d78973a1a282057761792f0cd5d84557e04e9ebdab7a83164f3b42256edb9826", size = 1548341, upload-time = "2025-12-03T12:49:13.286Z" },
 ]
 
 [[package]]
