@@ -1,0 +1,95 @@
+**********************************************************************
+*                                                                    *
+*                        This is flow 2026.04                        *
+*                                                                    *
+* Flow is a simulator for fully implicit three-phase black-oil flow, *
+*             including solvent and polymer capabilities.            *
+*          For more information, see https://opm-project.org         *
+*                                                                    *
+**********************************************************************
+
+Using 1 MPI processes with 1 OMP threads on each 
+
+Reading deck file '/input/SW.DATA'
+    0 Reading RUNSPEC  in /input/SW.DATA line 3
+    1 Reading TITLE    in /input/SW.DATA line 4
+    2 Reading DIMENS   in /input/SW.DATA line 6
+    3 Reading OIL      in /input/SW.DATA line 8
+    4 Reading WATER    in /input/SW.DATA line 9
+    5 Reading METRIC   in /input/SW.DATA line 10
+    6 Reading TABDIMS  in /input/SW.DATA line 11
+    7 Reading EQLDIMS  in /input/SW.DATA line 13
+    8 Reading START    in /input/SW.DATA line 15
+    9 Reading UNIFOUT  in /input/SW.DATA line 17
+   10 Reading GRID     in /input/SW.DATA line 19
+   11 Reading INIT     in /input/SW.DATA line 20
+   12 Reading DX       in /input/SW.DATA line 21
+   13 Reading DY       in /input/SW.DATA line 23
+   14 Reading DZ       in /input/SW.DATA line 25
+   15 Reading TOPS     in /input/SW.DATA line 233
+   16 Reading PORO     in /input/SW.DATA line 441
+   17 Reading PERMX    in /input/SW.DATA line 649
+   18 Reading COPY     in /input/SW.DATA line 857
+   19 Reading MULTX    in /input/SW.DATA line 862
+   20 Reading PROPS    in /input/SW.DATA line 865
+   21 Reading ROCK     in /input/SW.DATA line 866
+   22 Reading PVDO     in /input/SW.DATA line 868
+   23 Reading PVTW     in /input/SW.DATA line 871
+   24 Reading DENSITY  in /input/SW.DATA line 873
+   25 Reading SWOF     in /input/SW.DATA line 875
+   26 Reading REGIONS  in /input/SW.DATA line 907
+   27 Reading SATNUM   in /input/SW.DATA line 908
+   28 Reading EQLNUM   in /input/SW.DATA line 992
+   29 Reading SOLUTION in /input/SW.DATA line 1077
+   30 Reading EQUIL    in /input/SW.DATA line 1078
+   31 Reading RPTRST   in /input/SW.DATA line 1080
+   32 Reading SUMMARY  in /input/SW.DATA line 1083
+   33 Reading FOIP     in /input/SW.DATA line 1084
+   34 Reading SCHEDULE in /input/SW.DATA line 1086
+   35 Reading TSTEP    in /input/SW.DATA line 1087
+
+Creating grid from keywords DX, DY, DZ and TOPS
+2 fluid phases are active
+
+Processing dynamic information from
+/input/SW.DATA line 1086
+Initializing report step 0/1 at 2008-01-01 0 DAYS line 1086
+Complete report step 1 (0.001 DAYS) at 2008-01-01 (0 DAYS)
+
+
+Processing grid
+Total number of active cells: 1656 / total pore volume: 97 RM3
+
+
+================ Starting main simulation loop ===============
+
+
+Report step  0/1 at day 0/0.001, date = 01-Jan-2008
+Using Newton nonlinear solver.
+
+Starting time step 0, stepsize 0.001 days, at day 0/0.001, date = 01-Jan-2008
+Restart file written for report step 0/1, date = 01-Jan-2008 00:00:00
+Could not build any aggregates. Probably no connected nodes.
+ Newton its= 2, linearizations= 3 (0.0sec), linear its=  0 (0.0sec)
+Restart file written for report step 1/1, date = 01-Jan-2008 00:01:26
+
+
+================    End of simulation     ===============
+
+Number of MPI processes:         1
+Threads per MPI process:         1
+Setup time:                      0.04 s
+  Deck input:                    0.02 s
+Number of timesteps:             1
+Simulation time:                 0.00 s
+  Assembly time:                 0.00 s (Wasted: 0.0 s; 0.0%)
+    Well assembly:               0.00 s (Wasted: 0.0 s; 0.0%)
+  Linear solve time:             0.00 s (Wasted: 0.0 s; 0.0%)
+    Linear setup:                0.00 s (Wasted: 0.0 s; 0.0%)
+  Props/update time:             0.00 s (Wasted: 0.0 s; 0.0%)
+  Pre/post step:                 0.00 s (Wasted: 0.0 s; 0.0%)
+  Output write time:             0.00 s
+Overall Linearizations:          3      (Wasted:     0; 0.0%)
+Overall Newton Iterations:       2      (Wasted:     0; 0.0%)
+Overall Linear Iterations:       0      (Wasted:     0; 0.0%)
+

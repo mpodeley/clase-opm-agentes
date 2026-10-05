@@ -1,0 +1,8 @@
+e2bdc37 exponentes fijos en -1 (porosidad) y 0 (permeabilidad): Sw depende de altura por porosidad y no usa KLOGH; un parámetro menos, espero rmse cerca de 0.109
+455e092 exponente de porosidad de JFUNC libre: en el Hugin el Sw del perfil baja con la porosidad y Leverett (alpha 0.5) lo empuja al revés; espero rmse cerca de 0.108
+5756fd3 funciones J lineales en ln(J) (Sw = a - b ln J) con pendiente compartida en lugar de Brooks-Corey: dos parámetros menos, espero rmse cerca de 0.117
+731f35c mismo lam en las dos funciones J (un parámetro menos): espero perder menos de 0.003
+f5d6c35 dos funciones J separadas en la base del Hugin, con un FWL profundo: Sleipner y Skagerrak dejan de quedar en Sw = 1, espero rmse cerca de 0.116
+b38ef1b función J de Leverett en lugar de curva única: la roca pobre retiene más agua a igual altura, espero rmse cerca de 0.159
+dc08dce misma curva única, reajustando swirr, pe y lam: transición más corta, espero rmse cerca de 0.163
+38ff766 caso base

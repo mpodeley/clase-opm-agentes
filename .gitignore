@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.pyc
+datos/volve/
+corridas/
+run.log
+results.tsv
+slides/*.html
+.pytest_cache/
+slides/img/
+docente/plan-b/*/SW.*
+docente/plan-b/*/flow.log
+docente/plan-b/*/base/
+!docente/plan-b/*/SW.DATA
+!docente/plan-b/ensayo/results.tsv
+dist/

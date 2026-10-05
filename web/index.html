@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Simulación numérica con agentes — OPM Flow sobre Volve</title>
+<meta name="description" content="Clase de 3 h 40 min para ingenieros de reservorios: un agente de terminal maneja OPM Flow para reproducir la saturación de agua de dos pozos de Volve.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #ffffff; --panel: #f4f4f2; --border: #d9dce0; --text: #16181d; --muted: #4a5361;
+  --faint: #6b7280; --primary: #c24b22; --blue: #1f6a9b;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1012; --panel: #1a1c20; --border: #2c3036; --text: #f4f4f2; --muted: #b4bac4;
+    --faint: #8a919c; --primary: #ff9576; --blue: #7db8de;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 17px/1.6 "IBM Plex Sans", system-ui, sans-serif; }
+main { max-width: 860px; margin: 0 auto; padding: 56px 16px 72px; }
+h1, h2 { font-family: "Space Grotesk", system-ui, sans-serif; line-height: 1.15; }
+h1 { font-size: clamp(34px, 6vw, 54px); margin: 10px 0 18px; }
+h2 { font-size: 26px; margin: 56px 0 14px; }
+p { margin: 0 0 14px; max-width: 68ch; }
+a { color: var(--primary); }
+.kicker, th, .meta { font-family: "IBM Plex Mono", monospace; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); }
+.lead { font-size: 20px; color: var(--muted); }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 26px 0 0; }
+.actions a { padding: 11px 18px; border: 1px solid var(--border); border-radius: 6px; text-decoration: none; color: var(--text); font-weight: 600; }
+.actions a.main { background: var(--primary); border-color: var(--primary); color: var(--bg); }
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 15.5px; margin: 6px 0 14px; }
+th { text-align: left; font-weight: 500; padding: 0 14px 8px 0; border-bottom: 1px solid var(--border); white-space: nowrap; }
+td { padding: 9px 14px 9px 0; border-bottom: 1px solid var(--border); vertical-align: top; }
+td.n, th.n { text-align: right; font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; }
+figure { margin: 22px 0; }
+figure img { width: 100%; height: auto; border: 1px solid var(--border); border-radius: 6px; background: #fcfcfb; }
+figcaption { font-size: 14.5px; color: var(--muted); margin-top: 8px; }
+ul { padding-left: 20px; margin: 0 0 14px; max-width: 68ch; }
+li { margin-bottom: 8px; }
+code { font-family: "IBM Plex Mono", monospace; font-size: 0.9em; background: var(--panel); padding: 1px 5px; border-radius: 4px; }
+pre { background: var(--panel); padding: 14px 16px; border-radius: 6px; overflow-x: auto; font: 14.5px/1.5 "IBM Plex Mono", monospace; }
+.limit { border-left: 3px solid var(--primary); padding: 2px 0 2px 18px; }
+footer { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--border); font-size: 14px; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <div class="kicker">Clase · ingeniería de reservorios · 3 h 40 min</div>
+  <h1>Un agente maneja el simulador</h1>
+  <p class="lead">Un agente de terminal (Claude Code) maneja un simulador numérico abierto (OPM Flow) para reproducir la saturación de agua de los perfiles de dos pozos del campo Volve, y compara distintas formas de hacerlo.</p>
+  <div class="actions">
+    <a class="main" href="clase.html">Ver las diapositivas</a>
+    <a href="https://github.com/mpodeley/clase-opm-agentes">Repositorio en GitHub</a>
+  </div>
+
+  <h2>El problema</h2>
+  <p>El perfil interpretado de 15/9-F-12 da la saturación de agua (Sw) metro a metro. Un modelo de simulación arranca con el agua donde la ponen su curva de presión capilar y su contacto. El ejercicio busca que las dos cosas coincidan, y mide la distancia con la raíz del error cuadrático medio (RMSE, root mean square error).</p>
+  <figure>
+    <img src="img/perfil-f12.png" alt="Perfil interpretado de 15/9-F-12: saturación de agua, porosidad y permeabilidad contra profundidad">
+    <figcaption>15/9-F-12, perfilado en 2007, antes de que el campo produjera. Profundidad en metros verticales bajo el nivel del mar (TVDSS, true vertical depth subsea).</figcaption>
+  </figure>
+  <p>El cálculo lo hace el equilibrio del propio simulador, sobre una fila de celdas con una celda por metro de pozo. Lo que se ajusta es lo mismo que después inicializa un modelo de campo.</p>
+
+  <h2>La clase, bloque por bloque</h2>
+  <div class="scroll">
+  <table>
+    <tr><th>Bloque</th><th class="n">Tiempo</th><th>Qué pasa</th></tr>
+    <tr><td>El problema</td><td class="n">15 min</td><td>El perfil de F-12 y el número con que se mide el ajuste</td></tr>
+    <tr><td>Instalación</td><td class="n">25 min</td><td>OPM Flow en un contenedor, el entorno de Python y Claude Code</td></tr>
+    <tr><td>El agente lee el deck</td><td class="n">35 min</td><td>Explica el modelo keyword por keyword y corre el caso base</td></tr>
+    <tr><td>Alternativas de ajuste</td><td class="n">45 min</td><td>Función J, tipos de roca, escalado de extremos y SWATINIT</td></tr>
+    <tr><td>El contacto</td><td class="n">30 min</td><td>Plano, dos sistemas o inclinado, con el segundo pozo a la vista</td></tr>
+    <tr><td>Loop autónomo</td><td class="n">30 min</td><td>El agente prueba variantes solo, con reglas y un tope</td></tr>
+    <tr><td>Controles y cierre</td><td class="n">20 min</td><td>Qué revisa y firma el ingeniero</td></tr>
+  </table>
+  </div>
+  <p>Con dos pausas de 10 minutos. Todo corre en la máquina del docente; el repositorio queda para repetirlo.</p>
+
+  <h2>Cinco formas de ajustar un pozo</h2>
+  <div class="scroll">
+  <table>
+    <tr><th>Caso</th><th class="n">RMSE en F-12</th><th class="n">RMSE en F-11 B</th><th class="n">Parámetros</th></tr>
+    <tr><td>A: curva única y un contacto</td><td class="n">0.163</td><td class="n">0.497</td><td class="n">4</td></tr>
+    <tr><td>B: función J de Leverett</td><td class="n">0.159</td><td class="n">0.484</td><td class="n">4</td></tr>
+    <tr><td>C: tres tipos de roca</td><td class="n">0.163</td><td class="n">0.473</td><td class="n">12</td></tr>
+    <tr><td>D: agua connata por celda</td><td class="n">0.158</td><td class="n">0.490</td><td class="n">5</td></tr>
+    <tr><td>E: SWATINIT</td><td class="n">0.000</td><td class="n">0.486</td><td class="n">383</td></tr>
+  </table>
+  </div>
+  <p>Los cinco casos se ajustan con F-12; F-11 B queda oculto. De A a D el error cambia en el tercer decimal. SWATINIT lo lleva a cero en el pozo donde se impone y deja igual al otro.</p>
+  <figure>
+    <img src="img/caso-b.png" alt="Caso B: saturación del perfil y simulada con función J de Leverett en los dos pozos">
+    <figcaption>Caso B. La función J sigue las capas de mala calidad dentro del Hugin. En F-11 B el modelo pone agua donde el perfil muestra petróleo.</figcaption>
+  </figure>
+
+  <h2>Dos pozos que no cuentan lo mismo</h2>
+  <p>En F-12 hay agua desde la base del Hugin, cerca de 2,910 m. En F-11 B hay petróleo por debajo de 3,100 m. Con los dos pozos a la vista, dos sistemas con contactos en 2,937 y 3,156 m dan un RMSE de 0.230 en F-11 B, y un contacto inclinado 105 m por kilómetro da 0.232.</p>
+  <figure>
+    <img src="img/caso-f2.png" alt="Caso F2: contacto inclinado desde F-12 hacia F-11 B">
+    <figcaption>Caso F2, contacto inclinado en escalones de regiones de equilibrio. La línea punteada es el nivel de agua libre (FWL, free water level) de cada celda.</figcaption>
+  </figure>
+
+  <h2>El loop</h2>
+  <p>En el último tramo el agente trabaja solo, con una adaptación de <a href="https://github.com/karpathy/autoresearch">autoresearch</a>: un arnés fijo con la métrica, un único archivo editable y las reglas escritas en <code>program.md</code>. Cada experimento es un commit que queda o se deshace.</p>
+  <p>En el ensayo del 5 de octubre de 2026 hizo 15 experimentos en 17 minutos y bajó el RMSE en F-12 de 0.177 a 0.109 con 4 parámetros. El mayor salto vino de separar el Hugin de lo que está debajo, un cambio de forma del modelo.</p>
+
+  <h2>Qué no se puede afirmar con esto</h2>
+  <div class="limit">
+  <ul>
+    <li>Dónde está el contacto de Volve. El conjunto no trae presiones de formación ni ensayos de laboratorio, y las densidades de los fluidos son un supuesto.</li>
+    <li>Que F-11 B valide la saturación inicial. Se perfiló en 2013, con cinco años de producción e inyección de agua detrás.</li>
+    <li>Que el contacto esté inclinado. Sostener 105 m por kilómetro pediría unos 3 bar por kilómetro de gradiente en el acuífero, y dos compartimentos ajustan igual.</li>
+    <li>Que estos parámetros sirvan para un modelo de campo. Son 2 de los 22 pozos de desarrollo.</li>
+  </ul>
+  </div>
+
+  <h2>Para repetirlo</h2>
+<pre>git clone https://github.com/mpodeley/clase-opm-agentes.git
+cd clase-opm-agentes
+instalacion/instalar.sh
+instalacion/verificar.sh
+uv run evaluar.py</pre>
+  <p>Hace falta Podman o Docker, <code>uv</code>, git y Claude Code. El detalle está en el README del repositorio.</p>
+
+  <footer>
+    <p>Matías Podeley · 2026</p>
+    <p>Datos de Equinor y los ex socios de la licencia Volve (ExxonMobil Exploration &amp; Production Norway AS, Bayerngas Norge AS), bajo la <a href="https://cdn.equinor.com/files/h61q9gi9/global/de6532f6134b9a953f6c41bac47a0c055a3712d3.pdf">Equinor Open Data Licence</a>.</p>
+  </footer>
+</main>
+</body>
+</html>

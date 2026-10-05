@@ -1,0 +1,414 @@
+/* @theme podeley */
+
+/* Tema de los decks del curso. La marca `@theme` de arriba tiene que ser el
+   primer comentario del archivo: si no está, Marp ignora el tema SIN dar error
+   y renderiza todo con `default`.
+
+   ---------------------------------------------------------------------------
+   Por qué los valores están copiados y no importados de src/styles/tokens.css
+   ---------------------------------------------------------------------------
+   Dos razones, las dos fatales:
+
+   1. Marpit reescribe `:root` para que signifique la <section> de la slide. En
+      tokens.css el bloque `:root` canónico es el tema OSCURO (el claro está
+      detrás de [data-theme="light"], un atributo que no existe en un documento
+      Marp). Importarlo daría texto de tema oscuro sobre fondo blanco.
+
+   2. Los tokens de tipografía son fluidos: clamp(2.1rem, 1.5rem + 3.6vw, 3.3rem).
+      Dentro de una slide el vw es la ventana del browser, no los 1280 px de la
+      slide, y encima Marp escala la slide con transform. La tipografía cambiaría
+      de tamaño al redimensionar la ventana y saldría mal en el PDF.
+
+   Entonces acá se repiten los valores LIGHT en hex literal y todo en px fijos.
+   Es la tercera copia de los mismos valores, junto con src/theme.ts (colores de
+   charts, porque los atributos SVG no resuelven var()) y docs/brochure/
+   brochure.html (impresión). Si cambian los tokens upstream, se tocan las tres.
+   =========================================================================== */
+
+@import 'podeley-fonts';
+
+:root {
+  /* --- valores LIGHT de tokens.css --- */
+  --bg: #ffffff;
+  --surface-2: #f6f7f8;
+  --border: #d9dce0;
+  --border-soft: #e8eaed;
+  --text: #16181d;
+  --muted: #4a5361;
+  --faint: #6b7280;
+  --primary: #c24b22;  /* --pd-orange-ink */
+  --blue: #1f6a9b;     /* --pd-blue-ink   */
+  --green: #147a5f;    /* --pd-green-ink  */
+  --gold: #8a6412;     /* --pd-gold-ink   */
+  --near-black: #0f1012;
+  --off-white: #f4f4f2;
+
+  --disp: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --body: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+
+  /* La regla de campo de medición de podeley.ar, copiada verbatim de
+     docs/brochure/brochure.html (el stroke #6e7480 ya viene adentro). */
+  --regla: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22132%22%20height%3D%2220%22%20viewBox%3D%220%200%20132%2020%22%3E%3Cg%20stroke%3D%22%236e7480%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%3E%3Cline%20x1%3D%221.1%22%20y1%3D%229.6%22%20x2%3D%2213.5%22%20y2%3D%2210.4%22%2F%3E%3Cline%20x1%3D%2216.0%22%20y1%3D%228.4%22%20x2%3D%2228.0%22%20y2%3D%2211.6%22%2F%3E%3Cline%20x1%3D%2230.6%22%20y1%3D%228.7%22%20x2%3D%2242.7%22%20y2%3D%2211.3%22%2F%3E%3Cline%20x1%3D%2245.1%22%20y1%3D%2210.3%22%20x2%3D%2257.5%22%20y2%3D%229.7%22%2F%3E%3Cline%20x1%3D%2260.1%22%20y1%3D%2212.0%22%20x2%3D%2271.9%22%20y2%3D%228.0%22%2F%3E%3Cline%20x1%3D%2275.0%22%20y1%3D%2212.5%22%20x2%3D%2286.3%22%20y2%3D%227.5%22%2F%3E%3Cline%20x1%3D%2289.3%22%20y1%3D%2211.4%22%20x2%3D%22101.4%22%20y2%3D%228.6%22%2F%3E%3Cline%20x1%3D%22103.8%22%20y1%3D%229.6%22%20x2%3D%22116.2%22%20y2%3D%2210.4%22%2F%3E%3Cline%20x1%3D%22118.7%22%20y1%3D%228.4%22%20x2%3D%22130.6%22%20y2%3D%2211.6%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+}
+
+/* ===========================================================================
+   Slide base
+   Todo en px fijos: la slide mide 1280x720 y Marp la escala entera con
+   transform, así que las unidades relativas al viewport mienten.
+   =========================================================================== */
+
+section {
+  width: 1280px;
+  height: 720px;
+  padding: 76px 88px 72px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  font-size: 27px;
+  line-height: 1.45;
+  letter-spacing: 0.002em;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* Los tamaños están calibrados para pantalla compartida por videollamada, que
+   comprime y desenfoca: todo un escalón más grande de lo que pediría un PDF. */
+h1 {
+  font-family: var(--disp);
+  font-weight: 500;
+  font-size: 58px;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  margin: 0 0 24px;
+}
+
+h2 {
+  font-family: var(--disp);
+  font-weight: 500;
+  font-size: 42px;
+  line-height: 1.18;
+  letter-spacing: -0.005em;
+  margin: 0 0 28px;
+  max-width: 22ch;
+}
+
+h3 {
+  font-family: var(--disp);
+  font-weight: 500;
+  font-size: 30px;
+  line-height: 1.25;
+  margin: 28px 0 12px;
+}
+
+p {
+  margin: 0 0 20px;
+  max-width: 54ch;
+}
+
+strong { font-weight: 600; }
+/* Las woff2 del subset no traen cursiva, así que una italic se sintetizaría y
+   saldría deforme proyectada. El énfasis va por color, no por inclinación. */
+em { font-style: normal; color: var(--primary); }
+
+a {
+  color: var(--primary);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+/* Listas: la viñeta em-dash del brochure, en color de acento. */
+ul, ol { margin: 0 0 20px; padding-left: 0; max-width: 52ch; }
+ul { list-style: none; }
+ul > li {
+  position: relative;
+  padding-left: 34px;
+  margin-bottom: 16px;
+}
+ul > li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--primary);
+}
+ol { padding-left: 34px; }
+ol > li { margin-bottom: 16px; }
+li::marker { color: var(--faint); }
+li > ul, li > ol { margin: 12px 0 0; }
+li > ul > li { font-size: 0.88em; color: var(--muted); margin-bottom: 8px; }
+
+code {
+  font-family: var(--mono);
+  font-size: 0.86em;
+  background: var(--surface-2);
+  border: 1px solid var(--border-soft);
+  border-radius: 5px;
+  padding: 2px 7px;
+}
+
+pre {
+  font-family: var(--mono);
+  font-size: 22px;
+  line-height: 1.5;
+  background: var(--surface-2);
+  border: 1px solid var(--border-soft);
+  border-radius: 10px;
+  padding: 24px 28px;
+  overflow: hidden;
+}
+pre code { background: none; border: none; padding: 0; font-size: inherit; }
+
+blockquote {
+  border-left: 3px solid var(--primary);
+  padding-left: 26px;
+  margin: 0 0 20px;
+  color: var(--muted);
+  max-width: 42ch;
+}
+
+table {
+  border-collapse: collapse;
+  font-size: 23px;
+  line-height: 1.35;
+  width: 100%;
+}
+th {
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--faint);
+  text-align: left;
+  padding: 0 20px 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+td {
+  padding: 14px 20px 14px 0;
+  border-bottom: 1px solid var(--border-soft);
+  vertical-align: top;
+}
+tr:last-child td { border-bottom: none; }
+/* La columna de minutos de las tablas de agenda. */
+td:nth-child(2) { font-family: var(--mono); font-size: 20px; color: var(--muted); white-space: nowrap; }
+
+/* La slide "Hoy" de la segunda edición: 11 a 13 filas (dos pausas incluidas)
+   en vez de las 6 a 8 de la primera. Con el padding normal la tabla mide
+   ~780 px sobre 572 útiles y se cortan las últimas filas. */
+section.agenda { padding-top: 56px; }
+section.agenda h2 { margin-bottom: 14px; }
+section.agenda table { font-size: 18px; line-height: 1.3; }
+section.agenda th { font-size: 13px; padding: 0 16px 6px 0; }
+section.agenda td { padding: 5px 16px 5px 0; }
+section.agenda td:nth-child(2) { font-size: 16px; }
+
+/* Ojo: NO hay regla para <hr>, y no es un olvido. Marpit parte las slides en
+   cada thematic break de CommonMark, o sea que `---`, `***` y `___` son los
+   tres saltos de slide. Es imposible escribir un <hr> dentro de una slide desde
+   markdown plano. La regla de campo de medición se aplica como decoración de
+   CSS donde hace falta (ver .portada), nunca desde el markdown. */
+
+img { display: block; }
+
+/* ===========================================================================
+   Cromo: header, footer, paginación
+   Se fijan una vez en el front-matter del deck y se estilan acá.
+   =========================================================================== */
+
+header, footer, section::after {
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+header {
+  position: absolute;
+  top: 34px;
+  left: 88px;
+  right: 88px;
+}
+header strong { color: var(--primary); font-weight: 500; }
+
+footer {
+  position: absolute;
+  bottom: 32px;
+  left: 88px;
+}
+
+/* El token attr(data-marpit-pagination) es obligatorio: si falta, Marpit
+   descarta la declaración `content` entera y no se numera nada. */
+section::after {
+  bottom: 32px;
+  right: 88px;
+  left: auto;
+  padding: 0;
+  content: attr(data-marpit-pagination) ' / ' attr(data-marpit-pagination-total);
+}
+
+/* ===========================================================================
+   Siete layouts. Se aplican con una línea: <!-- _class: seccion -->
+   El vocabulario es chico a propósito: el markdown tiene que seguir siendo
+   cómodo de editar a mano.
+   =========================================================================== */
+
+/* --- portada ------------------------------------------------------------- */
+section.portada {
+  justify-content: center;
+  padding: 76px 88px;
+}
+section.portada h1 {
+  font-size: 72px;
+  max-width: 20ch;
+  margin-bottom: 0;
+}
+/* La regla va acá y no en el markdown: ver la nota sobre <hr> más arriba. */
+section.portada h1::after {
+  content: '';
+  display: block;
+  height: 20px;
+  margin: 34px 0 30px;
+  opacity: 0.55;
+  background: var(--regla) repeat-x left center / 132px 20px;
+}
+section.portada p {
+  font-family: var(--mono);
+  font-size: 19px;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--faint);
+  max-width: none;
+  margin: 0;
+}
+section.portada strong { color: var(--primary); font-weight: 500; }
+section.portada img {
+  position: absolute;
+  right: 88px;
+  bottom: 76px;
+}
+/* Apagar la numeración desde el tema tiene dos requisitos, y los dos son
+   trampas silenciosas:
+
+   1. Marpit numera con section[data-marpit-pagination]::after — un selector de
+      atributo, que le gana en especificidad a section.clase. Hay que igualarla.
+   2. Se apaga con display:none, NO con content:''. Marpit descarta toda
+      declaración `content` sobre section::after que no incluya el token
+      attr(data-marpit-pagination), así que un content:'' desaparece del CSS
+      compilado y la numeración sigue ahí.
+
+   Mismo caso en .cita. */
+section.portada header { display: none; }
+section.portada[data-marpit-pagination]::after { display: none; }
+
+/* --- seccion: separador de bloque, con el presupuesto de minutos ---------- */
+section.seccion {
+  background: var(--near-black);
+  color: var(--off-white);
+  justify-content: center;
+}
+section.seccion h2 {
+  font-size: 60px;
+  color: var(--off-white);
+  margin-bottom: 18px;
+  max-width: 20ch;
+}
+section.seccion p {
+  font-family: var(--mono);
+  font-size: 19px;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: #9aa0aa;
+  max-width: none;
+  margin: 0;
+}
+section.seccion strong { color: #ff9576; font-weight: 500; }  /* --pd-orange-lit: el ink no contrasta sobre negro */
+section.seccion header, section.seccion footer { color: #6e7480; }
+section.seccion::after { color: #6e7480; }
+
+/* --- panel: la slide bisagra que manda al sitio o al panel en vivo -------- */
+section.panel {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: var(--surface-2);
+}
+section.panel h2 {
+  font-size: 50px;
+  max-width: 24ch;
+  margin-bottom: 26px;
+}
+section.panel p { max-width: 40ch; color: var(--muted); }
+section.panel code {
+  font-size: 30px;
+  font-weight: 500;
+  background: var(--bg);
+  border-color: var(--border);
+  padding: 12px 22px;
+  color: var(--primary);
+}
+section.panel img { margin: 30px auto 0; }
+/* The site URL is the one thing a panel slide must show whole: the paragraph that
+   holds it drops the 40ch cap and the URL never wraps. */
+section.panel p:has(code) { max-width: none; }
+section.panel code { white-space: nowrap; }
+section.panel ul { text-align: left; }
+
+/* --- cita: una frase sola, grande ---------------------------------------- */
+section.cita {
+  justify-content: center;
+  padding: 76px 120px;
+}
+section.cita h2 {
+  font-size: 56px;
+  line-height: 1.2;
+  max-width: 24ch;
+  margin: 0;
+}
+section.cita p {
+  font-size: 30px;
+  color: var(--muted);
+  max-width: 38ch;
+  margin: 30px 0 0;
+}
+section.cita strong { color: var(--primary); font-weight: 500; }
+section.cita header, section.cita footer { display: none; }
+section.cita[data-marpit-pagination]::after { display: none; }
+
+/* --- figura: una imagen que ocupa la slide, con título arriba ------------
+   La imagen va como markdown plano, ![texto alternativo](img/x.svg), y queda
+   dentro de un <p>. Un párrafo sin imagen después de ella es el epígrafe. Los
+   SVG de slides/img/ salen de tools/diagramas.mjs o están escritos a mano. */
+section.figura { padding: 56px 72px 60px; }
+section.figura h2 { font-size: 36px; margin-bottom: 14px; max-width: none; }
+section.figura p { max-width: none; margin: 0; }
+section.figura img { width: 100%; height: 480px; object-fit: contain; margin: 0 auto; }
+section.figura p:not(:has(img)) { font-size: 20px; color: var(--muted); margin-top: 12px; }
+
+/* --- dupla: dos bloques lado a lado, cada uno un h3 y un párrafo ----------
+   Pensada para "Quiénes somos". El flujo por columnas pone el primer h3 y su
+   párrafo a la izquierda y el segundo par a la derecha. */
+section.dupla {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto 1fr;
+  grid-auto-flow: column;
+  column-gap: 56px;
+  align-content: start;
+}
+section.dupla h2 { grid-column: 1 / -1; grid-row: 1; }
+section.dupla h3 { margin: 0 0 10px; color: var(--primary); }
+section.dupla p { font-size: 22px; line-height: 1.45; max-width: none; }
+
+/* ===========================================================================
+   acentos: modificador para las listas de cuatro items donde cada item es una
+   cosa distinta (las cuatro capas del mapa, por ejemplo). Rota el color de la
+   viñeta igual que .three del brochure rota el border-top.
+
+   Va combinado con un layout: <!-- _class: acentos -->
+   =========================================================================== */
+section.acentos ul > li:nth-child(2)::before { color: var(--blue); }
+section.acentos ul > li:nth-child(3)::before { color: var(--green); }
+section.acentos ul > li:nth-child(4)::before { color: var(--gold); }

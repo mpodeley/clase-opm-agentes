@@ -1,0 +1,42 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(uv run evaluar.py*)",
+      "Bash(ls *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(grep *)",
+      "Bash(wc *)",
+      "Bash(date *)",
+      "Bash(cp caso.py casos/*)",
+      "Bash(cp casos/* caso.py)",
+      "Bash(git status*)",
+      "Bash(git log*)",
+      "Bash(git diff*)",
+      "Bash(git checkout -b ajuste/*)",
+      "Bash(git commit *)",
+      "Bash(git reset --hard HEAD~1)",
+      "Edit(./caso.py)",
+      "Edit(./casos/**)",
+      "Edit(./results.tsv)",
+      "Edit(./comparacion.md)",
+      "Edit(./informe.md)"
+    ],
+    "deny": [
+      "WebFetch",
+      "WebSearch",
+      "Bash(curl *)",
+      "Bash(wget *)",
+      "Bash(rm *)",
+      "Bash(uv add *)",
+      "Bash(uv pip *)",
+      "Bash(git push*)",
+      "Edit(./evaluar.py)",
+      "Edit(./sw/**)",
+      "Edit(./datos/**)",
+      "Edit(./program.md)",
+      "Edit(./CLAUDE.md)",
+      "Edit(./PEDIDO-*.md)"
+    ]
+  }
+}
