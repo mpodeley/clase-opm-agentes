@@ -31,7 +31,8 @@ from sw.modelo import OIL_DENSITY, WATER_DENSITY  # noqa: E402
 # One hue, light to dark: shallow to deep on the maps, oil to water on the wells.
 BLUES = LinearSegmentedColormap.from_list('blues', ['#cde2fb', '#86b6ef', '#3987e5', '#1c5cab', '#0d366b'])
 GREENS = LinearSegmentedColormap.from_list('greens', ['#e3f4ec', '#9fd9bf', '#4bb98b', '#147a5f', '#0a4a3a'])
-SERIES = {'Petróleo': '#2a78d6', 'Agua producida': '#eb6834', 'Agua inyectada': '#1baf7a'}
+# The colours an engineer expects: oil green, produced water blue, injected water light blue.
+SERIES = {'Petróleo': '#008300', 'Agua producida': '#2a78d6', 'Agua inyectada': '#86b6ef'}
 WATER, OIL_INK = '#2a78d6', '#147a5f'
 KM = 1000.0
 X0, Y0 = 433500.0, 6476900.0   # map origin, UTM 31N ED50
@@ -451,7 +452,8 @@ def figure_production(path: Path) -> None:
     for year, label, y in ((2008.12, 'Primer petróleo: los cinco\npozos de ajuste ya están perfilados', 0.97),
                            (2013.45, 'Se perfila F-11 B,\nel pozo de control', 0.97)):
         ax.axvline(year, color=SECONDARY, linewidth=0.8, linestyle=(0, (4, 3)))
-        ax.text(year + 0.07, top * y, label, fontsize=9.5, color=SECONDARY, va='top')
+        ax.text(year + 0.07, top * y, label, fontsize=9.5, color=SECONDARY, va='top', zorder=5,
+                bbox={'facecolor': SURFACE, 'edgecolor': 'none', 'pad': 2, 'alpha': 0.85})
     fig.suptitle('Producción e inyección mensual del campo, según el archivo del operador',
                  x=0.08, y=0.95, ha='left', fontsize=13, color=INK)
     fig.savefig(path, dpi=130, facecolor=SURFACE)
