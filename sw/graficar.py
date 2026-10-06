@@ -67,6 +67,11 @@ def case_j(case: Case, cells: Cells) -> np.ndarray | None:
     return pc * cells.k ** j.beta / cells.phi ** j.alpha / (j.surface_tension * JFUNC_METRIC_CONSTANT)
 
 
+def _stairs(values: np.ndarray, depth: np.ndarray, dz: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """A cell-by-cell curve against depth: each value held from the top to the bottom of its cell."""
+    return np.repeat(values, 2), np.column_stack([depth - 0.5 * dz, depth + 0.5 * dz]).ravel()
+
+
 def _track(ax, cells: Cells, sw_sim: np.ndarray, case: Case, well: str, result: dict) -> None:
     """One well: log and simulated water saturation against depth, with its free water level."""
     _style(ax)
@@ -77,8 +82,9 @@ def _track(ax, cells: Cells, sw_sim: np.ndarray, case: Case, well: str, result: 
     for part in np.split(np.arange(m.sum()), cut):
         ax.fill_betweenx(depth[part], 0, 1, where=~cells.net[m][part], color=GRID, alpha=0.6,
                          linewidth=0, step='mid')
-        ax.plot(cells.sw[m][part], depth[part], color=LOG, linewidth=1.0)
-        ax.plot(sw_sim[m][part], depth[part], color=WELL_COLOR[well], linewidth=1.8)
+        # Both curves are cell values, so they are drawn as stairs: one tread per cell.
+        ax.plot(*_stairs(cells.sw[m][part], depth[part], cells.dz[m][part]), color=LOG, linewidth=1.0)
+        ax.plot(*_stairs(sw_sim[m][part], depth[part], cells.dz[m][part]), color=WELL_COLOR[well], linewidth=1.8)
     for fwl in _fwl_levels(case, m)[:3]:
         ax.axhline(fwl, color=SECONDARY, linewidth=0.8, linestyle=(0, (4, 3)))
     ax.set_xlim(0, 1)
@@ -105,7 +111,7 @@ def profiles(cells: Cells, sw_sim: np.ndarray, case: Case, result: dict, path: P
     first.set_ylim(base, top)
     first.set_ylabel('Profundidad (m TVDSS)', fontsize=11, color=SECONDARY)
     fig.text(0.055 + 0.5 * (0.985 - 0.055) * len(wells) / (len(wells) + 4.9), 0.025,
-             'Sw (fracción): gris el perfil, color el simulado; fondo gris, roca no neta; línea de trazos, FWL',
+             'Sw por celda, una por metro de pozo: gris el perfil, color el simulado; fondo gris, roca no neta; trazos, FWL',
              ha='center', fontsize=9, color=SECONDARY)
 
     ax = fig.add_subplot(grid[0, -1])

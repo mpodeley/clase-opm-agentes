@@ -658,6 +658,10 @@ RMSE de ajuste 0.122 sin ajustar un solo número. En el control pone más agua q
 6 min · acumulado 2:13
 Leer la figura: seis pozos en una escala de profundidad, el FWL como
 línea de trazos, y a la derecha la nube de J de cada pozo con la curva.
+Las dos curvas son valores por celda y van en escalones. Casi no se
+ven porque cada celda mide entre 0.3 y 0.9 m verticales: el modelo está
+a la escala del perfil, con una celda por metro de pozo. En un modelo de
+campo, con capas de 1 a 3 m y celdas de 50 m de lado, se verían.
 Un modelo de 2006, hecho con pozos de Sleipner Øst y dos de Volve,
 reproduce pozos que no existían cuando se escribió.
 Su debilidad está en el control: da más agua inicial que la que F-11 B

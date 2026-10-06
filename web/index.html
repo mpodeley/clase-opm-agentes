@@ -190,6 +190,10 @@ footer { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--border
     <figcaption>Tres rocas dan tres perfiles de saturación y una sola curva de J. El ajuste son los parámetros de esa curva y el contacto.</figcaption>
   </figure>
   <p>El modelo es una fila de celdas, una por metro de pozo dentro del Hugin, cada una con su profundidad y su roca. Entre celdas no hay flujo: OPM Flow equilibra cada una con la función J y el contacto que le asigna el caso. Lo que se ajusta es lo mismo que después inicializa un modelo de campo.</p>
+  <figure>
+    <img src="img/celdas.png" alt="Acercamiento a la base de F-4: el perfil promediado y el simulado dibujados en escalones, uno por celda">
+    <figcaption>Tanto el perfil como el simulado son un valor por celda, constante en todo su espesor. En las figuras de pozo completo los escalones casi no se ven, porque cada celda mide entre 0.3 y 0.9 m verticales.</figcaption>
+  </figure>
   <p>El modelo de campo de Equinor resuelve esto de otra forma: 12 regiones de equilibrio y presión capilar cero, con el agua inicial cargada como un valor de agua connata por celda. Honra el volumen del geomodelo y no tiene zona de transición.</p>
 
   <h3>Dónde vive el ajuste en el deck</h3>

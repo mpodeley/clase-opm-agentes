@@ -25,7 +25,7 @@ from scipy.spatial import cKDTree
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from sw import pozo  # noqa: E402
-from sw.graficar import AXIS, GRID, INK, LOG, MUTED, SECONDARY, SURFACE, WELL_COLOR, _style  # noqa: E402
+from sw.graficar import AXIS, GRID, INK, LOG, MUTED, SECONDARY, SURFACE, WELL_COLOR, _stairs, _style  # noqa: E402
 from sw.modelo import OIL_DENSITY, WATER_DENSITY  # noqa: E402
 
 # One hue, light to dark: shallow to deep on the maps, oil to water on the wells.
@@ -571,9 +571,10 @@ def figure_rmse(path: Path) -> None:
         depth, net, log, sim = t[m, 2], t[m, 5] > 0.5, t[m, 6], t[m, 7]
         ax = fig.add_subplot(grid[0, i])
         _style(ax)
+        dz = np.gradient(depth)                      # vertical size of each cell
         ax.fill_betweenx(depth, log, sim, where=net, color=error_colour, alpha=0.45, linewidth=0, step='mid')
-        ax.plot(log, depth, color=LOG, linewidth=1.1, label='Perfil')
-        ax.plot(sim, depth, color=WELL_COLOR['F-4'], linewidth=1.9, label='Simulado')
+        ax.plot(*_stairs(log, depth, dz), color=LOG, linewidth=1.1, label='Perfil')
+        ax.plot(*_stairs(sim, depth, dz), color=WELL_COLOR['F-4'], linewidth=1.9, label='Simulado')
         rmse = float(np.sqrt(np.mean((sim[net] - log[net]) ** 2)))
         ax.set_xlim(0, 1)
         ax.set_ylim(depth.max(), depth.min())
@@ -617,6 +618,33 @@ def figure_rmse(path: Path) -> None:
     plt.close(fig)
 
 
+def figure_cells(path: Path) -> None:
+    """A close-up of the base of F-4 in the best case: every curve is constant across its cell."""
+    wells, t = _run('p')
+    m = (wells == 'F-4') & (t[:, 2] > 3005)
+    depth, log, sim = t[m, 2], t[m, 6], t[m, 7]
+    dz = np.gradient(depth)
+    fig, ax = plt.subplots(figsize=(6.4, 6.4), facecolor=SURFACE)
+    fig.subplots_adjust(left=0.14, right=0.96, top=0.86, bottom=0.1)
+    _style(ax)
+    for edge in np.r_[depth - 0.5 * dz, depth[-1] + 0.5 * dz[-1]]:
+        ax.axhline(edge, color=GRID, linewidth=0.5)
+    ax.plot(*_stairs(log, depth, dz), color=LOG, linewidth=1.3, label='Perfil, promediado a la celda')
+    ax.plot(*_stairs(sim, depth, dz), color=WELL_COLOR['F-4'], linewidth=2.2, label='Simulado')
+    ax.grid(axis='y', visible=False)
+    ax.set_xlim(0, 1)
+    ax.set_ylim(depth.max() + 0.6, depth.min() - 0.6)
+    ax.set_xlabel('Sw (fracción)', fontsize=10, color=SECONDARY)
+    ax.set_ylabel('Profundidad (m TVDSS)', fontsize=10, color=SECONDARY)
+    ax.legend(loc='upper right', frameon=False, fontsize=9.5, labelcolor=SECONDARY)
+    fig.suptitle(f'El modelo, de cerca: los {depth.max() - depth.min():.0f} m de la base de F-4',
+                 x=0.14, y=0.965, ha='left', fontsize=13, color=INK)
+    fig.text(0.14, 0.905, f'{m.sum()} celdas de {np.median(dz):.2f} m verticales (1 m de pozo). Cada valor es constante en su celda.',
+             fontsize=9.5, color=SECONDARY)
+    fig.savefig(path, dpi=130, facecolor=SURFACE)
+    plt.close(fig)
+
+
 def main() -> int:
     out = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parent.parent / 'slides' / 'img'
     out.mkdir(parents=True, exist_ok=True)
@@ -634,6 +662,7 @@ def main() -> int:
     figure_tilt(out / 'inclinacion.png')
     figure_perched(out / 'agua-colgada.png')
     figure_rmse(out / 'rmse.png')
+    figure_cells(out / 'celdas.png')
     numbers = figure_pressure(out / 'presiones.png')
     (out / 'presiones.json').write_text(json.dumps(numbers, indent=1))
     print(json.dumps(numbers, indent=1))
