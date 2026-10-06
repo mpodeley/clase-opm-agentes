@@ -525,6 +525,35 @@ def figure_tilt(path: Path) -> None:
     plt.close(fig)
 
 
+def figure_perched(path: Path) -> None:
+    """Fit and control error against the local water level under F-4, with the independent estimates."""
+    table = np.loadtxt(Path(__file__).resolve().parent.parent / 'docente' / 'plan-b' / 'barrido_agua_colgada.tsv',
+                       skiprows=1)
+    table = table[table[:, 0] <= 3100]
+    fig, ax = plt.subplots(figsize=(9.6, 5.2), facecolor=SURFACE)
+    fig.subplots_adjust(left=0.09, right=0.8, top=0.84, bottom=0.14)
+    _style(ax)
+    ax.axvspan(3016, 3024, color=GRID, alpha=0.9, linewidth=0)
+    ax.text(3020, 0.292, 'derrame de\nla cubeta', fontsize=9, color=SECONDARY, ha='center', va='top')
+    ax.axvline(3025, color=SECONDARY, linewidth=0.9, linestyle=(0, (2, 2)))
+    ax.text(3026, 0.245, 'modelo\nde campo', fontsize=9, color=SECONDARY, va='top')
+    ax.axvline(3033.3, color=SECONDARY, linewidth=0.9, linestyle=(0, (4, 3)))
+    ax.text(3034.5, 0.292, 'base del Hugin\nen F-4', fontsize=9, color=SECONDARY, va='top')
+    series = (('Ajuste, 5 pozos', 1, INK, 2.2), ('F-4', 2, WELL_COLOR['F-4'], 1.6), ('Control, F-11 B', 4, WELL_COLOR['F-11 B'], 1.6))
+    for name, column, color, width in series:
+        ax.plot(table[:, 0], table[:, column], color=color, linewidth=width, marker='o', ms=5,
+                markeredgecolor=SURFACE, markeredgewidth=1)
+        ax.annotate(name, (table[-1, 0], table[-1, column]), xytext=(8, 0), textcoords='offset points',
+                    fontsize=10, color=INK, va='center')
+    ax.set_ylim(0, 0.3)
+    ax.set_xlabel('Nivel de agua libre local bajo F-4 (m TVDSS)', fontsize=10, color=SECONDARY)
+    ax.set_ylabel('RMSE de Sw', fontsize=11, color=SECONDARY)
+    fig.suptitle('Agua colgada en F-4: el perfil pide un nivel local en 3,033 m', x=0.09, y=0.95, ha='left',
+                 fontsize=13, color=INK)
+    fig.savefig(path, dpi=130, facecolor=SURFACE)
+    plt.close(fig)
+
+
 def main() -> int:
     out = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parent.parent / 'slides' / 'img'
     out.mkdir(parents=True, exist_ok=True)
@@ -540,6 +569,7 @@ def main() -> int:
     figure_sw_depth(out / 'sw-profundidad.png')
     figure_j_review(out / 'repaso-j.png')
     figure_tilt(out / 'inclinacion.png')
+    figure_perched(out / 'agua-colgada.png')
     numbers = figure_pressure(out / 'presiones.png')
     (out / 'presiones.json').write_text(json.dumps(numbers, indent=1))
     print(json.dumps(numbers, indent=1))

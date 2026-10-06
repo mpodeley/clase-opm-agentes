@@ -12,11 +12,12 @@ if [ ! -f docente/plan-b/tabla.md ]; then
     uv run docente/tabla.py
 fi
 mkdir -p slides/img
-for c in base j1 op j2 t; do
+for c in base j1 op j2 t p; do
     cp "docente/plan-b/$c/perfil.png" "slides/img/caso-$c.png"
 done
 cp slides/static/*.svg slides/img/
 uv run web/contexto.py slides/img > /dev/null
+uv run web/cubeta.py slides/img > /dev/null
 uv run docente/hipotesis.py
 # The loop rehearsal as an animation: one frame per experiment (made by hipotesis.py).
 mkdir -p slides/img/loop

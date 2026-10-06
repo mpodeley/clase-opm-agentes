@@ -12,6 +12,7 @@ muestran el estado inicial, y dejar un pozo afuera para controlar.
 1. `instalacion/verificar.sh` termina con `todo en orden`.
 2. `uv run docente/tabla.py` regenera `docente/plan-b/`: los casos de referencia con su deck, su
    fragmento, su figura y `tabla.md`. Es el plan B de los bloques 5, 6 y 8.
+   `uv run web/cubeta.py` regenera la figura de la base del Hugin.
 3. Ensayo cronometrado de los cuatro pedidos en una carpeta de prueba:
    `ejercicio/preparar.sh ~/sw-volve-ensayo`, y adentro `claude` con cada `PEDIDO-N.md`.
 4. `ejercicio/preparar.sh ~/sw-volve` deja lista la carpeta de la clase, con el agente sin lanzar.
@@ -147,28 +148,40 @@ que el J1 de cuatro parámetros ajustado con optimizador. Lo que sirve para la d
 
 Si el loop no terminó: Esc y pedirle el informe con lo que tenga.
 
-### Bloque 8 · ¿Contacto inclinado? (3:15 a 3:30)
+### Bloque 8 · El contacto de F-4 (3:15 a 3:30)
 
-- 3:15. Pegar `PEDIDO-4.md`. Mientras corre: F-4 con agua móvil desde 3,015 m, 19 A con petróleo
-  hasta 3,101 m, a 960 m uno del otro.
-- 3:18. La figura del barrido (`docente/plan-b/barrido_inclinacion.tsv`):
+- 3:15. Pegar `PEDIDO-4.md`. Mientras corre: F-4 con Sw 0.34 a 3,020 m en roca de 3,000 mD, 19 A
+  con petróleo hasta 3,101 m, a 960 m uno del otro. Dos hipótesis con un parámetro más cada una.
+- 3:17. Hipótesis 1, contacto inclinado (`docente/plan-b/barrido_inclinacion.tsv`): con 90 m por
+  kilómetro el ajuste baja de 0.114 a 0.097 y el control sube de 0.142 a 0.193. Pide unos 3 bar
+  por kilómetro en el acuífero.
+- 3:20. Hipótesis 2, agua colgada. La figura de `web/cubeta.py`: la base del Hugin inclina hacia
+  una falla donde la cruza F-4. Con los escalones de más de 39 grados como falla sellante queda
+  una cubeta de 0.07 km² con derrame en 3,016 m; con 45 grados, 3,024 m; con 56 no cierra. En los
+  otros cuatro pozos no hay cubeta. El modelo de campo tiene una región "purged water" en 3,025 m.
+- 3:24. El barrido del nivel local (`docente/plan-b/barrido_agua_colgada.tsv`): mínimo agudo en
+  3,033 m, la base del Hugin en F-4.
 
-  | Inclinación (m por km) | Ajuste | F-4 | 19 A | Control |
-  | ---: | ---: | ---: | ---: | ---: |
-  | 0 | 0.114 | 0.149 | 0.058 | 0.142 |
-  | −45 | 0.107 | 0.136 | 0.073 | 0.209 |
-  | −90 | 0.097 | 0.108 | 0.061 | 0.193 |
-  | −120 | 0.099 | 0.114 | 0.055 | 0.143 |
+  | Hipótesis | Ajuste | F-4 | Control | Sesgo del control |
+  | --- | ---: | ---: | ---: | ---: |
+  | Un contacto (J1) | 0.112 | 0.147 | 0.122 | −0.003 |
+  | Contacto inclinado 90 m por km | 0.097 | 0.108 | 0.193 | +0.049 |
+  | Agua colgada en F-4 | 0.090 | 0.090 | 0.131 | −0.033 |
 
-- 3:23. ¿Vale la pena? A favor: 0.017 por un parámetro. En contra: el control no mejora, y 90 m
-  por kilómetro piden unos 3 bar por kilómetro en el acuífero. La otra explicación son bloques
-  con contactos distintos: el modelo de campo tiene una región en 3,025 m, y el punto de presión
-  de F-4 está 6.7 bar sobre la línea de 19 A.
-- 3:28. Qué dato lo decide: presiones de formación en F-4 y en 19 A, del mismo momento.
+- 3:27. ¿Vale la pena? El agua colgada mejora más, no rompe el control y coincide con la
+  estructura y con el modelo de campo. Lo que queda abierto: un solo pozo no distingue una cubeta
+  de un bloque separado. Lo decide la presión del petróleo.
 
-El control no es monótono con la inclinación (con −120 vuelve a 0.143). Si alguien lo pregunta:
-depende de dónde cae el contacto a lo largo de F-11 B, que cruza varias regiones. Por eso la
-conclusión se apoya en el gradiente y en las presiones, y el control solo dice que no mejora.
+Si preguntan por el punto de presión de F-4, 6.7 bar sobre la línea de 19 A: apunta a otro
+bloque, pero una presión es de 1997 y la otra de 2008, y la de 19 A no dice a qué profundidad
+está referida. No alcanza para decidir.
+
+Si preguntan por qué el nivel ajustado (3,033 m) queda por debajo del derrame (3,016 a 3,024 m):
+la cubeta puede no estar llena hasta el borde, y el mapa de la base tiene su propio error. En F-4
+el mapa y el tope de pozo difieren 0.6 m, pero el punto de derrame está en otro lugar.
+
+El control del contacto inclinado no es monótono (con −120 m por kilómetro vuelve a 0.143):
+depende de dónde cae el contacto a lo largo de F-11 B.
 
 ### Bloque 9 · Controles y cierre (3:30 a 3:45)
 

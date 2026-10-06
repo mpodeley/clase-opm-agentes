@@ -19,13 +19,13 @@ runs on the instructor's machine.
 - `program.md` — the loop instructions. `bitacora.py` — logbook, animation frames and GIF.
 - `ejercicio/` — what the agent sees in class: its `CLAUDE.md`, `PEDIDO-1..4.md`, permissions.
   `ejercicio/preparar.sh` builds the working folder outside this repo (default `~/sw-volve`).
-- `docente/` — never copied to the working folder: `soluciones/` (J1, J2, OP, T),
+- `docente/` — never copied to the working folder: `soluciones/` (J1, J2, OP, T, P),
   `optimizar.py` (Nelder-Mead baseline), `tabla.py`, `hipotesis.py` (rehearsal -> slides, page,
   animation), `guion.md`, `plan-b/` (reference runs, tilt scan, the rehearsed loop).
 - `instalacion/` — `instalar.sh`, `verificar.sh`, the SPE1 deck.
 - `slides/clase.md` — Marp deck, `podeley` theme in `slides/themes/`; `slides/build.sh`.
 - `web/` — the public page: `index.html` and `contexto.py` (maps, sections, quick looks, Buckles,
-  pressures, J review, tilt scan). `tools/publicar.sh [--cloudflare|--local]` builds `dist/`.
+  pressures, J review, tilt and perched-water scans) and `cubeta.py` (basin analysis of the base Hugin). `tools/publicar.sh [--cloudflare|--local]` builds `dist/`.
 - `datos/preparar_datos.py` — 24 pinned files into `datos/volve/` (gitignored, 52 MB).
 
 ## Rules
@@ -60,4 +60,9 @@ runs on the instructor's machine.
   pressure and SWL per cell. No SWATINIT, no JFUNC.
 - No SP log is usable (oil-based mud). No formation pressures in F-12. No public surfaces below
   the base of the Hugin, no fault polygons.
+- F-4 has mobile water at its base (Sw 0.34 at 3,020 m in 3-darcy rock). `web/cubeta.py` fills the
+  mapped base of the Hugin like a terrain, with steep steps as sealing faults: the block dips into
+  a fault under F-4 and closes a small basin (spill 3,016 m at 39 degrees, 3,024 m at 45, none at
+  56). Case P (a second EQLNUM for F-4) fits its local level at 3,033 m; the field deck has a
+  "purged water" region at 3,025 m.
 - Headless `claude -p` in an untrusted folder ignores the allow list of `.claude/settings.json`.

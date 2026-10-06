@@ -22,7 +22,7 @@ Un número que baja sin una razón física detrás no sirve.
 - **Sí:** `caso.py`. Es el único archivo que editás. Forma de la curva, exponentes de la función
   J, agua irreducible según la roca, regiones de saturación: todo lo que acepta `Case`.
 - **No:** `evaluar.py`, `sw/`, `datos/`. La métrica es la de `sw/puntaje.py` y no se discute.
-- **No:** más de un nivel de agua libre. El contacto inclinado es otro ejercicio.
+- **No:** más de un nivel de agua libre. El contacto de F-4 es otro ejercicio.
 - **No:** instalar paquetes.
 
 ## Objetivo

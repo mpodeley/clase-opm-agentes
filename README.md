@@ -25,7 +25,7 @@ Las diapositivas y un resumen con las figuras están en
 | Ajuste de J | 40 min | Una J, el modelo del operador y su forma reajustada; el pozo de control |
 | Pausa | 10 min | El loop queda corriendo |
 | Loop con hipótesis a la vista | 30 min | El agente prueba variantes solo y escribe cada hipótesis antes de correr |
-| ¿Contacto inclinado? | 15 min | Cuánto mejora el ajuste y qué dice el control |
+| El contacto de F-4 | 15 min | Contacto inclinado contra agua colgada en una cubeta de la base |
 | Controles y cierre | 15 min | Qué revisa y firma el ingeniero, y los límites del ejercicio |
 
 El guion con el minuto a minuto está en `docente/guion.md` y las diapositivas en `slides/clase.md`.
@@ -148,7 +148,7 @@ agente y cuatro pedidos que se le pasan de a uno:
 1. Leer y explicar el deck.
 2. Ajustar tres casos: una función J, el modelo del operador sin tocar y su forma reajustada.
 3. El loop de `program.md`.
-4. La hipótesis del contacto inclinado.
+4. El contacto de F-4: inclinado, o agua colgada en una cubeta.
 
 El agente puede editar `caso.py` y correr `evaluar.py`; no puede tocar la métrica, los datos ni
 salir a internet. Los casos de referencia de `docente/soluciones/` no se copian.
@@ -190,6 +190,7 @@ optimizador clásico (Nelder-Mead, `docente/optimizar.py`).
 | OP: el modelo del operador (2006), sin ajustar | 0.122 | 0.197 | +0.066 | 3,120 m | 0 |
 | J2: la forma del operador, reajustada | 0.114 | 0.142 | +0.003 | 3,151 m | 5 |
 | T: J2 con contacto inclinado 90 m por km | 0.097 | 0.193 | +0.049 | 3,030 a 3,127 m | 6 |
+| P: J1 con agua colgada en F-4 | 0.090 | 0.131 | −0.033 | 3,146 m; 3,033 m en F-4 | 5 |
 
 Lo que la clase discute:
 
@@ -198,13 +199,18 @@ Lo que la clase discute:
 - Con cuatro parámetros alcanza: el quinto de J2 no baja el error y deja peor el control.
 - Los dos ajustes llevan el contacto a 3,150 m, entre el petróleo de 19 A y el agua de 19 BT2.
 - El contacto inclinado baja el error de ajuste 0.017 y sube el del control 0.051.
+- Un nivel de agua local bajo F-4 baja el error de ajuste 0.022 con un parámetro y deja el control
+  casi igual. `uv run web/cubeta.py` muestra que la base del Hugin inclina ahí hacia una falla y,
+  si la falla sella, forma una cubeta con derrame entre 3,016 y 3,024 m.
 
 ## Qué no se puede afirmar con esto
 
 - **Dónde está el contacto.** Los datos lo dejan entre 3,100 y 3,220 m. El informe del operador
   dice 3,120 ± 15 m, las presiones 3,196 ± 14 m y el modelo de campo 3,200 m. Ningún pozo lo vio.
-- **Que haya un solo contacto.** F-4 tiene agua móvil 130 m por encima del contacto ajustado. No
-  hay presiones del mismo momento en F-4 y en 19 A.
+- **Que el agua de la base de F-4 sea una cubeta.** El perfil pide un nivel local en 3,033 m y la
+  estructura lo admite, pero un bloque separado con su propio contacto da el mismo perfil. La
+  cubeta depende de qué escalones de la base se toman como falla sellante, y no hay presiones del
+  mismo momento en F-4 y en 19 A.
 - **Que el control valide la saturación inicial.** Solo dice que el modelo no pone más agua que la
   que había en 2013.
 - **Que estos parámetros sirvan para un modelo de campo.** Son 5 pozos, sin facies ni geomodelo.

@@ -38,7 +38,7 @@ El minuto a minuto completo está en docente/guion.md.
 | Ajuste de J | 40 min | Una J, el modelo del operador y su forma reajustada; el pozo de control |
 | Pausa | 10 min | El loop queda corriendo |
 | Loop con hipótesis a la vista | 30 min | El agente prueba variantes solo y escribe cada hipótesis antes de correr |
-| ¿Contacto inclinado? | 15 min | Cuánto mejora el ajuste y qué dice el control |
+| El contacto de F-4 | 15 min | Contacto inclinado contra agua colgada en una cubeta de la base |
 | Controles y cierre | 15 min | Qué revisa y firma el ingeniero, y los límites de lo que vimos |
 
 <!--
@@ -260,7 +260,7 @@ La resistividad cae desde 3,005 m y por debajo de 3,015 m la Sw media es 0.51.
 5 min · acumulado 0:35
 En F-4 la zona de transición está dentro del pozo: debajo de 3,015 m hay
 agua móvil. En 19 A, 70 m más abajo, casi no la hay. Esa diferencia es la
-pregunta del bloque 8.
+pregunta del bloque 8: ¿hay una cubeta en la base?
 Dato de procedencia: la permeabilidad de F-12 en el archivo de 2007 es
 unas 40 veces menor que la revisión de 2009 del operador. Usamos la
 revisión. La función J depende de la raíz de k.
@@ -922,7 +922,7 @@ Cierre del bloque 7.
 
 <!-- _class: seccion -->
 
-## ¿Contacto inclinado?
+## El contacto de F-4
 
 Bloque 8 de 9 · **15 min**
 
@@ -935,55 +935,104 @@ Arranca 3:15, termina 3:30. Pegar PEDIDO-4.md al empezar.
 
 ## Dos pozos que no cuentan lo mismo
 
-- En **F-4** hay agua móvil desde unos 3,015 m: Sw media 0.51 en la base del Hugin
+- En **F-4** hay agua móvil desde unos 3,015 m: Sw 0.34 a 3,020 m en roca de 3,000 mD
 - En **19 A**, a 960 m, hay petróleo con Sw 0.26 hasta 3,101 m
 - Con un solo contacto, F-4 es el pozo peor ajustado en todos los casos: 0.147 a 0.151
 
-La hipótesis: el nivel de agua libre sube de 19 A hacia F-4. Es **un parámetro más**, escrito como escalones de `EQLNUM`.
+Dos hipótesis, un parámetro más cada una: un **contacto inclinado**, o **agua colgada** en una cubeta de la base del Hugin.
 
 <!--
-3 min · acumulado 3:18
-Mientras el agente corre el pedido 4. Es la única hipótesis de contacto
-que los pozos previos a la producción dejan plantear.
+2 min · acumulado 3:17
+Mientras el agente corre el pedido 4.
+Sw 0.34 en roca de tres darcys no se explica por calidad de roca: a esa
+altura sobre el contacto regional debería estar en agua irreducible.
+Agua colgada (perched water): agua que quedó atrapada en un bajo de la
+base y el petróleo no pudo desplazar. Todo es una misma estructura, con
+un contacto local por encima del regional.
 -->
 
 ---
 
 <!-- _class: figura -->
 
-## El ajuste mejora, el control no
+## Hipótesis 1: un contacto inclinado
 
 ![RMSE de ajuste, de F-4, de 19 A y del control contra la inclinación del nivel de agua libre](img/inclinacion.png)
 
-Con 90 m por kilómetro el ajuste baja de 0.114 a 0.097 y F-4 de 0.149 a 0.108. El control pasa de 0.142 a 0.193.
+Con 90 m por kilómetro el ajuste baja de 0.114 a 0.097. El control pasa de 0.142 a 0.193.
 
 <!--
-5 min · acumulado 3:23
+3 min · acumulado 3:20
 Cada punto es un ajuste completo con esa inclinación fija.
-La mejora está toda en F-4. El control no acompaña: con 90 m por
-kilómetro el modelo pone agua donde F-11 B, después de cinco años de
-inyección, todavía tiene petróleo.
+La mejora está toda en F-4. El control no acompaña: el modelo pone agua
+donde F-11 B, después de cinco años de inyección, todavía tiene petróleo.
+Y sostener 90 m por kilómetro pide unos 3 bar por kilómetro de gradiente
+en el acuífero: 0.090 por 345 sobre 1,065.
+-->
+
+---
+
+<!-- _class: figura -->
+
+## Hipótesis 2: agua colgada en una cubeta
+
+![Mapa de la base del Hugin alrededor de F-4 con la cubeta contra la falla, y sección de oeste a este con el nivel de derrame, el nivel del modelo de campo y el del ajuste](img/cubeta.png)
+
+La base del Hugin inclina hacia una falla justo donde la cruza F-4. Si la falla sella, queda una cubeta.
+
+<!--
+4 min · acumulado 3:24
+La cuenta: se llena la base mapeada como un terreno y se ve hasta qué
+nivel se sostiene el agua antes de derramar. Los escalones de más de 39
+grados se toman como falla sellante.
+Da una cubeta de 0.07 km² bajo F-4, con derrame en 3,016 m. Con 45 grados,
+3,024 m. Con 56 grados no cierra. En los otros cuatro pozos no hay cubeta
+con ninguno de los tres.
+El modelo de campo de Equinor tiene una región de equilibrio propia,
+rotulada "purged water", con contacto en 3,025 m.
+-->
+
+---
+
+<!-- _class: figura -->
+
+## El perfil pide el nivel local en 3,033 m
+
+![RMSE de ajuste, de F-4 y del control contra el nivel de agua libre local bajo F-4](img/agua-colgada.png)
+
+Con un nivel local en F-4 el ajuste baja de 0.112 a 0.090 y F-4 de 0.147 a 0.090. El control queda en 0.131.
+
+<!--
+3 min · acumulado 3:27
+Caso P: la misma función J, el contacto regional en 3,146 m y una segunda
+región de equilibrio para F-4. Un parámetro más.
+El mínimo es agudo y cae en la base del Hugin de F-4. Queda 9 a 17 m por
+debajo del derrame de la cubeta y 8 m por debajo del modelo de campo:
+tres estimaciones independientes dentro de 17 m.
+El control no se rompe: el nivel local no toca a F-11 B.
 -->
 
 ---
 
 ## ¿Vale la pena?
 
-- **A favor**: 0.017 de mejora por un parámetro, cuatro veces el umbral del criterio de simplicidad
-- **En contra**: el control empeora, y sostener 90 m por kilómetro pide unos **3 bar por kilómetro** de gradiente en el acuífero
-- **La otra explicación**: bloques separados por fallas, cada uno con su contacto. El modelo de campo tiene una región con contacto en 3,025 m
+| Hipótesis | Ajuste | F-4 | Control | Qué pide |
+| --- | ---: | ---: | ---: | --- |
+| Un contacto | 0.112 | 0.147 | 0.122 | Nada |
+| Contacto inclinado | 0.097 | 0.108 | 0.193 | 3 bar por kilómetro en el acuífero |
+| Agua colgada en F-4 | 0.090 | 0.090 | 0.131 | Una falla que selle y una base que no drene |
 
-Lo decide un dato que no está: presiones de formación en F-4 y en 19 A, del mismo momento.
+El agua colgada mejora más, no rompe el control y coincide con la estructura y con el modelo de campo.
 
 <!--
-7 min · acumulado 3:30
-La cuenta: inclinación por diferencia de densidades sobre densidad del
-agua da el gradiente de carga; 0.090 por 345 sobre 1,065 es 0.029, unos
-3 bar por kilómetro.
-El punto de presión de F-4 que vimos en el bloque 3, 6.7 bar sobre la
-línea de 19 A, apunta a bloques distintos.
-Respuesta corta: como plano inclinado, no. Como señal de que F-4 está en
-otro bloque, sí.
+3 min · acumulado 3:30
+Lo que queda abierto. Un solo pozo no distingue una cubeta dentro de la
+misma estructura de un bloque separado con su propio contacto: en los dos
+casos F-4 tiene un nivel local. Lo decide la presión del petróleo: en una
+cubeta es la misma que en el resto del campo; en otro bloque, no. El
+punto de F-4 del bloque 3, 6.7 bar sobre la línea de 19 A, apunta a otro
+bloque, pero las dos presiones son de fechas y referencias distintas.
+Y la cubeta depende de qué pendiente se toma como falla sellante.
 Cierre del bloque 8.
 -->
 
@@ -1022,7 +1071,7 @@ AJUSTE_*.INC, la lista de supuestos del primer pedido, los hashes, F-11 B.
 ## Qué no se puede afirmar con esto
 
 - Dónde está el contacto: los datos lo dejan entre 3,100 y 3,220 m, y el ajuste lo pone en 3,150 m
-- Que haya un solo contacto: F-4 pide otro, y no hay presiones que lo confirmen
+- Que el agua de F-4 sea una cubeta y no otro bloque: un solo pozo no los distingue, y faltan presiones
 - Que el control valide la saturación inicial: solo dice que el modelo no pone más agua que la de 2013
 - Que estos parámetros sirvan para un modelo de campo: son 5 pozos, sin facies ni geomodelo
 

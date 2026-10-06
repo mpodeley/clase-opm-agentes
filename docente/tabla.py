@@ -12,7 +12,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / 'docente' / 'plan-b'
-CASES = ['base', 'j1', 'op', 'j2', 't']
+CASES = ['base', 'j1', 'op', 'j2', 't', 'p']
 COLUMNS = ['rmse_ajuste', 'rmse_19-SR', 'rmse_19-A', 'rmse_19-BT2', 'rmse_F-12', 'rmse_F-4',
            'rmse_control', 'sesgo_control', 'error_hcpv_ajuste', 'fwl', 'n_parametros']
 
