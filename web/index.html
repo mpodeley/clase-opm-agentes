@@ -67,7 +67,7 @@ footer { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--border
   </div>
   <nav class="toc" aria-label="Secciones">
     <a href="#volve">El campo</a><a href="#pozos">Los pozos</a><a href="#quicklook">Lectura de perfiles</a>
-    <a href="#presiones">PVT y presiones</a><a href="#j">La función J</a><a href="#ajuste">El ajuste</a>
+    <a href="#presiones">PVT y presiones</a><a href="#j">La función J</a><a href="#rmse">La métrica</a><a href="#ajuste">El ajuste</a>
     <a href="#loop">El loop</a><a href="#contacto">El contacto de F-4</a><a href="#limites">Límites</a>
   </nav>
 
@@ -207,6 +207,15 @@ EQUIL
  3150.000 330 3150.000 0 1* 1* 1* 1* 0 /      -- nivel de agua libre</pre>
   <p>El deck está partido para que el ajuste se vea. La grilla, la roca y los fluidos van en archivos que no cambian nunca; lo que decide un caso, en cinco archivos chicos. Pasar de un caso a otro es un diff que se lee.</p>
 
+  <h2 id="rmse">Cómo se mide el ajuste</h2>
+  <p>En cada celda de arena neta se resta la Sw del perfil a la que inicializa el simulador. El RMSE (root mean square error) es la raíz del promedio de esas diferencias al cuadrado, y queda en unidades de Sw. Cuanto más chico, mejor: cero sería calcar el perfil celda por celda, y 0.09 quiere decir que el modelo erra unos 9 puntos de saturación en una celda típica.</p>
+  <figure>
+    <img src="img/rmse.png" alt="A la izquierda, el perfil y el simulado de F-4 sin ajustar y en el mejor caso, con el error sombreado; a la derecha, el RMSE de ajuste y de control de cada caso">
+    <figcaption>Izquierda: el error es el área entre el perfil y el simulado, acá en F-4, sin ajustar y en el mejor caso. Derecha: el RMSE de cada caso de esta página, con los cinco pozos de ajuste y con el pozo de control.</figcaption>
+  </figure>
+  <p>El cuadrado castiga los errores grandes: un tramo con agua donde hay petróleo pesa más que muchos desvíos chicos. El RMSE no llega a cero, porque el perfil cambia metro a metro por cosas que ninguna función de la roca explica.</p>
+  <p>Cada caso lleva dos números. El de ajuste usa los cinco pozos que el caso ve; el de control, el pozo que no ve. Si el primero baja y el segundo sube, el modelo está aprendiendo los pozos y no la roca.</p>
+
   <h2 id="ajuste">Tres casos y nada más</h2>
   <div class="scroll">
   <table>
@@ -217,7 +226,7 @@ EQUIL
     <tr><td>J2: la forma del operador, reajustada</td><td class="n">0.114</td><td class="n">0.149</td><td class="n">0.142</td><td class="n">+0.003</td><td class="n">3,151 m</td><td class="n">5</td></tr>
   </table>
   </div>
-  <p>El RMSE (root mean square error, raíz del error cuadrático medio) compara la Sw simulada con la del perfil, celda por celda, en la arena neta. Los casos J1 y J2 se ajustaron con un optimizador clásico, de 250 a 400 corridas cada uno.</p>
+  <p>Los casos J1 y J2 se ajustaron con un optimizador clásico, de 250 a 400 corridas cada uno. El sesgo del control es el promedio de simulado menos perfil en F-11 B: positivo quiere decir que el modelo pone más agua que la que había en 2013.</p>
   <figure>
     <img src="img/caso-op.png" alt="Caso OP: perfil y simulado en los seis pozos y nube de J contra Sw normalizada">
     <figcaption>El modelo del informe de 2006, sin tocar un número: seis pozos en una escala de profundidad, el FWL como línea de trazos, y a la derecha la nube de J de cada pozo con la curva.</figcaption>
@@ -299,7 +308,7 @@ show(0)})();
   </figure>
   <figure>
     <img src="img/caso-p.png" alt="Caso P: perfil y simulado en los seis pozos con un nivel de agua local bajo F-4, y nube de J contra Sw">
-    <figcaption>Con el nivel local en 3,033 m, la transición de la base de F-4 queda reproducida y sus puntos caen sobre la misma curva de J que el resto.</figcaption>
+    <figcaption>El mejor caso: una sola función J para los seis pozos, el contacto regional en 3,146 m y un nivel local en 3,033 m para F-4. La transición de la base de F-4 queda reproducida y sus puntos, en rosa, caen sobre la misma curva de J que el resto. El número bajo cada pozo es su RMSE.</figcaption>
   </figure>
   <div class="scroll">
   <table>

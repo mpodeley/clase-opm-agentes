@@ -87,7 +87,9 @@ muestran el estado inicial, y dejar un pozo afuera para controlar.
 - 1:34. La figura: tres rocas, tres perfiles, una curva.
 - 1:38. Nuestro modelo (una fila de celdas) y el deck de campo de Equinor: 12 regiones de
   equilibrio, presión capilar cero, agua connata por celda.
-- 1:42. Ventana C: `claude`, y pegar `PEDIDO-1.md`. Narrar qué herramienta llama. El caso base da
+- 1:42. Cómo medimos el ajuste: el RMSE es el área entre perfil y simulado, hecha número. Cuanto
+  más chico, mejor. Dos números por caso: ajuste y control.
+- 1:44. Ventana C: `claude`, y pegar `PEDIDO-1.md`. Narrar qué herramienta llama. El caso base da
   `rmse_ajuste` 0.142 y `rmse_control` 0.205.
 - 1:48. El fragmento del deck en pantalla: `JFUNC`, `SWOF`, `EQUIL`. Cuatro parámetros a la vista.
 - 1:53. Un caso nuevo es un diff de tres archivos chicos.
@@ -155,11 +157,11 @@ Si el loop no terminó: Esc y pedirle el informe con lo que tenga.
 - 3:17. Hipótesis 1, contacto inclinado (`docente/plan-b/barrido_inclinacion.tsv`): con 90 m por
   kilómetro el ajuste baja de 0.114 a 0.097 y el control sube de 0.142 a 0.193. Pide unos 3 bar
   por kilómetro en el acuífero.
-- 3:20. Hipótesis 2, agua colgada. La figura de `web/cubeta.py`: la base del Hugin inclina hacia
+- 3:19. Hipótesis 2, agua colgada. La figura de `web/cubeta.py`: la base del Hugin inclina hacia
   una falla donde la cruza F-4. Con los escalones de más de 39 grados como falla sellante queda
   una cubeta de 0.07 km² con derrame en 3,016 m; con 45 grados, 3,024 m; con 56 no cierra. En los
   otros cuatro pozos no hay cubeta. El modelo de campo tiene una región "purged water" en 3,025 m.
-- 3:24. El barrido del nivel local (`docente/plan-b/barrido_agua_colgada.tsv`): mínimo agudo en
+- 3:23. El barrido del nivel local (`docente/plan-b/barrido_agua_colgada.tsv`): mínimo agudo en
   3,033 m, la base del Hugin en F-4.
 
   | Hipótesis | Ajuste | F-4 | Control | Sesgo del control |
@@ -168,7 +170,10 @@ Si el loop no terminó: Esc y pedirle el informe con lo que tenga.
   | Contacto inclinado 90 m por km | 0.097 | 0.108 | 0.193 | +0.049 |
   | Agua colgada en F-4 | 0.090 | 0.090 | 0.131 | −0.033 |
 
-- 3:27. ¿Vale la pena? El agua colgada mejora más, no rompe el control y coincide con la
+- 3:25. El mejor caso en pantalla: los seis pozos con una sola función J, el contacto regional en
+  3,146 m y el local en 3,033 m. Leer el RMSE de cada pozo y mirar los puntos de F-4 sobre la
+  curva de J.
+- 3:28. ¿Vale la pena? El agua colgada mejora más, no rompe el control y coincide con la
   estructura y con el modelo de campo. Lo que queda abierto: un solo pozo no distingue una cubeta
   de un bloque separado. Lo decide la presión del petróleo.
 

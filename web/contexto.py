@@ -554,6 +554,69 @@ def figure_perched(path: Path) -> None:
     plt.close(fig)
 
 
+def _run(case: str) -> tuple[np.ndarray, np.ndarray]:
+    """A reference run from docente/plan-b: well name per cell and the table of sw.csv."""
+    folder = Path(__file__).resolve().parent.parent / 'docente' / 'plan-b' / case
+    return np.array((folder / 'pozos.txt').read_text().splitlines()), np.loadtxt(folder / 'sw.csv', delimiter=',', skiprows=1)
+
+
+def figure_rmse(path: Path) -> None:
+    """What the metric measures: the gap between log and model, cell by cell, in one well and overall."""
+    error_colour = '#eb6834'
+    fig = plt.figure(figsize=(12.4, 6.0), facecolor=SURFACE)
+    grid = fig.add_gridspec(1, 4, width_ratios=[1, 1, 0.95, 1.45], wspace=0.22, left=0.07, right=0.97, top=0.80, bottom=0.11)
+    for i, (case, label) in enumerate((('base', 'Sin ajustar'), ('p', 'El mejor caso'))):
+        wells, t = _run(case)
+        m = wells == 'F-4'
+        depth, net, log, sim = t[m, 2], t[m, 5] > 0.5, t[m, 6], t[m, 7]
+        ax = fig.add_subplot(grid[0, i])
+        _style(ax)
+        ax.fill_betweenx(depth, log, sim, where=net, color=error_colour, alpha=0.45, linewidth=0, step='mid')
+        ax.plot(log, depth, color=LOG, linewidth=1.1, label='Perfil')
+        ax.plot(sim, depth, color=WELL_COLOR['F-4'], linewidth=1.9, label='Simulado')
+        rmse = float(np.sqrt(np.mean((sim[net] - log[net]) ** 2)))
+        ax.set_xlim(0, 1)
+        ax.set_ylim(depth.max(), depth.min())
+        ax.set_xlabel('Sw (fracción)', fontsize=10, color=SECONDARY)
+        ax.set_title(f'{label}\nF-4 · RMSE {rmse:.3f}', fontsize=11, color=INK, loc='left')
+        if i == 0:
+            ax.set_ylabel('Profundidad (m TVDSS)', fontsize=10, color=SECONDARY)
+            ax.legend(loc='upper right', frameon=False, fontsize=9, labelcolor=SECONDARY)
+            ax.text(0.97, 0.52, 'en naranja,\nel error', transform=ax.transAxes, fontsize=9, color=INK, ha='right')
+
+    ax = fig.add_subplot(grid[0, 3])
+    _style(ax)
+    ax.grid(axis='y', visible=False)
+    cases = (('base', 'Sin ajustar'), ('op', 'Modelo del operador, sin ajustar'), ('j2', 'Forma del operador, reajustada'),
+             ('j1', 'Una función J y un contacto'), ('t', 'Con contacto inclinado'), ('p', 'Con agua colgada en F-4'))
+    for row, (case, label) in enumerate(cases):
+        wells, t = _run(case)
+        net = t[:, 5] > 0.5
+        fit = net & np.isin(wells, pozo.FIT_WELLS)
+        control = net & np.isin(wells, pozo.CONTROL_WELLS)
+        values = [float(np.sqrt(np.mean((t[m, 7] - t[m, 6]) ** 2))) for m in (fit, control)]
+        y = len(cases) - 1 - row
+        ax.plot(values, [y, y], color=AXIS, linewidth=1.2, zorder=1)
+        ax.plot(values[0], y, 'o', ms=9, color=INK, zorder=3)
+        ax.plot(values[1], y, 'o', ms=9, color=WELL_COLOR['F-11 B'], zorder=3)
+        ax.text(values[0] - 0.006, y + 0.2, f'{values[0]:.3f}', fontsize=9, color=INK, ha='right')
+        ax.text(values[1] + 0.006, y + 0.2, f'{values[1]:.3f}', fontsize=9, color=INK, ha='left')
+        ax.text(-0.008, y, label, fontsize=10, color=INK, ha='right', va='center')
+    ax.plot([], [], 'o', ms=8, color=INK, label='Ajuste: los cinco pozos previos a la producción')
+    ax.plot([], [], 'o', ms=8, color=WELL_COLOR['F-11 B'], label='Control: F-11 B, que el caso no ve')
+    ax.set_xlim(0, 0.245)
+    ax.set_ylim(-1.7, len(cases) - 0.3)
+    ax.set_yticks([])
+    ax.spines['left'].set_visible(False)
+    ax.set_xlabel('RMSE de Sw: más a la izquierda, mejor', fontsize=10, color=SECONDARY)
+    ax.legend(loc='lower left', frameon=False, fontsize=9, labelcolor=SECONDARY, ncols=1)
+    fig.subplots_adjust(left=0.07)
+    fig.suptitle('El RMSE mide la distancia entre el perfil y el modelo: cuanto más chico, mejor',
+                 x=0.07, y=0.965, ha='left', fontsize=13, color=INK)
+    fig.savefig(path, dpi=130, facecolor=SURFACE)
+    plt.close(fig)
+
+
 def main() -> int:
     out = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parent.parent / 'slides' / 'img'
     out.mkdir(parents=True, exist_ok=True)
@@ -570,6 +633,7 @@ def main() -> int:
     figure_j_review(out / 'repaso-j.png')
     figure_tilt(out / 'inclinacion.png')
     figure_perched(out / 'agua-colgada.png')
+    figure_rmse(out / 'rmse.png')
     numbers = figure_pressure(out / 'presiones.png')
     (out / 'presiones.json').write_text(json.dumps(numbers, indent=1))
     print(json.dumps(numbers, indent=1))

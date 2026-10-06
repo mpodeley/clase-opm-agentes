@@ -519,6 +519,31 @@ geomodelo; la de J explica por qué el agua está donde está.
 
 ---
 
+<!-- _class: figura -->
+
+## Cómo medimos el ajuste
+
+![A la izquierda, el perfil y el simulado de F-4 sin ajustar y en el mejor caso, con el error sombreado; a la derecha, el RMSE de ajuste y de control de cada caso](img/rmse.png)
+
+RMSE: la raíz del promedio de los errores al cuadrado, en unidades de Sw. **Cuanto más chico, mejor**; cero sería calcar el perfil.
+
+<!--
+2 min · acumulado 1:44
+RMSE: root mean square error. En cada celda de arena neta se resta la Sw
+del perfil a la simulada, se eleva al cuadrado, se promedia y se saca la
+raíz. Un RMSE de 0.09 quiere decir que el modelo erra, en una celda
+típica, unos 9 puntos de saturación.
+El cuadrado castiga los errores grandes: un tramo con agua donde hay
+petróleo pesa más que muchos desvíos chicos.
+No llega a cero: el perfil cambia metro a metro por cosas que ninguna
+función de la roca explica.
+Dos números por caso: el de ajuste, con los cinco pozos que el caso ve, y
+el de control, con el pozo que no ve. Si el primero baja y el segundo
+sube, el modelo está aprendiendo los pozos y no la roca.
+-->
+
+---
+
 <!-- _class: panel -->
 
 ## Primer pedido
@@ -528,7 +553,7 @@ geomodelo; la de J explica por qué el agua está donde está.
 Correr el caso base, **explicar el deck**, leer la figura y listar los supuestos. Sin cambiar nada.
 
 <!--
-6 min · acumulado 1:48
+4 min · acumulado 1:48
 Ventana C. Aceptar el diálogo de confianza leyéndolo en voz alta.
 Narrar qué herramienta llama: lee archivos, corre evaluar.py con
 --fragmento, abre SW.DATA, mira perfil.png.
@@ -962,7 +987,7 @@ un contacto local por encima del regional.
 Con 90 m por kilómetro el ajuste baja de 0.114 a 0.097. El control pasa de 0.142 a 0.193.
 
 <!--
-3 min · acumulado 3:20
+2 min · acumulado 3:19
 Cada punto es un ajuste completo con esa inclinación fija.
 La mejora está toda en F-4. El control no acompaña: el modelo pone agua
 donde F-11 B, después de cinco años de inyección, todavía tiene petróleo.
@@ -981,7 +1006,7 @@ en el acuífero: 0.090 por 345 sobre 1,065.
 La base del Hugin inclina hacia una falla justo donde la cruza F-4. Si la falla sella, queda una cubeta.
 
 <!--
-4 min · acumulado 3:24
+4 min · acumulado 3:23
 La cuenta: se llena la base mapeada como un terreno y se ve hasta qué
 nivel se sostiene el agua antes de derramar. Los escalones de más de 39
 grados se toman como falla sellante.
@@ -1003,13 +1028,37 @@ rotulada "purged water", con contacto en 3,025 m.
 Con un nivel local en F-4 el ajuste baja de 0.112 a 0.090 y F-4 de 0.147 a 0.090. El control queda en 0.131.
 
 <!--
-3 min · acumulado 3:27
+2 min · acumulado 3:25
 Caso P: la misma función J, el contacto regional en 3,146 m y una segunda
 región de equilibrio para F-4. Un parámetro más.
 El mínimo es agudo y cae en la base del Hugin de F-4. Queda 9 a 17 m por
 debajo del derrame de la cubeta y 8 m por debajo del modelo de campo:
 tres estimaciones independientes dentro de 17 m.
 El control no se rompe: el nivel local no toca a F-11 B.
+-->
+
+---
+
+<!-- _class: figura -->
+
+## El mejor caso: una función J y dos contactos
+
+![Caso P: perfil y simulado en los seis pozos con el contacto regional y el nivel local de F-4, y nube de J contra Sw con la curva del caso](img/caso-p.png)
+
+Una sola función J para los seis pozos. El contacto regional en 3,146 m y uno local en 3,033 m para F-4. RMSE 0.090.
+
+<!--
+3 min · acumulado 3:28
+Leer la figura pozo por pozo. El número bajo cada nombre es su RMSE:
+19 SR 0.053, 19 A 0.055, F-12 0.091, F-4 0.090, 19 BT2 0.110.
+En F-4 el simulado ahora sigue la subida de Sw hacia la base; antes se
+quedaba en agua irreducible. La línea de trazos de F-4 es su nivel local.
+A la derecha, la nube de J: los puntos de F-4, en rosa, caen ahora sobre
+la misma curva que los demás hasta J cerca de 1. Con el contacto
+regional quedaban todos arriba, con J de cientos.
+19 BT2 da 0.110 en cualquier caso: está en agua, el perfil promedia 0.95
+y el modelo pone 1.
+El control, F-11 B, queda en 0.131 y el modelo no lo inunda.
 -->
 
 ---
@@ -1025,7 +1074,7 @@ El control no se rompe: el nivel local no toca a F-11 B.
 El agua colgada mejora más, no rompe el control y coincide con la estructura y con el modelo de campo.
 
 <!--
-3 min · acumulado 3:30
+2 min · acumulado 3:30
 Lo que queda abierto. Un solo pozo no distingue una cubeta dentro de la
 misma estructura de un bloque separado con su propio contacto: en los dos
 casos F-4 tiene un nivel local. Lo decide la presión del petróleo: en una

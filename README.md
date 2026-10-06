@@ -103,10 +103,16 @@ n_parametros: 4
 fwl: 3120.0
 ```
 
-`rmse_ajuste` es la raíz del error cuadrático medio (RMSE, root mean square error) entre la
-saturación simulada y la del perfil, celda por celda, en la arena neta del Hugin de los cinco
-pozos de ajuste. `rmse_control` es lo mismo en F-11 B. `fwl` es el nivel de agua libre (free
-water level) del caso.
+`rmse_ajuste` es la raíz del error cuadrático medio (RMSE, root mean square error): en cada celda
+de arena neta del Hugin se resta la Sw del perfil a la simulada, se eleva al cuadrado, se promedia
+sobre los cinco pozos de ajuste y se saca la raíz. Queda en unidades de Sw. **Cuanto más chico,
+mejor**: cero sería calcar el perfil, y 0.09 quiere decir que el modelo erra unos 9 puntos de
+saturación en una celda típica. El cuadrado castiga los errores grandes.
+
+`rmse_control` es lo mismo en F-11 B, el pozo que el caso no ve. Si el de ajuste baja y el de
+control sube, el modelo está aprendiendo los pozos y no la roca. `sesgo_control` es el promedio de
+simulado menos perfil en ese pozo: positivo quiere decir más agua que la que había en 2013. `fwl`
+es el nivel de agua libre (free water level) del caso.
 
 El caso se define en `caso.py`, el único archivo que se edita. Con `--fragmento` se imprime además
 la parte del deck que decide el caso.
