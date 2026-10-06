@@ -54,7 +54,7 @@ def _draw_fwl(ax, levels: list[float], top: float, base: float, x: float, ha: st
 
 # One colour per well, in a fixed order: it follows the well in every figure of the class.
 WELL_COLOR = {'19 SR': '#2a78d6', '19 A': '#eb6834', '19 BT2': '#1baf7a', 'F-12': '#eda100',
-              'F-4': '#e87ba4', 'F-11 B': '#4a3aa7'}
+              'F-4': '#e87ba4', 'F-5': '#008300', 'F-11 B': '#4a3aa7'}
 
 
 def case_j(case: Case, cells: Cells) -> np.ndarray | None:
@@ -98,7 +98,7 @@ def _track(ax, cells: Cells, sw_sim: np.ndarray, case: Case, well: str, result: 
 def profiles(cells: Cells, sw_sim: np.ndarray, case: Case, result: dict, path: Path) -> Path:
     """Every well as a depth track on one depth scale, and the J function the case implies."""
     wells = list(WELLS)
-    fig = plt.figure(figsize=(14, 6.8), facecolor=SURFACE)
+    fig = plt.figure(figsize=(15, 6.8), facecolor=SURFACE)
     grid = fig.add_gridspec(1, len(wells) + 2, width_ratios=[1] * len(wells) + [0.45, 4.2], wspace=0.16,
                             left=0.055, right=0.985, top=0.80, bottom=0.10)
     top, base = cells.tvdss.min() - 8, max(cells.tvdss.max(), max(case.fwl)) + 8
@@ -110,7 +110,7 @@ def profiles(cells: Cells, sw_sim: np.ndarray, case: Case, result: dict, path: P
         ax.tick_params(labelleft=(i == 0))
     first.set_ylim(base, top)
     first.set_ylabel('Profundidad (m TVDSS)', fontsize=11, color=SECONDARY)
-    fig.text(0.055 + 0.5 * (0.985 - 0.055) * len(wells) / (len(wells) + 4.9), 0.025,
+    fig.text(0.055 + 0.5 * (0.985 - 0.055) * len(wells) / (len(wells) + 4.65), 0.025,
              'Sw por celda, una por metro de pozo: gris el perfil, color el simulado; fondo gris, roca no neta; trazos, FWL',
              ha='center', fontsize=9, color=SECONDARY)
 
@@ -125,7 +125,7 @@ def profiles(cells: Cells, sw_sim: np.ndarray, case: Case, result: dict, path: P
             m = cells.of(well) & cells.net & (j > 0)
             swn = (cells.sw[m] - swl[m]) / (1.0 - swl[m])
             ax.scatter(swn, j[m], s=9, color=WELL_COLOR[well], alpha=0.55, linewidths=0,
-                       label=f'{well}' + (' (control)' if WELLS[well].role == 'control' else ''))
+                       label=f'{well}' + (' (control)' if WELLS[well].role != 'ajuste' else ''))
         for curve in case.curves:
             ax.plot(curve.sw, curve.pc, color=INK, linewidth=1.8)
         ax.set_yscale('log')
@@ -141,9 +141,9 @@ def profiles(cells: Cells, sw_sim: np.ndarray, case: Case, result: dict, path: P
     fig.suptitle(case.description, x=0.055, y=0.975, ha='left', fontsize=15, color=INK)
     fwl = ', '.join(f'{f:,.0f}' for f in sorted(set(case.fwl))[:3]) + (' …' if len(set(case.fwl)) > 3 else '')
     fig.text(0.055, 0.905, f'RMSE de ajuste {result["rmse_ajuste"]:.3f} (5 pozos previos a la producción) · '
-             f'control {result["rmse_control"]:.3f} · {case.n_parameters} parámetros · FWL {fwl} m · '
-             f'volumen poral de hidrocarburo {result["error_hcpv_ajuste"]:+.1%}',
-             fontsize=10, color=SECONDARY)
+             f'control inicial {result["rmse_control_inicial"]:.3f} (F-5) · '
+             f'control barrido {result["rmse_control_barrido"]:.3f} (F-11 B) · {case.n_parameters} parámetros · '
+             f'FWL {fwl} m', fontsize=10, color=SECONDARY)
     path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(path, dpi=130, facecolor=SURFACE)
     plt.close(fig)

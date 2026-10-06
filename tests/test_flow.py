@@ -48,13 +48,13 @@ def test_connate_water_per_cell_gives_the_operator_form(cells, tmp_path):
     assert np.max(np.abs(sw - expected)) < 0.02
 
 
-def test_a_case_never_sees_the_control_well(cells, tmp_path):
+def test_a_case_never_sees_the_control_wells(cells, tmp_path):
     probe = tmp_path / 'caso_espia.py'
     probe.write_text(
         'import numpy as np\n'
         'from sw.modelo import Case, JFunction, brooks_corey\n'
         'def build(cells):\n'
-        '    assert np.all(np.isnan(cells.sw[cells.well == "F-11 B"]))\n'
-        '    assert np.all(np.isfinite(cells.sw[cells.well != "F-11 B"]))\n'
+        '    control = np.isin(cells.well, ["F-5", "F-11 B"])\n'
+        '    assert np.all(np.isnan(cells.sw[control])) and np.all(np.isfinite(cells.sw[~control]))\n'
         '    return Case("espia", [brooks_corey(0.1, 2.0, 1.0)], [3120.0], 4, jfunc=JFunction())\n')
     evaluar.load_case(Path(probe), cells.hide_sw(pozo.CONTROL_WELLS))

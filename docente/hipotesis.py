@@ -37,11 +37,12 @@ def slides(experiments: list[dict]) -> str:
         lines = ['<style scoped>table { font-size: 19px; line-height: 1.3; width: 100%; } td { padding: 8px 14px 8px 0; } '
                  'td:nth-child(2) { font-family: inherit; font-size: 19px; color: inherit; white-space: normal; } '
                  'h2 { margin-bottom: 8px; max-width: none; }</style>', '', f'## {title}', '',
-                 '| N.º | Hipótesis | Ajuste | Control | Parámetros | Veredicto |',
-                 '| ---: | --- | ---: | ---: | ---: | --- |']
+                 '| N.º | Hipótesis | Ajuste | Control inicial | Control barrido | Parámetros | Veredicto |',
+                 '| ---: | --- | ---: | ---: | ---: | ---: | --- |']
         for e in chunk:
             lines.append(f"| {e['n']} | {e['hipotesis']} | {number(e.get('rmse_ajuste'))} | "
-                         f"{number(e.get('rmse_control'))} | {e.get('n_parametros', '—')} | {VERDICT.get(e['status'], e['status'])} |")
+                         f"{number(e.get('rmse_control_inicial'))} | {number(e.get('rmse_control_barrido'))} | "
+                         f"{e.get('n_parametros', '—')} | {VERDICT.get(e['status'], e['status'])} |")
         minutes = 6 // len(chunks)
         clock = 3 * 60 + (i + 1) * minutes
         note = (f'{minutes} min · acumulado {clock // 60}:{clock % 60:02d}\n'
@@ -53,11 +54,12 @@ def slides(experiments: list[dict]) -> str:
 def table_html(experiments: list[dict]) -> str:
     rows = ['<div class="scroll"><table>',
             '<tr><th class="n">N.º</th><th>Hipótesis</th><th>Predicción</th><th class="n">Ajuste</th>'
-            '<th class="n">Control</th><th>Veredicto</th></tr>']
+            '<th class="n">Control inicial</th><th class="n">Control barrido</th><th>Veredicto</th></tr>']
     for e in experiments:
         rows.append(f'<tr><td class="n">{e["n"]}</td><td>{html.escape(e["hipotesis"])}</td>'
                     f'<td>{html.escape(e["prediccion"])}</td><td class="n">{number(e.get("rmse_ajuste"))}</td>'
-                    f'<td class="n">{number(e.get("rmse_control"))}</td><td>{VERDICT.get(e["status"], e["status"])}</td></tr>')
+                    f'<td class="n">{number(e.get("rmse_control_inicial"))}</td>'
+                    f'<td class="n">{number(e.get("rmse_control_barrido"))}</td><td>{VERDICT.get(e["status"], e["status"])}</td></tr>')
     rows.append('</table></div>')
     return '\n  '.join(rows)
 

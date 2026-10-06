@@ -31,7 +31,7 @@ JSONLOG = ('https://raw.githubusercontent.com/geosoft-as/jsonwelllogformat/35f52
 
 # (path inside datos/volve/, pinned URL, sha256)
 FILES = [
-    # Interpreted logs: five wells logged before first oil, and the 2013 control.
+    # Interpreted logs: five wells logged before first oil, and the two controls (July 2008 and 2013).
     ('perfiles/15_9-19 SR/15_9-19_SR_CPI.las', f'{PETRO}/15_9-19%20SR/CPI/15_9-19_SR_CPI.las',
      'e4bd02b48733e465994809823187e7282119c784c396e29e130fed94eebb1ed8'),
     ('perfiles/15_9-19 A/15_9-19_A_CPI.las', f'{PETRO}/15_9-19%20A/CPI/15_9-19_A_CPI.las',
@@ -42,6 +42,8 @@ FILES = [
      '545ff15bc7fca12ff9660c07981be84c74e4c908206165718947457e9f1fc8bf'),
     ('perfiles/15_9-F-4/WLC_PETRO_COMPUTED_OUTPUT_1.DLIS', f'{PETRO}/15_9-F-4/WLC_PETRO_COMPUTED_OUTPUT_1.DLIS',
      '1cde69df90b9dcb5dff5807941c8b816d1db337140b3f654d14d5b8a975dbba7'),
+    ('perfiles/15_9-F-5/WLC_PETRO_COMPUTED_OUTPUT_1.DLIS', f'{PETRO}/15_9-F-5/WLC_PETRO_COMPUTED_OUTPUT_1.DLIS',
+     '68e36fe12ebbc7046552194f9ce1f0f6cbffa5dd751610534127d06de4e506b7'),
     ('perfiles/15_9-F-11 B/WLC_PETRO_COMPUTED_OUTPUT_1.LAS', f'{PETRO}/15_9-F-11%20B/WLC_PETRO_COMPUTED_OUTPUT_1.LAS',
      'e3fd166e295d4350d9a51bd338cb02a0ca3e72da9a5cb831641c999b6b015cec'),
     # The operator's 2009 revision of permeability.
@@ -49,6 +51,8 @@ FILES = [
      'aedc85027c7609212b8d18c4bb7d39fa1bf6582569053e8c365fe07d8c0dbba6'),
     ('perfiles/15_9-F-4/KLOGH_NEW.las', f'{PETRO}/15_9-F-4/geomod09/NO_15_9-F-4_KLOGH_NEW.las',
      '157e25fb42b1dfe74841e703081b7ecd4376501120814529127cfb65b2196641'),
+    ('perfiles/15_9-F-5/KLOGH_NEW.las', f'{PETRO}/15_9-F-5/geomod09/NO_15_9-F-5_KLOGH_NEW.las',
+     'e64691a9a2811695195aabae13d9c2744efc2be4da4b3a7fb15c518f3b117d10'),
     ('perfiles/15_9-19 BT2/KLOGH_NEW.las', f'{PETRO}/15_9-19%20BT2/geomod09/NO_15_9-19_BT2_KLOGH_NEW.las',
      '0bda4b605f7485d226fa3719e42e675cf538518c490034d860e8673a0918c9a9'),
     # Input logs for the quick look.
@@ -61,6 +65,8 @@ FILES = [
      '34a1a6f6e1d73060e30af00114401392826e3870274e9d1e7314eba724c64477'),
     ('trayectorias/F-4_ACTUAL', f'{AWGEO}/input_data/wellpaths/F-4_ACTUAL',
      'e837fedc1bd7bc70588d7742ca598113bf019c9ddc2a79c85c5638d50fbb3c49'),
+    ('trayectorias/F-5_ACTUAL', f'{AWGEO}/input_data/wellpaths/F-5_ACTUAL',
+     '8f2a17efc256bf265aa808449956f95f8cabf6bc7366392194c2d0ccc199109c'),
     ('trayectorias/F-11 B_ACTUAL', f'{AWGEO}/input_data/wellpaths/F-11%20B_ACTUAL',
      '85e1d1f6b2f2dfd00d8a0d6aac2cc7c740e2f6958de830b8ad0dbde5a84a7411'),
     ('topes/Well_picks_Volve_v1.dat', f'{PICKS}/Well_picks_Volve_v1.dat',

@@ -15,11 +15,11 @@ def test_logbook_joins_runs_with_their_verdict(tmp_path):
         folder.mkdir(parents=True)
         (folder / 'registro.json').write_text(json.dumps(
             {'commit': commit, 'mensaje': f'hipótesis {n}\n\nprediccion: baja', 'rmse_ajuste': fit,
-             'rmse_control': 0.2, 'n_parametros': 4}))
+             'rmse_control_inicial': 0.15, 'rmse_control_barrido': 0.2, 'n_parametros': 4}))
         (folder / 'fragmento.txt').write_text(f'EQUIL\n {3100 + n}.000 /\n')
     (tmp_path / 'results.tsv').write_text(
-        'commit\trmse_ajuste\trmse_control\tn_parametros\tstatus\tlectura\n'
-        'aaa1111\t0.14\t0.2\t4\tkeep\tbase\nbbb2222\t0.11\t0.2\t4\tdiscard\tno alcanzó\n')
+        'commit\trmse_ajuste\trmse_control_inicial\trmse_control_barrido\tn_parametros\tstatus\tlectura\n'
+        'aaa1111\t0.14\t0.15\t0.2\t4\tkeep\tbase\nbbb2222\t0.11\t0.15\t0.2\t4\tdiscard\tno alcanzó\n')
     experiments = bitacora.load(tmp_path)
     assert [e['status'] for e in experiments] == ['keep', 'discard']
     assert experiments[1]['hipotesis'] == 'hipótesis 2' and experiments[1]['lectura'] == 'no alcanzó'

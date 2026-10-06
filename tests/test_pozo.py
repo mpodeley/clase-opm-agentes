@@ -5,10 +5,10 @@ from sw import pozo
 
 # Hugin top and base in m TVDSS, from the picks file.
 HUGIN = {'19 SR': (2861.41, 2879.66), '19 A': (3012.99, 3101.40), '19 BT2': (3148.92, 3274.68),
-         'F-12': (2818.39, 2909.63), 'F-4': (2931.04, 3033.32)}
+         'F-12': (2818.39, 2909.63), 'F-4': (2931.04, 3033.32), 'F-5': (3000.20, 3144.03)}
 
 
-@pytest.mark.parametrize('well', ['F-12', 'F-4'])
+@pytest.mark.parametrize('well', ['F-12', 'F-4', 'F-5'])
 def test_survey_reproduces_the_picked_depths(well):
     top, base = pozo.hugin_intervals(pozo.WELLS[well].picks_name)[0]
     tvdss, _, _ = pozo.position(well, np.array([top, base]))
@@ -25,7 +25,8 @@ def test_cells_stay_inside_the_hugin(well):
 
 def test_fit_and_control_wells():
     assert pozo.FIT_WELLS == ['19 SR', '19 A', '19 BT2', 'F-12', 'F-4']
-    assert pozo.CONTROL_WELLS == ['F-11 B']
+    assert pozo.CONTROL_WELLS == ['F-5', 'F-11 B']
+    assert pozo.WELLS['F-5'].role == 'control_inicial' and pozo.WELLS['F-11 B'].role == 'control_barrido'
     assert len(pozo.hugin_intervals(pozo.WELLS['F-11 B'].picks_name)) > 1   # faulted: several stretches
 
 
@@ -54,5 +55,5 @@ def test_upscaling_keeps_the_water_volume_of_the_log():
 
 def test_hide_sw_only_blanks_the_named_well():
     cells = pozo.load_all().hide_sw(pozo.CONTROL_WELLS)
-    assert np.all(np.isnan(cells.sw[cells.of('F-11 B')]))
+    assert np.all(np.isnan(cells.sw[cells.of('F-11 B')])) and np.all(np.isnan(cells.sw[cells.of('F-5')]))
     assert np.all(np.isfinite(cells.sw[np.isin(cells.well, pozo.FIT_WELLS)]))

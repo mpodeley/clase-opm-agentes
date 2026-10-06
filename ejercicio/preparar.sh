@@ -32,5 +32,5 @@ uv sync --quiet --no-dev
 git init -q -b main
 git add -A
 git -c user.name="clase" -c user.email="clase@localhost" commit -q -m "caso base"
-uv run evaluar.py --sin-grafico | grep -E "^(caso|rmse_ajuste|rmse_control):"
+uv run evaluar.py --sin-grafico | grep -E "^(caso|rmse_ajuste|rmse_control_inicial|rmse_control_barrido):"
 echo "listo: cd $dest && claude"

@@ -72,7 +72,7 @@ def main() -> int:
 
     cells = load_all()
     try:
-        # The control well is never shown to a case.
+        # The control wells are never shown to a case.
         case = load_case(args.caso, cells.hide_sw(CONTROL_WELLS))
         sw_sim, seconds = initialize(case, cells, out)
     except (ValueError, FlowError) as e:

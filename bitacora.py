@@ -25,6 +25,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 STATUS = {'keep': 'conservado', 'discard': 'descartado', 'crash': 'falló'}
+SERIES_KEYS = ('rmse_ajuste', 'rmse_control_inicial', 'rmse_control_barrido')
 
 
 def parse_message(message: str) -> dict[str, str]:
@@ -69,11 +70,12 @@ def number(value) -> str:
 
 
 def table_markdown(experiments: list[dict]) -> str:
-    lines = ['| N.º | Hipótesis | Predicción | RMSE de ajuste | RMSE de control | Parámetros | Resultado |',
-             '| ---: | --- | --- | ---: | ---: | ---: | --- |']
+    lines = ['| N.º | Hipótesis | Predicción | Ajuste | Control inicial | Control barrido | Parámetros | Resultado |',
+             '| ---: | --- | --- | ---: | ---: | ---: | ---: | --- |']
     for e in experiments:
         lines.append(f"| {e['n']} | {e['hipotesis']} | {e['prediccion'] or '—'} | {number(e.get('rmse_ajuste'))} | "
-                     f"{number(e.get('rmse_control'))} | {e.get('n_parametros', '—')} | {STATUS.get(e['status'], e['status'])} |")
+                     f"{number(e.get('rmse_control_inicial'))} | {number(e.get('rmse_control_barrido'))} | "
+                     f"{e.get('n_parametros', '—')} | {STATUS.get(e['status'], e['status'])} |")
     return '\n'.join(lines)
 
 
@@ -82,8 +84,8 @@ def chart_svg(experiments: list[dict]) -> str:
     runs = [e for e in experiments if isinstance(e.get('rmse_ajuste'), float)]
     if not runs:
         return ''
-    w, h, left, right, top, bottom = 860, 300, 56, 150, 18, 38
-    values = [e[k] for e in runs for k in ('rmse_ajuste', 'rmse_control')]
+    w, h, left, right, top, bottom = 860, 300, 56, 190, 18, 38
+    values = [e[k] for e in runs for k in SERIES_KEYS]
     lo, hi = min(values) * 0.92, max(values) * 1.05
     x = lambda n: left + (w - left - right) * (n - 1) / max(len(experiments) - 1, 1)   # noqa: E731
     y = lambda v: top + (h - top - bottom) * (hi - v) / (hi - lo)                       # noqa: E731
@@ -95,7 +97,8 @@ def chart_svg(experiments: list[dict]) -> str:
     for e in experiments:
         out.append(f'<text x="{x(e["n"]):.1f}" y="{h - 14}" class="tick" text-anchor="middle">{e["n"]}</text>')
     out.append(f'<text x="{(left + w - right) / 2:.0f}" y="{h - 1}" class="tick" text-anchor="middle">experimento</text>')
-    for key, cls, label in (('rmse_control', 'control', 'control (F-11 B)'), ('rmse_ajuste', 'fit', 'ajuste (5 pozos)')):
+    for key, cls, label in (('rmse_control_barrido', 'control', 'control barrido (F-11 B)'),
+                            ('rmse_control_inicial', 'early', 'control inicial (F-5)'), ('rmse_ajuste', 'fit', 'ajuste (5 pozos)')):
         best, points = None, []
         for e in runs:   # the staircase of the kept cases
             if e['status'] == 'keep' or best is None:
@@ -121,12 +124,12 @@ def frames(experiments: list[dict], out: Path) -> list[Path]:
 
     ink, muted, surface, grid = '#0b0b0b', '#52514e', '#fcfcfb', '#e1e0d9'
     colours = {'keep': '#147a5f', 'discard': '#8a6412', 'crash': '#8a6412'}
-    fit_colour, control_colour = '#2a78d6', '#4a3aa7'
+    fit_colour, control_colour, early_colour = '#2a78d6', '#4a3aa7', '#008300'
     runs = [e for e in experiments if isinstance(e.get('rmse_ajuste'), float) and (e['folder'] / 'perfil.png').exists()]
     out.mkdir(parents=True, exist_ok=True)
     for old in out.glob('*.png'):
         old.unlink()
-    values = [e[k] for e in runs for k in ('rmse_ajuste', 'rmse_control')]
+    values = [e[k] for e in runs for k in SERIES_KEYS]
     paths = []
     for i, e in enumerate(runs):
         fig = plt.figure(figsize=(16, 9), facecolor=surface)
@@ -136,7 +139,8 @@ def frames(experiments: list[dict], out: Path) -> list[Path]:
         title = textwrap.wrap(e['hipotesis'], 84)[:3]
         fig.text(0.035, 0.918, '\n'.join(title), fontsize=17, color=ink, va='top', linespacing=1.25)
         detail = [('Mecanismo', e['mecanismo']), ('Predicción', e['prediccion']),
-                  ('Resultado', f'ajuste {e["rmse_ajuste"]:.4f} · control {e["rmse_control"]:.4f} · '
+                  ('Resultado', f'ajuste {e["rmse_ajuste"]:.4f} · control inicial {e["rmse_control_inicial"]:.4f} · '
+                                f'control barrido {e["rmse_control_barrido"]:.4f} · '
                                 f'{e.get("n_parametros", "—")} parámetros'), ('Lectura', e['lectura'])]
         y = 0.918 - 0.039 * len(title) - 0.014
         for label, text in detail:
@@ -151,7 +155,9 @@ def frames(experiments: list[dict], out: Path) -> list[Path]:
             y -= 0.025 * len(wrapped) + 0.007
 
         ax = fig.add_axes([0.775, 0.685, 0.20, 0.245], facecolor=surface)
-        for key, colour, label in (('rmse_control', control_colour, 'control'), ('rmse_ajuste', fit_colour, 'ajuste')):
+        for key, colour, label in (('rmse_control_barrido', control_colour, 'control barrido'),
+                                   ('rmse_control_inicial', early_colour, 'control inicial'),
+                                   ('rmse_ajuste', fit_colour, 'ajuste')):
             best, stairs = None, []
             for r in runs[:i + 1]:
                 if r['status'] == 'keep' or best is None:
@@ -169,7 +175,7 @@ def frames(experiments: list[dict], out: Path) -> list[Path]:
         ax.grid(True, color=grid, linewidth=0.6)
         for side in ('top', 'right', 'left', 'bottom'):
             ax.spines[side].set_visible(False)
-        ax.legend(loc='upper right', frameon=False, fontsize=9.5, labelcolor=muted, ncols=2, handlelength=1.2)
+        ax.legend(loc='upper right', frameon=False, fontsize=8.5, labelcolor=muted, ncols=3, handlelength=1.0, columnspacing=0.8)
         ax.set_title('RMSE por experimento', fontsize=10.5, color=ink, loc='left')
 
         image_ax = fig.add_axes([0.13, 0.0, 0.74, 0.615])
@@ -220,16 +226,16 @@ def player_html(sources: list[str]) -> str:
 
 
 CSS = """
-:root{--bg:#fff;--panel:#f4f4f2;--border:#d9dce0;--text:#16181d;--muted:#4a5361;--fit:#2a78d6;--control:#4a3aa7;
+:root{--bg:#fff;--panel:#f4f4f2;--border:#d9dce0;--text:#16181d;--muted:#4a5361;--fit:#2a78d6;--control:#4a3aa7;--early:#008300;
 --keep:#147a5f;--discard:#8a6412}
 @media (prefers-color-scheme:dark){:root{--bg:#0f1012;--panel:#1a1c20;--border:#2c3036;--text:#f4f4f2;--muted:#b4bac4;
---fit:#3987e5;--control:#9085e9;--keep:#3fc79b;--discard:#d9a531}}
+--fit:#3987e5;--control:#9085e9;--early:#3fb13f;--keep:#3fc79b;--discard:#d9a531}}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,sans-serif}
 main{max-width:1000px;margin:0 auto;padding:32px 16px 64px}h1{font-size:28px;margin:0 0 4px}h2{font-size:19px;margin:0}
 p.lead{color:var(--muted);margin:0 0 20px}svg{width:100%;height:auto}.grid{stroke:var(--border);stroke-width:1}
 .tick{font-size:12px;fill:var(--muted)}.label{font-size:13px;fill:var(--text)}.line{fill:none;stroke-width:2}
-.line.fit,.mark.fit{stroke:var(--fit)}.line.control,.mark.control{stroke:var(--control)}
-.mark{stroke-width:2}.mark.fit{fill:var(--fit)}.mark.control{fill:var(--control)}.mark.hollow{fill:var(--bg)}
+.line.fit,.mark.fit{stroke:var(--fit)}.line.control,.mark.control{stroke:var(--control)}.line.early,.mark.early{stroke:var(--early)}
+.mark{stroke-width:2}.mark.fit{fill:var(--fit)}.mark.control{fill:var(--control)}.mark.early{fill:var(--early)}.mark.hollow{fill:var(--bg)}
 article{border-top:1px solid var(--border);padding:18px 0;display:grid;grid-template-columns:1fr 300px;gap:20px}
 @media (max-width:760px){article{grid-template-columns:1fr}}
 .badge{font-size:12px;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:4px;border:1px solid currentColor}
@@ -256,7 +262,8 @@ def page(experiments: list[dict], frame_paths: list[Path] | None = None) -> str:
         if (e['folder'] / 'perfil.png').exists():
             data = base64.b64encode((e['folder'] / 'perfil.png').read_bytes()).decode()
             image = f'<a href="data:image/png;base64,{data}"><img alt="Perfiles del experimento {e["n"]}" src="data:image/png;base64,{data}"></a>'
-        result = (f'ajuste {number(e.get("rmse_ajuste"))} · control {number(e.get("rmse_control"))} · '
+        result = (f'ajuste {number(e.get("rmse_ajuste"))} · control inicial {number(e.get("rmse_control_inicial"))} · '
+                  f'control barrido {number(e.get("rmse_control_barrido"))} · '
                   f'{e.get("n_parametros", "—")} parámetros' if 'error' not in e else html.escape(e['error'][:300]))
         diff = f'<pre>{html.escape(e["diff"])}</pre>' if e['diff'] else ''
         parts.append(

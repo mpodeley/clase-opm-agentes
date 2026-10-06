@@ -47,11 +47,19 @@ su porosidad (PHIF), su permeabilidad (KLOGH) y una marca de arena neta. No hay 
 | 15/9-19 BT2 | ajuste | 1998 | 3,149 a 3,275 | 128 |
 | 15/9-F-12 | ajuste | 2007 | 2,818 a 2,910 | 126 |
 | 15/9-F-4 | ajuste | febrero de 2008 | 2,931 a 3,033 | 165 |
-| 15/9-F-11 B | control | 2013 | 2,829 a 3,171 | 431 |
+| 15/9-F-5 | control inicial | julio de 2008 | 3,000 a 3,144 | 215 |
+| 15/9-F-11 B | control barrido | 2013 | 2,829 a 3,171 | 431 |
 
 El campo empezó a producir el 12 de febrero de 2008. Los cinco pozos de ajuste se perfilaron antes
-y muestran el reservorio en estado inicial. F-11 B se perfiló con cinco años de producción e
-inyección de agua: el caso nunca ve su perfil, y sirve de control.
+y muestran el reservorio en estado inicial. Hay dos pozos de control, y el caso nunca ve su perfil:
+
+- **F-5, control inicial.** Se perfiló a fines de julio de 2008, cuando el campo había producido
+  0.5 millones de Sm³ de petróleo (el 5% de lo que terminó produciendo) y antes de que el propio
+  F-5 empezara a inyectar. El único inyector hasta entonces, F-4, está a 830 m. Vale como estado
+  inicial: es la prueba limpia de si el caso predice un pozo que no vio.
+- **F-11 B, control barrido.** Se perfiló en junio de 2013, con 7.75 millones de Sm³ de petróleo
+  producidos (el 77% del total final), 19 millones de Sm³ de agua inyectados y un corte de agua
+  del 85%. Su Sw es igual o mayor que la inicial.
 
 Profundidades en metros bajo el nivel del mar (TVDSS), positivas hacia abajo.
 
@@ -72,10 +80,10 @@ de J sean comparables con los de su informe.
 ## Reglas
 
 1. Solo editás `caso.py`, y copias de casos en `casos/`. No tocás `evaluar.py`, `sw/` ni `datos/`.
-2. `cells.sw` trae el perfil de los cinco pozos de ajuste y `NaN` en F-11 B.
+2. `cells.sw` trae el perfil de los cinco pozos de ajuste y `NaN` en F-5 y F-11 B.
 3. `n_parameters` se cuenta con honestidad: cada número elegido mirando el resultado suma uno.
    El arnés rechaza más de 6.
-4. Un resultado se informa con su número: `rmse_ajuste`, el RMSE por pozo, `rmse_control`,
+4. Un resultado se informa con su número: `rmse_ajuste`, el RMSE por pozo, los dos controles,
    `n_parametros` y el error en volumen poral de hidrocarburo. Sin adjetivos.
 5. Lo que no sale de los datos se escribe como hipótesis.
 6. No hay internet y no hace falta. No instalás paquetes.
@@ -89,5 +97,7 @@ de J sean comparables con los de su informe.
 - La permeabilidad de F-12, F-4 y 19 BT2 es la revisión de 2009 del operador. La del archivo
   original de F-12 es unas 40 veces menor.
 - 19 BT2 está entero en agua. Si un caso le pone petróleo, el contacto está demasiado abajo.
-- Un `rmse_ajuste` bajo con un `sesgo_control` positivo es mala señal: el modelo pone más agua
-  inicial que la que tiene el pozo de control después de cinco años de inyección.
+- Un `rmse_ajuste` bajo con un `rmse_control_inicial` alto es sobreajuste: el caso aprendió los
+  pozos y no la roca.
+- Un `sesgo_control_barrido` positivo es mala señal: el modelo pone más agua inicial que la que
+  tiene F-11 B después de cinco años de inyección.

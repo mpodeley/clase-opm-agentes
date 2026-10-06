@@ -5,7 +5,9 @@ along the well path instead of a vertical stack. Equilibration only needs depth 
 per cell, which makes the same construction valid for a vertical and a horizontal well.
 
 Only the Hugin Formation is kept. Five wells were logged before first oil (12 February 2008)
-and are the ones a case is fitted to; 15/9-F-11 B was logged in 2013 and is the control.
+and are the ones a case is fitted to. Two wells are controls that no case ever sees:
+15/9-F-5, logged in July 2008 with 5% of the field's final oil produced and before it started
+injecting, stands for the initial state; 15/9-F-11 B, logged in 2013 with 77% produced, is swept.
 """
 from __future__ import annotations
 
@@ -34,7 +36,8 @@ class WellSpec:
     name: str               # short name used in tables and plots
     log: str                # interpreted log, relative to DATA
     trajectory: str | None  # survey file; None = interpolate between the formation picks
-    role: str               # 'ajuste' (fitted) or 'control' (never shown to a case)
+    role: str               # 'ajuste' (fitted), or a control never shown to a case:
+                            # 'control_inicial' (before sweep) or 'control_barrido' (after)
     logged: str             # when the reservoir section was logged
     perm: str | None = None  # the operator's 2009 revision of permeability, where there is one
 
@@ -56,11 +59,14 @@ WELLS = {w.name: w for w in (
              'ajuste', '2007', 'perfiles/15_9-F-12/KLOGH_NEW.las'),
     WellSpec('F-4', 'perfiles/15_9-F-4/WLC_PETRO_COMPUTED_OUTPUT_1.DLIS', 'trayectorias/F-4_ACTUAL',
              'ajuste', 'febrero de 2008', 'perfiles/15_9-F-4/KLOGH_NEW.las'),
+    WellSpec('F-5', 'perfiles/15_9-F-5/WLC_PETRO_COMPUTED_OUTPUT_1.DLIS', 'trayectorias/F-5_ACTUAL',
+             'control_inicial', 'julio de 2008', 'perfiles/15_9-F-5/KLOGH_NEW.las'),
     WellSpec('F-11 B', 'perfiles/15_9-F-11 B/WLC_PETRO_COMPUTED_OUTPUT_1.LAS', 'trayectorias/F-11 B_ACTUAL',
-             'control', '2013'),
+             'control_barrido', '2013'),
 )}
+ROLES = ('ajuste', 'control_inicial', 'control_barrido')
 FIT_WELLS = [w.name for w in WELLS.values() if w.role == 'ajuste']
-CONTROL_WELLS = [w.name for w in WELLS.values() if w.role == 'control']
+CONTROL_WELLS = [w.name for w in WELLS.values() if w.role != 'ajuste']
 
 
 @dataclass(frozen=True)

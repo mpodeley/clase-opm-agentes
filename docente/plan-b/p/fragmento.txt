@@ -19,8 +19,8 @@ SWOF
 -- Sin escalado de extremos: el agua irreducible es la de la tabla.
 -- ===== AJUSTE_REGIONES.INC
 -- Qué tabla (SATNUM) y qué contacto (EQLNUM) le toca a cada celda.
-SATNUM   -- 1173 valores, 1: 1173 celdas
-EQLNUM   -- 1173 valores, 1: 999 celdas, 2: 174 celdas
+SATNUM   -- 1411 valores, 1: 1411 celdas
+EQLNUM   -- 1411 valores, 1: 1237 celdas, 2: 174 celdas
 -- ===== AJUSTE_SOLUTION.INC
 -- Un registro por región de equilibrio. Datum y contacto en el nivel de agua libre (FWL).
 --  datum(m)  presión(bar)  contacto(m)  Pc en el contacto  ...  0 = equilibrio al centro de la celda

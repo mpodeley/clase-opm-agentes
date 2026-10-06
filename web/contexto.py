@@ -128,7 +128,7 @@ def figure_map(top: dict, path: Path) -> None:
     ax.set_xlabel('Este (km)', fontsize=11, color=SECONDARY)
     ax.set_ylabel('Norte (km)', fontsize=11, color=SECONDARY)
     _colorbar(fig, filled, ax, 'Tope de la Formación Hugin (m TVDSS)', invert=True)
-    fig.suptitle('Tope del Hugin y los seis pozos del ejercicio, con su tramo dentro del Hugin',
+    fig.suptitle('Tope del Hugin y los siete pozos del ejercicio, con su tramo dentro del Hugin',
                  x=0.08, y=0.96, ha='left', fontsize=13, color=INK)
     fig.savefig(path, dpi=130, facecolor=SURFACE)
     plt.close(fig)
@@ -166,8 +166,10 @@ def figure_sections(top: dict, base: dict, bcu: dict, path: Path) -> None:
     for name, s in (('BCU', bcu), ('Tope del Hugin', top), ('Base del Hugin', base)):
         a = as_array(s)
         trees[name] = (cKDTree(a[:, :2]), a[:, 2])
-    fig, axes = plt.subplots(2, 3, figsize=(13, 7.6), facecolor=SURFACE, sharey=True)
-    fig.subplots_adjust(left=0.07, right=0.9, top=0.88, bottom=0.08, wspace=0.08, hspace=0.3)
+    fig, axes = plt.subplots(2, 4, figsize=(15, 7.6), facecolor=SURFACE, sharey=True)
+    fig.subplots_adjust(left=0.06, right=0.91, top=0.88, bottom=0.08, wspace=0.08, hspace=0.3)
+    for ax in axes.flat[len(pozo.WELLS):]:
+        ax.axis('off')
     points = None
     for ax, well in zip(axes.flat, pozo.WELLS):
         _style(ax)
@@ -183,7 +185,7 @@ def figure_sections(top: dict, base: dict, bcu: dict, path: Path) -> None:
         cells = pozo.load_cells(well)
         points = ax.scatter(np.interp(cells.md, md, distance), cells.tvdss, c=cells.sw, cmap=BLUES, vmin=0, vmax=1,
                             s=14, linewidths=0, zorder=3)
-        ax.set_title(f'{well} · {spec.logged}' + (' · control' if spec.role == 'control' else ''),
+        ax.set_title(f'{well} · {spec.logged}' + (' · control' if spec.role != 'ajuste' else ''),
                      fontsize=11, color=INK, loc='left')
         ax.set_xlabel('Distancia horizontal (m)', fontsize=9, color=SECONDARY)
     axes[0, 0].invert_yaxis()
@@ -195,8 +197,8 @@ def figure_sections(top: dict, base: dict, bcu: dict, path: Path) -> None:
     bar.set_label('Sw del perfil en el Hugin (fracción)', fontsize=10, color=SECONDARY)
     bar.ax.tick_params(colors=MUTED, labelsize=9, length=0)
     bar.outline.set_visible(False)
-    fig.suptitle('Los seis pozos en sección, entre los horizontes del mapa: claro es petróleo, oscuro es agua',
-                 x=0.07, y=0.96, ha='left', fontsize=13, color=INK)
+    fig.suptitle('Los siete pozos en sección, entre los horizontes del mapa: claro es petróleo, oscuro es agua',
+                 x=0.06, y=0.96, ha='left', fontsize=13, color=INK)
     fig.savefig(path, dpi=125, facecolor=SURFACE)
     plt.close(fig)
 
@@ -449,8 +451,18 @@ def figure_production(path: Path) -> None:
     ax.set_xlim(2007.9, 2016.95)
     ax.set_ylabel('Miles de Sm³ por mes', fontsize=11, color=SECONDARY)
     top = ax.get_ylim()[1]
-    for year, label, y in ((2008.12, 'Primer petróleo: los cinco\npozos de ajuste ya están perfilados', 0.97),
-                           (2013.45, 'Se perfila F-11 B,\nel pozo de control', 0.97)):
+    oil, injected = series['Petróleo'], series['Agua inyectada']
+
+    def produced(year: float) -> tuple[float, float]:
+        """Share of the final oil produced, and water injected in million Sm3, before `year`."""
+        before = when < year
+        return oil[before].sum() / oil.sum(), injected[before].sum() / 1000.0
+
+    f5, f11 = produced(2008.5), produced(2013.42)
+    notes = ((2008.12, 'Primer petróleo:\ncinco pozos ya perfilados', 0.97),
+             (2008.56, f'F-5, control inicial:\n{f5[0]:.0%} del petróleo final producido', 0.80),
+             (2013.45, f'F-11 B, control barrido:\n{f11[0]:.0%} producido,\n{f11[1]:.0f} millones de Sm³ inyectados', 0.97))
+    for year, label, y in notes:
         ax.axvline(year, color=SECONDARY, linewidth=0.8, linestyle=(0, (4, 3)))
         ax.text(year + 0.07, top * y, label, fontsize=9.5, color=SECONDARY, va='top', zorder=5,
                 bbox={'facecolor': SURFACE, 'edgecolor': 'none', 'pad': 2, 'alpha': 0.85})
@@ -501,17 +513,17 @@ def figure_tilt(path: Path) -> None:
     """Fit and control error against the tilt of the free water level, from the optimizer scan."""
     table = np.loadtxt(Path(__file__).resolve().parent.parent / 'docente' / 'plan-b' / 'barrido_inclinacion.tsv',
                        skiprows=1)
-    fig, ax = plt.subplots(figsize=(9.6, 5.2), facecolor=SURFACE)
-    fig.subplots_adjust(left=0.09, right=0.8, top=0.84, bottom=0.14)
+    fig, ax = plt.subplots(figsize=(9.8, 5.2), facecolor=SURFACE)
+    fig.subplots_adjust(left=0.09, right=0.76, top=0.84, bottom=0.14)
     _style(ax)
-    series = (('Ajuste, 5 pozos', 2, INK, 2.2), ('F-4', 3, WELL_COLOR['F-4'], 1.6), ('19 A', 4, WELL_COLOR['19 A'], 1.6),
-              ('Control, F-11 B', 5, WELL_COLOR['F-11 B'], 1.6))
+    series = (('Ajuste, 5 pozos', 2, INK, 2.2), ('F-4', 3, WELL_COLOR['F-4'], 1.6),
+              ('Control inicial, F-5', 5, WELL_COLOR['F-5'], 1.6), ('Control barrido, F-11 B', 7, WELL_COLOR['F-11 B'], 1.6))
     ends = sorted(series, key=lambda s: table[-1, s[1]])
     for name, column, color, width in series:
         ax.plot(table[:, 0], table[:, column], color=color, linewidth=width, marker='o', ms=5,
                 markeredgecolor=SURFACE, markeredgewidth=1)
     for rank, (name, column, color, _) in enumerate(ends):
-        ax.annotate(name, (table[-1, 0], table[-1, column]), xytext=(table[-1, 0] + 8, max(table[-1, column], 0.085 + 0.022 * rank)),
+        ax.annotate(name, (table[-1, 0], table[-1, column]), xytext=(table[-1, 0] + 8, max(table[-1, column], 0.10 + 0.035 * rank)),
                     textcoords='data', fontsize=10, color=INK, va='center',
                     arrowprops={'arrowstyle': '-', 'color': color, 'linewidth': 1.3})
     ax.axvline(0, color=SECONDARY, linewidth=0.8, linestyle=(0, (4, 3)))
@@ -520,7 +532,7 @@ def figure_tilt(path: Path) -> None:
     ax.set_xlabel('Inclinación del nivel de agua libre de 19 A hacia F-4 (m por km; negativo: más somero en F-4)',
                   fontsize=10, color=SECONDARY)
     ax.set_ylabel('RMSE de Sw', fontsize=11, color=SECONDARY)
-    fig.suptitle('¿Contacto inclinado? El ajuste mejora, el control no', x=0.09, y=0.95, ha='left', fontsize=13, color=INK)
+    fig.suptitle('¿Contacto inclinado? El ajuste mejora, los controles no', x=0.09, y=0.95, ha='left', fontsize=13, color=INK)
     fig.savefig(path, dpi=130, facecolor=SURFACE)
     plt.close(fig)
 
@@ -530,8 +542,8 @@ def figure_perched(path: Path) -> None:
     table = np.loadtxt(Path(__file__).resolve().parent.parent / 'docente' / 'plan-b' / 'barrido_agua_colgada.tsv',
                        skiprows=1)
     table = table[table[:, 0] <= 3100]
-    fig, ax = plt.subplots(figsize=(9.6, 5.2), facecolor=SURFACE)
-    fig.subplots_adjust(left=0.09, right=0.8, top=0.84, bottom=0.14)
+    fig, ax = plt.subplots(figsize=(9.8, 5.2), facecolor=SURFACE)
+    fig.subplots_adjust(left=0.09, right=0.76, top=0.84, bottom=0.14)
     _style(ax)
     ax.axvspan(3016, 3024, color=GRID, alpha=0.9, linewidth=0)
     ax.text(3020, 0.292, 'derrame de\nla cubeta', fontsize=9, color=SECONDARY, ha='center', va='top')
@@ -539,7 +551,8 @@ def figure_perched(path: Path) -> None:
     ax.text(3026, 0.245, 'modelo\nde campo', fontsize=9, color=SECONDARY, va='top')
     ax.axvline(3033.3, color=SECONDARY, linewidth=0.9, linestyle=(0, (4, 3)))
     ax.text(3034.5, 0.292, 'base del Hugin\nen F-4', fontsize=9, color=SECONDARY, va='top')
-    series = (('Ajuste, 5 pozos', 1, INK, 2.2), ('F-4', 2, WELL_COLOR['F-4'], 1.6), ('Control, F-11 B', 4, WELL_COLOR['F-11 B'], 1.6))
+    series = (('Ajuste, 5 pozos', 1, INK, 2.2), ('F-4', 2, WELL_COLOR['F-4'], 1.6),
+              ('Control inicial, F-5', 4, WELL_COLOR['F-5'], 1.6), ('Control barrido, F-11 B', 6, WELL_COLOR['F-11 B'], 1.6))
     for name, column, color, width in series:
         ax.plot(table[:, 0], table[:, column], color=color, linewidth=width, marker='o', ms=5,
                 markeredgecolor=SURFACE, markeredgewidth=1)
@@ -593,20 +606,21 @@ def figure_rmse(path: Path) -> None:
     for row, (case, label) in enumerate(cases):
         wells, t = _run(case)
         net = t[:, 5] > 0.5
-        fit = net & np.isin(wells, pozo.FIT_WELLS)
-        control = net & np.isin(wells, pozo.CONTROL_WELLS)
-        values = [float(np.sqrt(np.mean((t[m, 7] - t[m, 6]) ** 2))) for m in (fit, control)]
+        masks = [net & np.isin(wells, [w.name for w in pozo.WELLS.values() if w.role == role]) for role in pozo.ROLES]
+        values = [float(np.sqrt(np.mean((t[m, 7] - t[m, 6]) ** 2))) for m in masks]
         y = len(cases) - 1 - row
-        ax.plot(values, [y, y], color=AXIS, linewidth=1.2, zorder=1)
-        ax.plot(values[0], y, 'o', ms=9, color=INK, zorder=3)
-        ax.plot(values[1], y, 'o', ms=9, color=WELL_COLOR['F-11 B'], zorder=3)
-        ax.text(values[0] - 0.006, y + 0.2, f'{values[0]:.3f}', fontsize=9, color=INK, ha='right')
-        ax.text(values[1] + 0.006, y + 0.2, f'{values[1]:.3f}', fontsize=9, color=INK, ha='left')
+        ax.plot([min(values), max(values)], [y, y], color=AXIS, linewidth=1.2, zorder=1)
+        for value, colour in zip(values, (INK, WELL_COLOR['F-5'], WELL_COLOR['F-11 B'])):
+            ax.plot(value, y, 'o', ms=9, color=colour, zorder=3, markeredgecolor=SURFACE, markeredgewidth=1)
         ax.text(-0.008, y, label, fontsize=10, color=INK, ha='right', va='center')
+        ax.text(0.475, y, f'{values[0]:.3f} · {values[1]:.3f} · {values[2]:.3f}', fontsize=9, color=INK, va='center', ha='right')
     ax.plot([], [], 'o', ms=8, color=INK, label='Ajuste: los cinco pozos previos a la producción')
-    ax.plot([], [], 'o', ms=8, color=WELL_COLOR['F-11 B'], label='Control: F-11 B, que el caso no ve')
-    ax.set_xlim(0, 0.245)
-    ax.set_ylim(-1.7, len(cases) - 0.3)
+    ax.plot([], [], 'o', ms=8, color=WELL_COLOR['F-5'], label='Control inicial: F-5, sin barrer')
+    ax.plot([], [], 'o', ms=8, color=WELL_COLOR['F-11 B'], label='Control barrido: F-11 B')
+    ax.text(0.475, len(cases) - 0.45, 'ajuste · inicial · barrido', fontsize=8.5, color=SECONDARY, ha='right')
+    ax.set_xlim(0, 0.48)
+    ax.set_xticks([0, 0.1, 0.2, 0.3])
+    ax.set_ylim(-2.2, len(cases) - 0.2)
     ax.set_yticks([])
     ax.spines['left'].set_visible(False)
     ax.set_xlabel('RMSE de Sw: más a la izquierda, mejor', fontsize=10, color=SECONDARY)

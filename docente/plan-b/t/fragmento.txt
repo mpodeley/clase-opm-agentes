@@ -17,11 +17,11 @@ SWOF
  1.000000 1.000000 0.000000 0.193 /
 -- ===== AJUSTE_SWL.INC
 -- Agua connata por celda: la tabla de SWOF se reescala entre SWL y 1.
-SWL   -- 1173 valores, de 0.020 a 0.426
+SWL   -- 1411 valores, de 0.020 a 0.426
 -- ===== AJUSTE_REGIONES.INC
 -- Qué tabla (SATNUM) y qué contacto (EQLNUM) le toca a cada celda.
-SATNUM   -- 1173 valores, 1: 1173 celdas
-EQLNUM   -- 1173 valores, de 1.000 a 30.000
+SATNUM   -- 1411 valores, 1: 1411 celdas
+EQLNUM   -- 1411 valores, de 1.000 a 30.000
 -- ===== AJUSTE_SOLUTION.INC
 -- Un registro por región de equilibrio. Datum y contacto en el nivel de agua libre (FWL).
 --  datum(m)  presión(bar)  contacto(m)  Pc en el contacto  ...  0 = equilibrio al centro de la celda

@@ -14,7 +14,8 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / 'docente' / 'plan-b'
 CASES = ['base', 'j1', 'op', 'j2', 't', 'p']
 COLUMNS = ['rmse_ajuste', 'rmse_19-SR', 'rmse_19-A', 'rmse_19-BT2', 'rmse_F-12', 'rmse_F-4',
-           'rmse_control', 'sesgo_control', 'error_hcpv_ajuste', 'fwl', 'n_parametros']
+           'rmse_control_inicial', 'sesgo_control_inicial', 'rmse_control_barrido', 'sesgo_control_barrido',
+           'error_hcpv_ajuste', 'fwl', 'n_parametros']
 
 
 def main() -> int:
@@ -30,7 +31,7 @@ def main() -> int:
         if name == 'base':
             values['caso'] = 'Base: J1 sin ajustar'
         rows.append(values)
-        print(f'{name:5} {values["rmse_ajuste"]}  {values["rmse_control"]}  {values["caso"]}')
+        print(f'{name:5} {values["rmse_ajuste"]}  {values["rmse_control_inicial"]}  {values["rmse_control_barrido"]}  {values["caso"]}')
 
     lines = ['| Caso | ' + ' | '.join(COLUMNS) + ' |', '| --- |' + ' ---: |' * len(COLUMNS)]
     for values in rows:

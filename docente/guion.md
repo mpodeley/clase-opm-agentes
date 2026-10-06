@@ -5,7 +5,7 @@ ingenieros de reservorios. Conocen presión capilar, función J y contactos; lo 
 OPM Flow y el trabajo con un agente.
 
 El hilo de la clase: mirar bien los datos, ajustar con pocos parámetros solo los pozos que
-muestran el estado inicial, y dejar un pozo afuera para controlar.
+muestran el estado inicial, y dejar dos pozos afuera para controlar, uno de ellos sin barrer.
 
 ## El día anterior
 
@@ -38,16 +38,20 @@ muestran el estado inicial, y dejar un pozo afuera para controlar.
 - 0:00. Qué van a ver: un agente que maneja un simulador, sobre un problema que ellos conocen.
 - 0:02. Volve en un minuto: mar del Norte, 80 m de agua, Formación Hugin entre 2,700 y 3,100 m,
   producido de 2008 a 2016 con inyección de agua, datos liberados en 2018.
-- 0:04. El mapa: un alto de 1.5 por 2.5 km. Seis pozos en color, y cada color sigue al pozo en
+- 0:04. El mapa: un alto de 1.5 por 2.5 km. Siete pozos en color, y cada color sigue al pozo en
   toda la clase.
 - 0:07. Las superficies: discordancia de la base del Cretácico, tope y base del Hugin, y el
   espesor. No hay superficies públicas de lo que está debajo.
 - 0:10. Las secciones: cuatro pozos con petróleo entre 2,818 y 3,101 m, 19 BT2 entero en agua
   desde 3,149 m, F-11 B entrando y saliendo por fallas.
 - 0:14. La producción y la regla: solo se ajusta con pozos perfilados antes del 12 de febrero de
-  2008. F-4 es el caso límite (7 y 11 de febrero). F-11 B, de 2013, es el control.
-- 0:17. La tabla de los seis pozos.
-- 0:20. Qué trae el conjunto completo y qué usamos: 24 archivos, 52 MB.
+  2008. F-4 es el caso límite (7 y 11 de febrero). Dos controles, que no son equivalentes:
+  - F-5, fines de julio de 2008: 0.5 millones de Sm³ de petróleo producidos (5% del final),
+    0.5 inyectados por F-4, a 830 m. El propio F-5 empezó a inyectar en agosto. Sin barrer.
+  - F-11 B, junio de 2013: 7.75 millones de Sm³ producidos (77% del final), 19 inyectados,
+    corte de agua del 85%. Puede estar barrido.
+- 0:17. La tabla de los siete pozos.
+- 0:20. Qué trae el conjunto completo y qué usamos: 27 archivos, 53 MB.
 - 0:23. Lo que hay que reproducir: Sw contra profundidad, los cinco pozos. Preguntar dónde
   pondrían el contacto y anotar dos o tres respuestas.
 
@@ -88,9 +92,9 @@ muestran el estado inicial, y dejar un pozo afuera para controlar.
 - 1:38. Nuestro modelo (una fila de celdas) y el deck de campo de Equinor: 12 regiones de
   equilibrio, presión capilar cero, agua connata por celda.
 - 1:42. Cómo medimos el ajuste: el RMSE es el área entre perfil y simulado, hecha número. Cuanto
-  más chico, mejor. Dos números por caso: ajuste y control.
+  más chico, mejor. Tres números por caso: ajuste, control inicial (F-5) y control barrido (F-11 B).
 - 1:44. Ventana C: `claude`, y pegar `PEDIDO-1.md`. Narrar qué herramienta llama. El caso base da
-  `rmse_ajuste` 0.142 y `rmse_control` 0.205.
+  `rmse_ajuste` 0.142, control inicial 0.295 y control barrido 0.205.
 - 1:48. El fragmento del deck en pantalla: `JFUNC`, `SWOF`, `EQUIL`. Cuatro parámetros a la vista.
 - 1:53. Un caso nuevo es un diff de tres archivos chicos.
 
@@ -101,19 +105,21 @@ Plan B: `docente/plan-b/base/` y `docente/plan-b/j1/fragmento.txt`.
 - 1:55. Pegar `PEDIDO-2.md`: J1, el modelo del operador sin tocar, y J2. Unos 12 minutos.
 - 1:57. Mientras corre, la diapositiva de los tres casos. Apuesta: ¿el modelo de 2006 sin tocar
   ajusta mejor o peor que una J nueva?
-- 2:07. La figura del operador: 0.122 sin ajustar nada, y sesgo de +0.066 en el control.
-- 2:13. La figura de J1: 0.112, contacto en 3,150 m, y la transición de F-11 B predicha.
+- 2:07. La figura del operador: 0.122 sin ajustar nada, y 0.302 en el control inicial. F-5 tiene
+  petróleo hasta 3,144 m: el contacto de 3,120 m del informe queda dentro de esa columna.
+- 2:13. La figura de J1: 0.112, contacto en 3,150 m, y F-5 predicho a ciegas con 0.090.
 - 2:19. La tabla. Compararla con `comparacion.md`:
 
-  | Caso | Ajuste | F-4 | Control | Sesgo del control | FWL | Parámetros |
-  | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-  | Base | 0.142 | 0.201 | 0.205 | −0.038 | 3,120 m | 4 |
-  | J1 | 0.112 | 0.147 | 0.122 | −0.003 | 3,150 m | 4 |
-  | OP | 0.122 | 0.151 | 0.197 | +0.066 | 3,120 m | 0 |
-  | J2 | 0.114 | 0.149 | 0.142 | +0.003 | 3,151 m | 5 |
+  | Caso | Ajuste | F-4 | Control inicial | Control barrido | Sesgo en F-11 B | FWL | Parámetros |
+  | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+  | Base | 0.142 | 0.201 | 0.295 | 0.205 | −0.038 | 3,120 m | 4 |
+  | J1 | 0.112 | 0.147 | 0.090 | 0.122 | −0.003 | 3,150 m | 4 |
+  | OP | 0.122 | 0.151 | 0.302 | 0.197 | +0.066 | 3,120 m | 0 |
+  | J2 | 0.114 | 0.149 | 0.094 | 0.142 | +0.003 | 3,151 m | 5 |
 
 - 2:25. El diff del deck entre J1 y el operador.
-- 2:30. Cierre: con cuatro parámetros alcanza y el control lo confirma. Qué eligió el agente.
+- 2:30. Cierre: con cuatro parámetros alcanza y el pozo sin barrer lo confirma. Qué eligió el
+  agente.
 - 2:33. Pegar `PEDIDO-3.md` y dejar el loop corriendo durante la pausa.
 
 Si el informe se contradice: es verdad. La tabla 11 da `Swirr = 0.45 − 0.105·log k` para Volve
@@ -133,16 +139,21 @@ y la figura 20.b rotula `0.412 − 0.088·log k`. El caso de referencia sigue la
 
 Referencia del ensayo del 5 de octubre de 2026 (`docente/plan-b/ensayo/`): 12 experimentos en 9
 minutos, 3 conservados y 9 descartados. Solo cambió `caso.py`. El caso final tiene 2 parámetros,
-`Sw = J^−0.284` con el contacto en 3,150 m: `rmse_ajuste` 0.112 y `rmse_control` 0.121, lo mismo
-que el J1 de cuatro parámetros ajustado con optimizador. Lo que sirve para la discusión:
+`Sw = J^−0.284` con el contacto en 3,150 m: ajuste 0.112, control inicial 0.103 y control barrido
+0.121, casi lo mismo que el J1 de cuatro parámetros ajustado con optimizador. El ensayo se hizo
+con F-11 B como único control; los números de F-5 se calcularon después, corriendo de nuevo el
+caso de cada commit. Lo que sirve para la discusión:
 
 - La primera hipótesis fue de forma y dio casi toda la mejora: sacar la meseta de agua
   irreducible (de 0.142 a 0.113, con un parámetro menos).
 - Probó sin escalado de Leverett y el error subió a 0.124: el escalado vale 0.011.
 - Swirr por permeabilidad, Swirr por arcilla, dos tipos de roca, exponente de k libre y curva de
   Thomeer no llegaron al umbral de 0.004 por parámetro.
-- Con el contacto del operador (3,120 m) el ajuste empeora 0.003 y el control pasa de 0.121 a
-  0.177.
+- El experimento 3 mueve el contacto de 3,120 a 3,150 m: el ajuste mejora 0.001 y se descarta por
+  simplicidad, pero el control inicial pasa de 0.296 a 0.093. Los pozos de ajuste no distinguen
+  los dos contactos; F-5, sin barrer, sí.
+- Con el contacto del operador (3,120 m) el ajuste empeora 0.003 y los controles pasan de 0.103 y
+  0.121 a 0.314 y 0.177.
 - Su informe dice que la base de F-4 concentra la mitad del error y propone contactos distintos
   para F-4 y 19 A. Es el puente al bloque 8.
 - Avisó que eligió los valores con una cuenta propia fuera de Flow, y que esa cuenta falló en los
@@ -155,8 +166,8 @@ Si el loop no terminó: Esc y pedirle el informe con lo que tenga.
 - 3:15. Pegar `PEDIDO-4.md`. Mientras corre: F-4 con Sw 0.34 a 3,020 m en roca de 3,000 mD, 19 A
   con petróleo hasta 3,101 m, a 960 m uno del otro. Dos hipótesis con un parámetro más cada una.
 - 3:17. Hipótesis 1, contacto inclinado (`docente/plan-b/barrido_inclinacion.tsv`): con 90 m por
-  kilómetro el ajuste baja de 0.114 a 0.097 y el control sube de 0.142 a 0.193. Pide unos 3 bar
-  por kilómetro en el acuífero.
+  kilómetro el ajuste baja de 0.114 a 0.097, el control inicial sube de 0.094 a 0.236 y el
+  barrido de 0.142 a 0.193. Pide unos 3 bar por kilómetro en el acuífero.
 - 3:19. Hipótesis 2, agua colgada. La figura de `web/cubeta.py`: la base del Hugin inclina hacia
   una falla donde la cruza F-4. Con los escalones de más de 39 grados como falla sellante queda
   una cubeta de 0.07 km² con derrame en 3,016 m; con 45 grados, 3,024 m; con 56 no cierra. En los
@@ -164,17 +175,17 @@ Si el loop no terminó: Esc y pedirle el informe con lo que tenga.
 - 3:23. El barrido del nivel local (`docente/plan-b/barrido_agua_colgada.tsv`): mínimo agudo en
   3,033 m, la base del Hugin en F-4.
 
-  | Hipótesis | Ajuste | F-4 | Control | Sesgo del control |
+  | Hipótesis | Ajuste | F-4 | Control inicial | Control barrido |
   | --- | ---: | ---: | ---: | ---: |
-  | Un contacto (J1) | 0.112 | 0.147 | 0.122 | −0.003 |
-  | Contacto inclinado 90 m por km | 0.097 | 0.108 | 0.193 | +0.049 |
-  | Agua colgada en F-4 | 0.090 | 0.090 | 0.131 | −0.033 |
+  | Un contacto (J1) | 0.112 | 0.147 | 0.090 | 0.122 |
+  | Contacto inclinado 90 m por km | 0.097 | 0.108 | 0.236 | 0.193 |
+  | Agua colgada en F-4 | 0.090 | 0.090 | 0.075 | 0.131 |
 
-- 3:25. El mejor caso en pantalla: los seis pozos con una sola función J, el contacto regional en
+- 3:25. El mejor caso en pantalla: los siete pozos con una sola función J, el contacto regional en
   3,146 m y el local en 3,033 m. Leer el RMSE de cada pozo y mirar los puntos de F-4 sobre la
   curva de J.
-- 3:28. ¿Vale la pena? El agua colgada mejora más, no rompe el control y coincide con la
-  estructura y con el modelo de campo. Lo que queda abierto: un solo pozo no distingue una cubeta
+- 3:28. ¿Vale la pena? El agua colgada mejora más, predice mejor el pozo sin barrer (0.075) y
+  coincide con la estructura y con el modelo de campo. Lo que queda abierto: un solo pozo no distingue una cubeta
   de un bloque separado. Lo decide la presión del petróleo.
 
 Si preguntan por el punto de presión de F-4, 6.7 bar sobre la línea de 19 A: apunta a otro
@@ -185,8 +196,9 @@ Si preguntan por qué el nivel ajustado (3,033 m) queda por debajo del derrame (
 la cubeta puede no estar llena hasta el borde, y el mapa de la base tiene su propio error. En F-4
 el mapa y el tope de pozo difieren 0.6 m, pero el punto de derrame está en otro lugar.
 
-El control del contacto inclinado no es monótono (con −120 m por kilómetro vuelve a 0.143):
-depende de dónde cae el contacto a lo largo de F-11 B.
+Los controles del contacto inclinado no son monótonos (con −120 m por kilómetro vuelven a 0.097
+y 0.143): dependen de por dónde pasa el plano en F-5 y a lo largo de F-11 B. Por eso la
+conclusión se apoya en que el agua colgada gana en los cuatro números y en el gradiente.
 
 ### Bloque 9 · Controles y cierre (3:30 a 3:45)
 
@@ -195,7 +207,7 @@ depende de dónde cae el contacto a lo largo de F-11 B.
   2. Un diff contra el caso base, leído.
   3. La lista de supuestos y de valores por defecto del simulador.
   4. La versión del simulador y los datos, fijados.
-  5. Un pozo de control que el caso nunca vio.
+  5. Pozos de control que el caso nunca vio, al menos uno sin barrer.
   6. Un ingeniero firma.
 - 3:36. Los límites: la sección "Qué no se puede afirmar con esto" del README.
 - 3:40. Para llevarse, y preguntas.

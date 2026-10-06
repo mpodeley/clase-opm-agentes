@@ -1,13 +1,13 @@
-commit	rmse_ajuste	rmse_control	n_parametros	status	lectura
-ccb2dfa	0.1424	0.2048	4	keep	base: una J de Brooks-Corey (swirr 0.10, pe 2, lam 1) y FWL 3120
-fb8e21c	0.1125	0.1761	3	keep	Se cumplió (predicho 0.113): sin meseta de Swirr mejoran F-4 (0.201 a 0.145), F-12 y 19 SR; 19 BT2 no cambia. sesgo_control pasó de -0.038 a +0.048, anotado y no usado
-1ed6d9b	0.1116	0.1201	3	discard	Se cumplió (predicho 0.1116): mejora 0.0009, menos que el umbral de 0.002; los perfiles de ajuste no distinguen un FWL entre 3,120 y 3,150 m. Anotado y no usado: rmse_control baja de 0.176 a 0.120 y sesgo_control de +0.048 a 0.000
-0df623e	0.1155	0.1821	5	discard	No se cumplió (predicho 0.1116, salió 0.1155): 19 A mejora de 0.082 a 0.056 pero F-4 empeora de 0.145 a 0.158 y 19 SR de 0.046 a 0.059; el Swirr por celda seca a 19 A y moja a los otros, y la función J ya lleva la dependencia con k
-b0972be	0.1121	0.1207	2	keep	Se cumplió (predicho 0.112): a y FWL se compensan; con a = 1 y FWL en 3,150 m el ajuste queda igual con un parámetro menos; 19 A empeora de 0.082 a 0.088 y F-4 mejora de 0.145 a 0.142
-46bb451	0.1238	0.1297	3	discard	Se cumplió (predicho 0.1235): sin escalado de Leverett F-4 pasa de 0.142 a 0.167 y F-12 de 0.092 a 0.100; la raíz de k/φ vale 0.012 de RMSE y hace falta
-dfbaf79	0.1101	0.1184	4	discard	Se cumplió (predicho 0.110): 19 A mejora de 0.088 a 0.076 pero la ganancia total es 0.002 con dos parámetros más, 0.001 por parámetro; la roca de menos de 28 mD no pide otra curva
-4e72193	0.1129	0.1280	3	discard	No se cumplió (predicho 0.1115, salió 0.1129): F-12 mejora de 0.092 a 0.089 y 19 A de 0.088 a 0.076, pero F-4 empeora de 0.142 a 0.148 y 19 SR de 0.049 a 0.063; el agua de la base de F-4 no sale de la arcilla. Mi cuenta previa no reprodujo el reescalado de SWL de Flow (la tabla no arranca en Sw = 0)
-a6d780f	0.1153	0.1771	2	discard	Se cumplió (predicho 0.115): con el FWL del operador 19 A pasa de 0.088 a 0.114 y el total empeora 0.003; con esta curva los perfiles prefieren el contacto en 3,150 m. Anotado: sesgo_control +0.055
-d975254	0.1118	0.1178	3	discard	Se cumplió (predicho 0.1118): mejora 0.0003 con un parámetro más; F-12 de 0.092 a 0.090. El exponente 0.5 de Leverett alcanza
-a2bc865	0.1102	0.1287	4	discard	Se cumplió (predicho 0.110): F-4 mejora de 0.142 a 0.133 pero 19 A, 19 SR y F-12 empeoran; 0.001 por parámetro. La arcilla explica una parte menor del agua de la base de F-4
-8d709da	0.1135	0.1254	3	discard	Se cumplió (predicho 0.113): 19 A mejora de 0.088 a 0.076 pero F-4 y F-12 empeoran; la nube de J no muestra umbral de entrada y la ley de potencias queda
+commit	rmse_ajuste	rmse_control_inicial	rmse_control_barrido	n_parametros	status	lectura
+ccb2dfa	0.1424	0.2949	0.2048	4	keep	base: una J de Brooks-Corey (swirr 0.10, pe 2, lam 1) y FWL 3120
+fb8e21c	0.1125	0.2962	0.1761	3	keep	Se cumplió (predicho 0.113): sin meseta de Swirr mejoran F-4 (0.201 a 0.145), F-12 y 19 SR; 19 BT2 no cambia. sesgo_control pasó de -0.038 a +0.048, anotado y no usado
+1ed6d9b	0.1116	0.0932	0.1201	3	discard	Se cumplió (predicho 0.1116): mejora 0.0009, menos que el umbral de 0.002; los perfiles de ajuste no distinguen un FWL entre 3,120 y 3,150 m. Anotado y no usado: rmse_control baja de 0.176 a 0.120 y sesgo_control de +0.048 a 0.000
+0df623e	0.1155	0.2828	0.1821	5	discard	No se cumplió (predicho 0.1116, salió 0.1155): 19 A mejora de 0.082 a 0.056 pero F-4 empeora de 0.145 a 0.158 y 19 SR de 0.046 a 0.059; el Swirr por celda seca a 19 A y moja a los otros, y la función J ya lleva la dependencia con k
+b0972be	0.1121	0.1025	0.1207	2	keep	Se cumplió (predicho 0.112): a y FWL se compensan; con a = 1 y FWL en 3,150 m el ajuste queda igual con un parámetro menos; 19 A empeora de 0.082 a 0.088 y F-4 mejora de 0.145 a 0.142
+46bb451	0.1238	0.1402	0.1297	3	discard	Se cumplió (predicho 0.1235): sin escalado de Leverett F-4 pasa de 0.142 a 0.167 y F-12 de 0.092 a 0.100; la raíz de k/φ vale 0.012 de RMSE y hace falta
+dfbaf79	0.1101	0.0985	0.1184	4	discard	Se cumplió (predicho 0.110): 19 A mejora de 0.088 a 0.076 pero la ganancia total es 0.002 con dos parámetros más, 0.001 por parámetro; la roca de menos de 28 mD no pide otra curva
+4e72193	0.1129	0.0863	0.1280	3	discard	No se cumplió (predicho 0.1115, salió 0.1129): F-12 mejora de 0.092 a 0.089 y 19 A de 0.088 a 0.076, pero F-4 empeora de 0.142 a 0.148 y 19 SR de 0.049 a 0.063; el agua de la base de F-4 no sale de la arcilla. Mi cuenta previa no reprodujo el reescalado de SWL de Flow (la tabla no arranca en Sw = 0)
+a6d780f	0.1153	0.3139	0.1771	2	discard	Se cumplió (predicho 0.115): con el FWL del operador 19 A pasa de 0.088 a 0.114 y el total empeora 0.003; con esta curva los perfiles prefieren el contacto en 3,150 m. Anotado: sesgo_control +0.055
+d975254	0.1118	0.1064	0.1178	3	discard	Se cumplió (predicho 0.1118): mejora 0.0003 con un parámetro más; F-12 de 0.092 a 0.090. El exponente 0.5 de Leverett alcanza
+a2bc865	0.1102	0.1083	0.1287	4	discard	Se cumplió (predicho 0.110): F-4 mejora de 0.142 a 0.133 pero 19 A, 19 SR y F-12 empeoran; 0.001 por parámetro. La arcilla explica una parte menor del agua de la base de F-4
+8d709da	0.1135	0.0918	0.1254	3	discard	Se cumplió (predicho 0.113): 19 A mejora de 0.088 a 0.076 pero F-4 y F-12 empeoran; la nube de J no muestra umbral de entrada y la ley de potencias queda
